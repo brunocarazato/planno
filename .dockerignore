@@ -1,0 +1,16 @@
+.git
+.idea
+.vscode
+node_modules
+vendor
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+public/build
+public/hot
+.env
+.env.*
+!.env.example
+!.env.docker.example
