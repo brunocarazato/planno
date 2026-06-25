@@ -145,11 +145,11 @@ Entregáveis:
 - [x] Edição dos dados básicos da turma.
 - [x] Permissão ou bloqueio de novos cadastros por turma.
 - [x] Arquivamento de turma.
-- [ ] Tela pública ou fluxo de cadastro para aluno informar nome, RA e turma.
-- [ ] Lista de cadastros pendentes por turma.
-- [ ] Aprovação ou reprovação de cadastro de aluno por administrador ou professor.
-- [ ] Registro da validade anual do cadastro aprovado.
-- [ ] Bloqueio de uso de cadastros vencidos.
+- [x] Tela pública ou fluxo de cadastro para aluno informar nome, RA e turma.
+- [x] Lista de cadastros pendentes por turma.
+- [x] Aprovação ou reprovação de cadastro de aluno por administrador ou professor.
+- [x] Registro da validade anual do cadastro aprovado.
+- [x] Bloqueio de uso de cadastros vencidos.
 
 Casos de uso:
 
@@ -159,11 +159,11 @@ Casos de uso:
 [x] PermitirNovosCadastrosNaTurma
 [x] BloquearNovosCadastrosNaTurma
 [x] ArquivarTurma
-SolicitarCadastroDeAluno
-AprovarCadastroDeAluno
-ReprovarCadastroDeAluno
-ExpirarCadastrosDeAlunoVencidos
-ListarCadastrosPendentesDaTurma
+[x] SolicitarCadastroDeAluno
+[x] AprovarCadastroDeAluno
+[x] ReprovarCadastroDeAluno
+[x] ExpirarCadastrosDeAlunoVencidos
+[x] ListarCadastrosPendentesDaTurma
 ```
 
 Critérios de aceite:
@@ -171,22 +171,22 @@ Critérios de aceite:
 - [x] O administrador ou professor consegue criar uma turma.
 - [x] O administrador ou professor consegue permitir ou bloquear novos cadastros na turma.
 - [x] O administrador ou professor consegue arquivar uma turma.
-- [ ] O aluno consegue solicitar cadastro informando nome, RA e turma.
-- [ ] Um cadastro solicitado fica pendente até aprovação.
-- [ ] O administrador ou professor consegue aprovar ou reprovar um cadastro.
-- [ ] Um cadastro aprovado recebe validade de 1 ano.
-- [ ] Cadastros vencidos não permitem participação ativa sem novo cadastro.
+- [x] O aluno consegue solicitar cadastro informando nome, RA e turma.
+- [x] Um cadastro solicitado fica pendente até aprovação.
+- [x] O administrador ou professor consegue aprovar ou reprovar um cadastro.
+- [x] Um cadastro aprovado recebe validade de 1 ano.
+- [x] Cadastros vencidos não permitem participação ativa sem novo cadastro.
 - [ ] Turmas arquivadas não aceitam novos cadastros nem novos projetos.
 
-Status em 25/06/2026: primeira vertical administrativa de turmas concluída, com listagem, criação, edição, bloqueio/liberação de cadastros e arquivamento. A autorização por papel ainda será incorporada quando o fluxo de usuários for definido; por enquanto as rotas representam a superfície administrativa inicial do MVP.
+Status em 25/06/2026: vertical de turmas e cadastros de alunos concluída no escopo inicial, com listagem, criação, edição, bloqueio/liberação, arquivamento, solicitação pública de cadastro, fila de pendências, aprovação/reprovação, validade anual e expiração de cadastros vencidos. A autorização por papel ainda será incorporada quando o fluxo de usuários for definido; por enquanto as rotas representam a superfície administrativa inicial do MVP.
 
 Validações executadas:
 
 ```text
+docker compose exec app php artisan migrate --force
 docker compose exec app php artisan test
 docker compose exec app ./vendor/bin/pint --test
-docker compose exec app php artisan route:list --path=turmas
-docker compose exec app php artisan migrate --force
+docker compose exec app php artisan route:list --path=cadastros-alunos
 docker compose run --rm node npm run build
 ```
 

@@ -23,6 +23,9 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                         <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/turmas">
                             Turmas
                         </Link>
+                        <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/cadastros-alunos/solicitar">
+                            Cadastro aluno
+                        </Link>
                         <a className="rounded-md px-3 py-2 hover:bg-slate-100" href="/#projetos">
                             Projetos
                         </a>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Turmas\Http\Controllers\CadastroAlunoController;
 use App\Modules\Turmas\Http\Controllers\TurmaController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,4 +18,11 @@ Route::prefix('turmas')->name('turmas.')->group(function (): void {
     Route::patch('/{turma}/bloquear-cadastros', [TurmaController::class, 'bloquearCadastros'])
         ->name('bloquear-cadastros');
     Route::patch('/{turma}/arquivar', [TurmaController::class, 'arquivar'])->name('arquivar');
+});
+
+Route::prefix('cadastros-alunos')->name('cadastros-alunos.')->group(function (): void {
+    Route::get('/solicitar', [CadastroAlunoController::class, 'create'])->name('create');
+    Route::post('/', [CadastroAlunoController::class, 'store'])->name('store');
+    Route::patch('/{cadastroAluno}/aprovar', [CadastroAlunoController::class, 'aprovar'])->name('aprovar');
+    Route::patch('/{cadastroAluno}/reprovar', [CadastroAlunoController::class, 'reprovar'])->name('reprovar');
 });

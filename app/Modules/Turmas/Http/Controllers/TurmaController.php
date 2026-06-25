@@ -10,7 +10,9 @@ use App\Modules\Turmas\Actions\CriarTurma;
 use App\Modules\Turmas\Actions\PermitirNovosCadastrosNaTurma;
 use App\Modules\Turmas\Http\Requests\AtualizarTurmaRequest;
 use App\Modules\Turmas\Http\Requests\CriarTurmaRequest;
+use App\Modules\Turmas\Models\CadastroAluno;
 use App\Modules\Turmas\Models\Turma;
+use App\Modules\Turmas\Presenters\CadastroAlunoPresenter;
 use App\Modules\Turmas\Presenters\TurmaPresenter;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -18,15 +20,23 @@ use Inertia\Response;
 
 class TurmaController extends Controller
 {
-    public function index(TurmaPresenter $presenter): Response
+    public function index(TurmaPresenter $presenter, CadastroAlunoPresenter $cadastroPresenter): Response
     {
         $turmas = Turma::query()
             ->latest()
             ->get()
             ->map(fn (Turma $turma) => $presenter->apresentar($turma));
 
+        $cadastrosPendentes = CadastroAluno::query()
+            ->with('turma')
+            ->pendentes()
+            ->latest()
+            ->get()
+            ->map(fn (CadastroAluno $cadastroAluno) => $cadastroPresenter->apresentar($cadastroAluno));
+
         return Inertia::render('Turmas/Index', [
             'turmas' => $turmas,
+            'cadastrosPendentes' => $cadastrosPendentes,
             'metricas' => [
                 'total' => Turma::query()->count(),
                 'ativas' => Turma::query()->ativas()->count(),
@@ -34,6 +44,7 @@ class TurmaController extends Controller
                     ->ativas()
                     ->where('aceita_novos_cadastros', true)
                     ->count(),
+                'cadastrosPendentes' => CadastroAluno::query()->pendentes()->count(),
             ],
         ]);
     }

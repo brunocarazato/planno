@@ -1,5 +1,5 @@
-import { Head, router, useForm } from '@inertiajs/react';
-import { Archive, Ban, CheckCircle2, Pencil, Plus, RefreshCcw, UsersRound } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Archive, Ban, Check, CheckCircle2, ClipboardList, Pencil, Plus, RefreshCcw, UserPlus, UsersRound, X } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 import { AppLayout } from '../../shared/layouts/AppLayout';
@@ -20,6 +20,19 @@ type Metricas = {
     total: number;
     ativas: number;
     aceitandoCadastros: number;
+    cadastrosPendentes: number;
+};
+
+type CadastroPendente = {
+    id: number;
+    nome: string;
+    ra: string;
+    criadoEm: string | null;
+    turma: {
+        id: number;
+        nome: string;
+        codigo: string;
+    };
 };
 
 type TurmaForm = {
@@ -31,6 +44,7 @@ type TurmaForm = {
 
 type TurmasIndexProps = {
     turmas: Turma[];
+    cadastrosPendentes: CadastroPendente[];
     metricas: Metricas;
     flash?: {
         success?: string | null;
@@ -44,7 +58,7 @@ const formularioInicial: TurmaForm = {
     descricao: '',
 };
 
-export default function TurmasIndex({ turmas, metricas, flash }: TurmasIndexProps) {
+export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flash }: TurmasIndexProps) {
     const [turmaEmEdicao, setTurmaEmEdicao] = useState<Turma | null>(null);
     const form = useForm<TurmaForm>(formularioInicial);
 
@@ -99,6 +113,20 @@ export default function TurmasIndex({ turmas, metricas, flash }: TurmasIndexProp
         router.patch(`/turmas/${turma.id}/arquivar`, {}, { preserveScroll: true });
     }
 
+    function aprovarCadastro(cadastro: CadastroPendente) {
+        router.patch(`/cadastros-alunos/${cadastro.id}/aprovar`, {}, { preserveScroll: true });
+    }
+
+    function reprovarCadastro(cadastro: CadastroPendente) {
+        const motivo = window.prompt(`Motivo da reprovacao de ${cadastro.nome} (opcional):`) ?? '';
+
+        router.patch(
+            `/cadastros-alunos/${cadastro.id}/reprovar`,
+            { motivo_reprovacao: motivo },
+            { preserveScroll: true },
+        );
+    }
+
     return (
         <AppLayout
             titulo="Turmas"
@@ -116,6 +144,68 @@ export default function TurmasIndex({ turmas, metricas, flash }: TurmasIndexProp
                 <Indicador rotulo="Turmas cadastradas" valor={metricas.total} />
                 <Indicador rotulo="Turmas ativas" valor={metricas.ativas} />
                 <Indicador rotulo="Aceitando cadastros" valor={metricas.aceitandoCadastros} />
+            </section>
+
+            <section className="mt-8 rounded-lg border border-slate-200 bg-white shadow-sm">
+                <div className="flex flex-col gap-4 border-b border-slate-200 p-6 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="rounded-md bg-cyan-50 p-2 text-cyan-700">
+                            <ClipboardList className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-semibold text-slate-950">Cadastros pendentes</h2>
+                            <p className="text-sm text-slate-600">
+                                Solicitações aguardando aprovacao para receber validade anual.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
+                            {metricas.cadastrosPendentes} pendente(s)
+                        </span>
+                        <Link className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50" href="/cadastros-alunos/solicitar">
+                            <UserPlus className="h-4 w-4" />
+                            Solicitar cadastro
+                        </Link>
+                    </div>
+                </div>
+
+                {cadastrosPendentes.length === 0 ? (
+                    <div className="p-8 text-center">
+                        <p className="font-medium text-slate-950">Nenhum cadastro pendente.</p>
+                        <p className="mt-2 text-sm text-slate-600">
+                            Novas solicitacoes de alunos aparecerao aqui para aprovacao.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="divide-y divide-slate-200">
+                        {cadastrosPendentes.map((cadastro) => (
+                            <article className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between" key={cadastro.id}>
+                                <div>
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <h3 className="font-semibold text-slate-950">{cadastro.nome}</h3>
+                                        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                                            RA {cadastro.ra}
+                                        </span>
+                                    </div>
+                                    <p className="mt-1 text-sm text-slate-600">
+                                        {cadastro.turma.nome} ({cadastro.turma.codigo})
+                                    </p>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    <Button onClick={() => aprovarCadastro(cadastro)} size="sm" type="button">
+                                        <Check className="h-4 w-4" />
+                                        Aprovar
+                                    </Button>
+                                    <Button onClick={() => reprovarCadastro(cadastro)} size="sm" type="button" variant="secondary">
+                                        <X className="h-4 w-4" />
+                                        Reprovar
+                                    </Button>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
             </section>
 
             <section className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
