@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 
 import { AppLayout } from '../../shared/layouts/AppLayout';
 import { Button } from '../../shared/ui/button';
+import { Dialog } from '../../shared/ui/dialog';
 
 type Turma = {
     id: number;
@@ -60,6 +61,9 @@ const formularioInicial: TurmaForm = {
 
 export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flash }: TurmasIndexProps) {
     const [turmaEmEdicao, setTurmaEmEdicao] = useState<Turma | null>(null);
+    const [turmaParaArquivar, setTurmaParaArquivar] = useState<Turma | null>(null);
+    const [cadastroParaReprovar, setCadastroParaReprovar] = useState<CadastroPendente | null>(null);
+    const [motivoReprovacao, setMotivoReprovacao] = useState('');
     const form = useForm<TurmaForm>(formularioInicial);
 
     function enviarFormulario(event: FormEvent<HTMLFormElement>) {
@@ -106,11 +110,16 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
     }
 
     function arquivarTurma(turma: Turma) {
-        if (!window.confirm(`Arquivar a turma ${turma.codigo}?`)) {
+        setTurmaParaArquivar(turma);
+    }
+
+    function confirmarArquivamento() {
+        if (!turmaParaArquivar) {
             return;
         }
 
-        router.patch(`/turmas/${turma.id}/arquivar`, {}, { preserveScroll: true });
+        router.patch(`/turmas/${turmaParaArquivar.id}/arquivar`, {}, { preserveScroll: true });
+        setTurmaParaArquivar(null);
     }
 
     function aprovarCadastro(cadastro: CadastroPendente) {
@@ -118,13 +127,22 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
     }
 
     function reprovarCadastro(cadastro: CadastroPendente) {
-        const motivo = window.prompt(`Motivo da reprovacao de ${cadastro.nome} (opcional):`) ?? '';
+        setCadastroParaReprovar(cadastro);
+        setMotivoReprovacao('');
+    }
+
+    function confirmarReprovacao() {
+        if (!cadastroParaReprovar) {
+            return;
+        }
 
         router.patch(
-            `/cadastros-alunos/${cadastro.id}/reprovar`,
-            { motivo_reprovacao: motivo },
+            `/cadastros-alunos/${cadastroParaReprovar.id}/reprovar`,
+            { motivo_reprovacao: motivoReprovacao },
             { preserveScroll: true },
         );
+        setCadastroParaReprovar(null);
+        setMotivoReprovacao('');
     }
 
     return (
@@ -359,6 +377,65 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                     )}
                 </div>
             </section>
+
+            <Dialog
+                aberto={Boolean(turmaParaArquivar)}
+                descricao={
+                    turmaParaArquivar
+                        ? `A turma ${turmaParaArquivar.codigo} sera marcada como arquivada e nao aceitara novos cadastros.`
+                        : undefined
+                }
+                onClose={() => setTurmaParaArquivar(null)}
+                titulo="Arquivar turma?"
+            >
+                <div className="flex flex-wrap justify-end gap-3">
+                    <Button onClick={() => setTurmaParaArquivar(null)} type="button" variant="secondary">
+                        Cancelar
+                    </Button>
+                    <Button onClick={confirmarArquivamento} type="button">
+                        Arquivar turma
+                    </Button>
+                </div>
+            </Dialog>
+
+            <Dialog
+                aberto={Boolean(cadastroParaReprovar)}
+                descricao={
+                    cadastroParaReprovar
+                        ? `Informe o motivo da reprovacao de ${cadastroParaReprovar.nome}, se quiser registrar essa justificativa.`
+                        : undefined
+                }
+                onClose={() => setCadastroParaReprovar(null)}
+                titulo="Reprovar cadastro?"
+            >
+                <div>
+                    <label className="text-sm font-medium text-slate-700" htmlFor="motivo_reprovacao">
+                        Motivo da reprovacao
+                    </label>
+                    <textarea
+                        className="mt-1 min-h-28 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                        id="motivo_reprovacao"
+                        onChange={(event) => setMotivoReprovacao(event.target.value)}
+                        placeholder="Opcional"
+                        value={motivoReprovacao}
+                    />
+                </div>
+                <div className="mt-6 flex flex-wrap justify-end gap-3">
+                    <Button
+                        onClick={() => {
+                            setCadastroParaReprovar(null);
+                            setMotivoReprovacao('');
+                        }}
+                        type="button"
+                        variant="secondary"
+                    >
+                        Cancelar
+                    </Button>
+                    <Button onClick={confirmarReprovacao} type="button">
+                        Reprovar cadastro
+                    </Button>
+                </div>
+            </Dialog>
         </AppLayout>
     );
 }
