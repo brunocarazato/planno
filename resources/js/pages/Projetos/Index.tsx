@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ClipboardCheck, Eye, FolderKanban, Plus, School, Target } from 'lucide-react';
 import { FormEvent } from 'react';
 
@@ -52,6 +52,16 @@ const formularioInicial: ProjetoForm = {
 
 export default function ProjetosIndex({ projetos, turmas, metricas, flash }: ProjetosIndexProps) {
     const form = useForm<ProjetoForm>(formularioInicial);
+    const { auth } = usePage<{
+        auth?: {
+            user?: {
+                tipo: string;
+            } | null;
+        };
+    }>().props;
+    const ehAluno = auth?.user?.tipo === 'aluno';
+    const alunoPossuiTurmaAtiva = turmas.length > 0;
+    const turmaDoAluno = turmas.length === 1 ? turmas[0] : null;
 
     function enviarFormulario(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -96,27 +106,45 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
                     </div>
 
                     <form className="mt-6 space-y-5" onSubmit={enviarFormulario}>
-                        <div>
-                            <label className="text-sm font-medium text-slate-700" htmlFor="turma_id">
-                                Turma
-                            </label>
-                            <select
-                                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
-                                id="turma_id"
-                                onChange={(event) => form.setData('turma_id', event.target.value)}
-                                value={form.data.turma_id}
-                            >
-                                <option value="">Selecione uma turma ativa</option>
-                                {turmas.map((turma) => (
-                                    <option key={turma.id} value={turma.id}>
-                                        {turma.nome} ({turma.codigo})
-                                    </option>
-                                ))}
-                            </select>
-                            {form.errors.turma_id ? (
-                                <p className="mt-1 text-sm text-red-600">{form.errors.turma_id}</p>
-                            ) : null}
-                        </div>
+                        {ehAluno ? (
+                            <div className="rounded-md border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm text-cyan-900">
+                                <p className="font-medium">Turma vinculada automaticamente</p>
+                                <p className="mt-1">
+                                    {turmaDoAluno ? `${turmaDoAluno.nome} (${turmaDoAluno.codigo})` : null}
+                                    {!turmaDoAluno && alunoPossuiTurmaAtiva
+                                        ? 'Seu projeto sera associado automaticamente a uma turma com vinculo aprovado.'
+                                        : null}
+                                    {!alunoPossuiTurmaAtiva
+                                        ? 'Seu cadastro precisa ter uma turma ativa aprovada para criar projetos.'
+                                        : null}
+                                </p>
+                                {form.errors.turma_id ? (
+                                    <p className="mt-2 text-sm text-red-600">{form.errors.turma_id}</p>
+                                ) : null}
+                            </div>
+                        ) : (
+                            <div>
+                                <label className="text-sm font-medium text-slate-700" htmlFor="turma_id">
+                                    Turma
+                                </label>
+                                <select
+                                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                                    id="turma_id"
+                                    onChange={(event) => form.setData('turma_id', event.target.value)}
+                                    value={form.data.turma_id}
+                                >
+                                    <option value="">Selecione uma turma ativa</option>
+                                    {turmas.map((turma) => (
+                                        <option key={turma.id} value={turma.id}>
+                                            {turma.nome} ({turma.codigo})
+                                        </option>
+                                    ))}
+                                </select>
+                                {form.errors.turma_id ? (
+                                    <p className="mt-1 text-sm text-red-600">{form.errors.turma_id}</p>
+                                ) : null}
+                            </div>
+                        )}
 
                         <CampoTexto
                             erro={form.errors.nome}
@@ -151,7 +179,10 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
                             ) : null}
                         </div>
 
-                        <Button disabled={form.processing || turmas.length === 0} type="submit">
+                        <Button
+                            disabled={form.processing || (ehAluno ? !alunoPossuiTurmaAtiva : turmas.length === 0)}
+                            type="submit"
+                        >
                             Criar projeto
                         </Button>
                     </form>

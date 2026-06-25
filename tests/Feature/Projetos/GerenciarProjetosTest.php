@@ -225,7 +225,51 @@ class GerenciarProjetosTest extends TestCase
         ]);
     }
 
-    public function test_aluno_nao_cria_projeto_em_turma_sem_vinculo_aprovado(): void
+    public function test_aluno_cria_projeto_sem_informar_turma_usando_vinculo_aprovado(): void
+    {
+        auth()->logout();
+
+        $aluno = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+        $this->actingAs($aluno);
+
+        $turmaDoAluno = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        CadastroAluno::create([
+            'user_id' => $aluno->id,
+            'turma_id' => $turmaDoAluno->id,
+            'nome' => 'Ana Souza',
+            'ra' => 'RA123',
+            'status' => CadastroAluno::STATUS_APROVADO,
+            'valido_ate' => now()->addMonth()->toDateString(),
+        ]);
+
+        $this->post('/projetos', [
+            'nome' => 'Projeto do aluno',
+            'codigo' => 'PROJ-ALUNO-NOVO',
+        ])->assertRedirect();
+
+        $projeto = Projeto::query()->firstOrFail();
+
+        $this->assertDatabaseHas('projetos', [
+            'id' => $projeto->id,
+            'turma_id' => $turmaDoAluno->id,
+            'nome' => 'Projeto do aluno',
+            'codigo' => 'PROJ-ALUNO-NOVO',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+
+        $this->assertDatabaseHas('termos_de_abertura', [
+            'projeto_id' => $projeto->id,
+        ]);
+    }
+
+    public function test_aluno_nao_define_turma_do_projeto_manualmente(): void
     {
         auth()->logout();
 
@@ -257,13 +301,20 @@ class GerenciarProjetosTest extends TestCase
         $this->from('/projetos')
             ->post('/projetos', [
                 'turma_id' => $turmaDeOutroAluno->id,
-                'nome' => 'Projeto indevido',
+                'nome' => 'Projeto do aluno',
                 'codigo' => 'PROJ-OUTRO',
             ])
-            ->assertRedirect('/projetos')
-            ->assertSessionHasErrors('turma_id');
+            ->assertRedirect();
 
-        $this->assertDatabaseCount('projetos', 0);
+        $this->assertDatabaseHas('projetos', [
+            'turma_id' => $turmaDoAluno->id,
+            'nome' => 'Projeto do aluno',
+            'codigo' => 'PROJ-OUTRO',
+        ]);
+        $this->assertDatabaseMissing('projetos', [
+            'turma_id' => $turmaDeOutroAluno->id,
+            'codigo' => 'PROJ-OUTRO',
+        ]);
     }
 
     public function test_nao_cria_projeto_para_turma_arquivada(): void

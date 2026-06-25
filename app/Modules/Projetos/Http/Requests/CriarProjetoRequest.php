@@ -57,11 +57,32 @@ class CriarProjetoRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if ($this->user()?->aluno()) {
+            $this->merge([
+                'turma_id' => $this->turmaIdDoAluno(),
+            ]);
+        }
+
         if ($this->has('codigo')) {
             $this->merge([
                 'codigo' => mb_strtoupper((string) $this->input('codigo')),
             ]);
         }
+    }
+
+    private function turmaIdDoAluno(): ?int
+    {
+        return CadastroAluno::query()
+            ->where('user_id', $this->user()?->id)
+            ->aprovados()
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('valido_ate')
+                    ->orWhereDate('valido_ate', '>=', today());
+            })
+            ->latest('avaliado_em')
+            ->latest('id')
+            ->value('turma_id');
     }
 
     private function alunoPodeUsarTurma(int $turmaId): bool
