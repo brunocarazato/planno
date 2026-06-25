@@ -3,25 +3,25 @@ import { Archive, BookOpenCheck, CheckCircle2, FolderKanban, UsersRound } from '
 import type { ComponentType } from 'react';
 
 import { AppLayout } from '../shared/layouts/AppLayout';
-import { Button, buttonVariants } from '../shared/ui/button';
+import { buttonVariants } from '../shared/ui/button';
 
 const fases = [
     {
         nome: 'Fase 0',
         titulo: 'Fundacao tecnica',
-        status: 'Em andamento',
+        status: 'Concluida',
         descricao: 'Laravel, Inertia, React, TypeScript, Tailwind e estrutura modular inicial.',
     },
     {
         nome: 'Fase 1',
         titulo: 'Turmas e cadastros',
-        status: 'Proxima vertical',
+        status: 'Concluida',
         descricao: 'Criacao de turmas, solicitacao de cadastro de alunos e fluxo de aprovacao.',
     },
     {
         nome: 'Fase 2',
         titulo: 'Projetos didaticos',
-        status: 'Planejada',
+        status: 'Em andamento',
         descricao: 'Projetos vinculados a turmas ativas e termo de abertura.',
     },
 ];
@@ -63,12 +63,12 @@ export default function Inicio() {
                                 a trilha para projetos didaticos, artefatos e avaliacao por rubrica.
                             </p>
                             <div className="mt-6 flex flex-wrap gap-3">
-                                <Link className={buttonVariants()} href="/turmas">
-                                    Iniciar fase de Turmas
+                                <Link className={buttonVariants()} href="/projetos">
+                                    Gerenciar projetos
                                 </Link>
-                                <Button type="button" variant="secondary">
-                                    Ver plano do MVP
-                                </Button>
+                                <Link className={buttonVariants({ variant: 'secondary' })} href="/turmas">
+                                    Gerenciar turmas
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -76,8 +76,8 @@ export default function Inicio() {
 
                 <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
                     <Resumo icon={UsersRound} rotulo="Turmas" valor="Base criada" />
-                    <Resumo icon={FolderKanban} rotulo="Projetos" valor="Modulo previsto" />
-                    <Resumo icon={Archive} rotulo="Cadastros" valor="Fluxo seguinte" />
+                    <Resumo icon={FolderKanban} rotulo="Projetos" valor="Vertical inicial" />
+                    <Resumo icon={Archive} rotulo="Cadastros" valor="Aprovacao ativa" />
                 </div>
             </section>
 

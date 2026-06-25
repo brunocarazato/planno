@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Projetos\Http\Controllers\ProjetoController;
 use App\Modules\Turmas\Http\Controllers\CadastroAlunoController;
 use App\Modules\Turmas\Http\Controllers\TurmaController;
 use Illuminate\Support\Facades\Route;
@@ -25,4 +26,12 @@ Route::prefix('cadastros-alunos')->name('cadastros-alunos.')->group(function ():
     Route::post('/', [CadastroAlunoController::class, 'store'])->name('store');
     Route::patch('/{cadastroAluno}/aprovar', [CadastroAlunoController::class, 'aprovar'])->name('aprovar');
     Route::patch('/{cadastroAluno}/reprovar', [CadastroAlunoController::class, 'reprovar'])->name('reprovar');
+});
+
+Route::prefix('projetos')->name('projetos.')->group(function (): void {
+    Route::get('/', [ProjetoController::class, 'index'])->name('index');
+    Route::post('/', [ProjetoController::class, 'store'])->name('store');
+    Route::get('/{projeto}', [ProjetoController::class, 'show'])->name('show');
+    Route::put('/{projeto}/termo-de-abertura', [ProjetoController::class, 'atualizarTermoDeAbertura'])
+        ->name('termo-de-abertura.update');
 });

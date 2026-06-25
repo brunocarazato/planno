@@ -176,7 +176,7 @@ Critérios de aceite:
 - [x] O administrador ou professor consegue aprovar ou reprovar um cadastro.
 - [x] Um cadastro aprovado recebe validade de 1 ano.
 - [x] Cadastros vencidos não permitem participação ativa sem novo cadastro.
-- [ ] Turmas arquivadas não aceitam novos cadastros nem novos projetos.
+- [x] Turmas arquivadas não aceitam novos cadastros nem novos projetos.
 
 Status em 25/06/2026: vertical de turmas e cadastros de alunos concluída no escopo inicial, com listagem, criação, edição, bloqueio/liberação, arquivamento, solicitação pública de cadastro, fila de pendências, aprovação/reprovação, validade anual e expiração de cadastros vencidos. A autorização por papel ainda será incorporada quando o fluxo de usuários for definido; por enquanto as rotas representam a superfície administrativa inicial do MVP.
 
@@ -198,30 +198,42 @@ Módulo principal: `Projetos`.
 
 Entregáveis:
 
-- Cadastro de projeto didático.
-- Associação do projeto a uma turma ativa.
-- Visualização de detalhes do projeto.
-- Criação e edição do termo de abertura.
-- Registro de objetivo, justificativa, restrições, premissas e entregas esperadas.
-- Situação inicial do projeto.
+- [x] Cadastro de projeto didático.
+- [x] Associação do projeto a uma turma ativa.
+- [x] Visualização de detalhes do projeto.
+- [x] Criação e edição do termo de abertura.
+- [x] Registro de objetivo, justificativa, restrições, premissas e entregas esperadas.
+- [x] Situação inicial do projeto.
 
 Casos de uso:
 
 ```text
-CriarProjeto
-AtualizarProjeto
-CriarTermoDeAberturaDoProjeto
-AtualizarTermoDeAberturaDoProjeto
-AtualizarSituacaoIntegradaDoProjeto
+[x] CriarProjeto
+[ ] AtualizarProjeto
+[x] CriarTermoDeAberturaDoProjeto
+[x] AtualizarTermoDeAberturaDoProjeto
+[ ] AtualizarSituacaoIntegradaDoProjeto
 ```
 
 Critérios de aceite:
 
-- O usuário consegue criar um projeto.
-- O projeto criado fica vinculado a uma turma ativa.
-- O projeto possui termo de abertura vinculado.
-- O sistema exibe uma visão resumida do projeto.
-- O projeto criado pode seguir para a trilha dos grupos de processos.
+- [x] O usuário consegue criar um projeto.
+- [x] O projeto criado fica vinculado a uma turma ativa.
+- [x] O projeto possui termo de abertura vinculado.
+- [x] O sistema exibe uma visão resumida do projeto.
+- [ ] O projeto criado pode seguir para a trilha dos grupos de processos.
+
+Status em 25/06/2026: vertical inicial de projetos criada, com listagem, cadastro vinculado a turma ativa, bloqueio de criação em turma arquivada, termo de abertura gerado automaticamente, tela de detalhe e edição dos campos pedagógicos iniciais do termo.
+
+Validações executadas:
+
+```text
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan test
+docker compose exec app ./vendor/bin/pint --test
+docker compose exec app php artisan route:list --path=projetos
+docker compose run --rm node npm run build
+```
 
 ### Fase 3 — Trilha dos grupos de processos
 

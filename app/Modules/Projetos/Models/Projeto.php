@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Modules\Projetos\Models;
+
+use App\Modules\Turmas\Models\Turma;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+class Projeto extends Model
+{
+    public const SITUACAO_EM_INICIACAO = 'em_iniciacao';
+
+    protected $table = 'projetos';
+
+    protected $fillable = [
+        'turma_id',
+        'nome',
+        'codigo',
+        'descricao',
+        'situacao',
+    ];
+
+    /**
+     * @return BelongsTo<Turma, Projeto>
+     */
+    public function turma(): BelongsTo
+    {
+        return $this->belongsTo(Turma::class);
+    }
+
+    /**
+     * @return HasOne<TermoDeAbertura>
+     */
+    public function termoDeAbertura(): HasOne
+    {
+        return $this->hasOne(TermoDeAbertura::class);
+    }
+
+    public function situacaoFormatada(): string
+    {
+        return match ($this->situacao) {
+            self::SITUACAO_EM_INICIACAO => 'Em iniciacao',
+            default => 'Situacao nao mapeada',
+        };
+    }
+}
