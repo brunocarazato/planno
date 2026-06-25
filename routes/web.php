@@ -42,6 +42,9 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/', [ProjetoController::class, 'index'])->name('index');
         Route::post('/', [ProjetoController::class, 'store'])->name('store');
         Route::get('/{projeto}', [ProjetoController::class, 'show'])->name('show');
+        Route::patch('/{projeto}/responsavel', [ProjetoController::class, 'atualizarResponsavel'])
+            ->middleware('professor')
+            ->name('responsavel.update');
         Route::put('/{projeto}/termo-de-abertura', [ProjetoController::class, 'atualizarTermoDeAbertura'])
             ->name('termo-de-abertura.update');
     });

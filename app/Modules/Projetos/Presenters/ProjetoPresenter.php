@@ -25,6 +25,12 @@ class ProjetoPresenter
                 'codigo' => $projeto->turma?->codigo,
                 'periodo' => $projeto->turma?->periodo,
             ],
+            'responsavel' => [
+                'id' => $projeto->responsavel?->id,
+                'name' => $projeto->responsavel?->name,
+                'ra' => $projeto->responsavel?->ra,
+                'tipo' => $projeto->responsavel?->tipo,
+            ],
             'termoDeAbertura' => [
                 'objetivo' => $projeto->termoDeAbertura?->objetivo,
                 'justificativa' => $projeto->termoDeAbertura?->justificativa,

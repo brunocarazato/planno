@@ -2,6 +2,7 @@
 
 namespace App\Modules\Projetos\Models;
 
+use App\Models\User;
 use App\Modules\Turmas\Models\Turma;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,7 @@ class Projeto extends Model
 
     protected $fillable = [
         'turma_id',
+        'responsavel_id',
         'nome',
         'codigo',
         'descricao',
@@ -27,6 +29,14 @@ class Projeto extends Model
     public function turma(): BelongsTo
     {
         return $this->belongsTo(Turma::class);
+    }
+
+    /**
+     * @return BelongsTo<User, Projeto>
+     */
+    public function responsavel(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'responsavel_id');
     }
 
     /**

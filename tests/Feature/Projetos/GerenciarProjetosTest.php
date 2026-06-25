@@ -215,6 +215,7 @@ class GerenciarProjetosTest extends TestCase
         $this->assertDatabaseHas('projetos', [
             'id' => $projeto->id,
             'turma_id' => $turma->id,
+            'responsavel_id' => auth()->id(),
             'nome' => 'Sistema de biblioteca escolar',
             'codigo' => 'PROJ-2026-01',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
@@ -259,6 +260,7 @@ class GerenciarProjetosTest extends TestCase
         $this->assertDatabaseHas('projetos', [
             'id' => $projeto->id,
             'turma_id' => $turmaDoAluno->id,
+            'responsavel_id' => $aluno->id,
             'nome' => 'Projeto do aluno',
             'codigo' => 'PROJ-ALUNO-NOVO',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
@@ -308,6 +310,7 @@ class GerenciarProjetosTest extends TestCase
 
         $this->assertDatabaseHas('projetos', [
             'turma_id' => $turmaDoAluno->id,
+            'responsavel_id' => $aluno->id,
             'nome' => 'Projeto do aluno',
             'codigo' => 'PROJ-OUTRO',
         ]);
@@ -338,8 +341,146 @@ class GerenciarProjetosTest extends TestCase
         $this->assertDatabaseCount('projetos', 0);
     }
 
+    public function test_professor_altera_responsavel_do_projeto(): void
+    {
+        $professor = auth()->user();
+
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        $alunoResponsavel = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+
+        CadastroAluno::create([
+            'user_id' => $alunoResponsavel->id,
+            'turma_id' => $turma->id,
+            'nome' => 'Ana Souza',
+            'ra' => 'RA123',
+            'status' => CadastroAluno::STATUS_APROVADO,
+            'valido_ate' => now()->addMonth()->toDateString(),
+        ]);
+
+        $projeto = Projeto::create([
+            'turma_id' => $turma->id,
+            'responsavel_id' => $professor?->id,
+            'nome' => 'Sistema de biblioteca escolar',
+            'codigo' => 'PROJ-2026-01',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+
+        $this->patch("/projetos/{$projeto->id}/responsavel", [
+            'responsavel_id' => $alunoResponsavel->id,
+        ])->assertRedirect("/projetos/{$projeto->id}");
+
+        $this->assertDatabaseHas('projetos', [
+            'id' => $projeto->id,
+            'responsavel_id' => $alunoResponsavel->id,
+        ]);
+    }
+
+    public function test_professor_nao_altera_responsavel_para_aluno_de_outra_turma(): void
+    {
+        $professor = auth()->user();
+
+        $turmaDoProjeto = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+        $outraTurma = Turma::create([
+            'nome' => 'Engenharia de Software',
+            'codigo' => 'ES-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        $alunoDeOutraTurma = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+
+        CadastroAluno::create([
+            'user_id' => $alunoDeOutraTurma->id,
+            'turma_id' => $outraTurma->id,
+            'nome' => 'Ana Souza',
+            'ra' => 'RA123',
+            'status' => CadastroAluno::STATUS_APROVADO,
+            'valido_ate' => now()->addMonth()->toDateString(),
+        ]);
+
+        $projeto = Projeto::create([
+            'turma_id' => $turmaDoProjeto->id,
+            'responsavel_id' => $professor?->id,
+            'nome' => 'Sistema de biblioteca escolar',
+            'codigo' => 'PROJ-2026-01',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+
+        $this->from("/projetos/{$projeto->id}")
+            ->patch("/projetos/{$projeto->id}/responsavel", [
+                'responsavel_id' => $alunoDeOutraTurma->id,
+            ])
+            ->assertRedirect("/projetos/{$projeto->id}")
+            ->assertSessionHasErrors('responsavel_id');
+
+        $this->assertDatabaseHas('projetos', [
+            'id' => $projeto->id,
+            'responsavel_id' => $professor?->id,
+        ]);
+    }
+
+    public function test_aluno_nao_altera_responsavel_do_projeto(): void
+    {
+        auth()->logout();
+
+        $aluno = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+        $this->actingAs($aluno);
+
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        CadastroAluno::create([
+            'user_id' => $aluno->id,
+            'turma_id' => $turma->id,
+            'nome' => 'Ana Souza',
+            'ra' => 'RA123',
+            'status' => CadastroAluno::STATUS_APROVADO,
+            'valido_ate' => now()->addMonth()->toDateString(),
+        ]);
+
+        $outroAluno = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+
+        $projeto = Projeto::create([
+            'turma_id' => $turma->id,
+            'responsavel_id' => $aluno->id,
+            'nome' => 'Projeto do aluno',
+            'codigo' => 'PROJ-ALUNO',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+
+        $this->patch("/projetos/{$projeto->id}/responsavel", [
+            'responsavel_id' => $outroAluno->id,
+        ])->assertForbidden();
+
+        $this->assertDatabaseHas('projetos', [
+            'id' => $projeto->id,
+            'responsavel_id' => $aluno->id,
+        ]);
+    }
+
     public function test_exibe_o_detalhe_do_projeto(): void
     {
+        $professor = auth()->user();
+
         $turma = Turma::create([
             'nome' => 'Gestao de Projetos',
             'codigo' => 'GP-2026-1A',
@@ -349,6 +490,7 @@ class GerenciarProjetosTest extends TestCase
 
         $projeto = Projeto::create([
             'turma_id' => $turma->id,
+            'responsavel_id' => $professor?->id,
             'nome' => 'Sistema de biblioteca escolar',
             'codigo' => 'PROJ-2026-01',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
@@ -364,6 +506,8 @@ class GerenciarProjetosTest extends TestCase
                 ->component('Projetos/Show')
                 ->where('projeto.nome', 'Sistema de biblioteca escolar')
                 ->where('projeto.turma.codigo', 'GP-2026-1A')
+                ->where('projeto.responsavel.id', $professor?->id)
+                ->where('podeAlterarResponsavel', true)
                 ->where('projeto.termoDeAbertura.objetivo', 'Organizar emprestimos de livros.'));
     }
 

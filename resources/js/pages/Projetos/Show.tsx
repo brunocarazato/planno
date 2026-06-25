@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, ClipboardCheck, Save, School, Target } from 'lucide-react';
+import { ArrowLeft, ClipboardCheck, Save, School, Target, UserRound } from 'lucide-react';
 import { FormEvent } from 'react';
 
 import { AppLayout } from '../../shared/layouts/AppLayout';
@@ -17,6 +17,7 @@ type Projeto = {
         codigo: string;
         periodo: string | null;
     };
+    responsavel: UsuarioResumo;
     termoDeAbertura: {
         objetivo: string | null;
         justificativa: string | null;
@@ -24,6 +25,20 @@ type Projeto = {
         premissas: string | null;
         entregasEsperadas: string | null;
     };
+};
+
+type UsuarioResumo = {
+    id: number | null;
+    name: string | null;
+    ra: string | null;
+    tipo: string | null;
+};
+
+type UsuarioOpcao = {
+    id: number;
+    name: string;
+    ra: string | null;
+    tipo: string;
 };
 
 type TermoForm = {
@@ -34,20 +49,34 @@ type TermoForm = {
     entregas_esperadas: string;
 };
 
+type ResponsavelForm = {
+    responsavel_id: string;
+};
+
 type ProjetosShowProps = {
     projeto: Projeto;
+    podeAlterarResponsavel: boolean;
+    responsaveisDisponiveis: UsuarioOpcao[];
     flash?: {
         success?: string | null;
     };
 };
 
-export default function ProjetosShow({ projeto, flash }: ProjetosShowProps) {
+export default function ProjetosShow({
+    projeto,
+    podeAlterarResponsavel,
+    responsaveisDisponiveis,
+    flash,
+}: ProjetosShowProps) {
     const form = useForm<TermoForm>({
         objetivo: projeto.termoDeAbertura.objetivo ?? '',
         justificativa: projeto.termoDeAbertura.justificativa ?? '',
         restricoes: projeto.termoDeAbertura.restricoes ?? '',
         premissas: projeto.termoDeAbertura.premissas ?? '',
         entregas_esperadas: projeto.termoDeAbertura.entregasEsperadas ?? '',
+    });
+    const responsavelForm = useForm<ResponsavelForm>({
+        responsavel_id: projeto.responsavel.id ? String(projeto.responsavel.id) : '',
     });
 
     function enviarFormulario(event: FormEvent<HTMLFormElement>) {
@@ -57,6 +86,16 @@ export default function ProjetosShow({ projeto, flash }: ProjetosShowProps) {
             preserveScroll: true,
         });
     }
+
+    function enviarResponsavel(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        responsavelForm.patch(`/projetos/${projeto.id}/responsavel`, {
+            preserveScroll: true,
+        });
+    }
+
+    const nomeResponsavel = projeto.responsavel.name ?? 'Nao definido';
 
     return (
         <AppLayout titulo={projeto.nome} subtitulo="Detalhe do projeto didatico e termo de abertura inicial.">
@@ -78,9 +117,10 @@ export default function ProjetosShow({ projeto, flash }: ProjetosShowProps) {
                 </div>
             ) : null}
 
-            <section className="grid gap-4 md:grid-cols-3">
+            <section className="grid gap-4 md:grid-cols-4">
                 <Resumo icon={ClipboardCheck} rotulo="Codigo" valor={projeto.codigo} />
                 <Resumo icon={School} rotulo="Turma" valor={`${projeto.turma.nome} (${projeto.turma.codigo})`} />
+                <Resumo icon={UserRound} rotulo="Responsavel" valor={nomeResponsavel} />
                 <Resumo icon={Target} rotulo="Situacao" valor={projeto.situacaoFormatada} />
             </section>
 
@@ -96,12 +136,48 @@ export default function ProjetosShow({ projeto, flash }: ProjetosShowProps) {
                             <dd className="mt-1 text-slate-600">{projeto.turma.periodo || 'Nao informado'}</dd>
                         </div>
                         <div>
+                            <dt className="font-medium text-slate-700">Responsavel</dt>
+                            <dd className="mt-1 text-slate-600">
+                                {nomeResponsavel}
+                                {projeto.responsavel.ra ? ` (${projeto.responsavel.ra})` : null}
+                            </dd>
+                        </div>
+                        <div>
                             <dt className="font-medium text-slate-700">Proxima etapa</dt>
                             <dd className="mt-1 text-slate-600">
                                 Completar o termo de abertura para seguir para a trilha dos grupos de processos.
                             </dd>
                         </div>
                     </dl>
+
+                    {podeAlterarResponsavel ? (
+                        <form className="mt-6 border-t border-slate-200 pt-5" onSubmit={enviarResponsavel}>
+                            <label className="text-sm font-medium text-slate-700" htmlFor="responsavel_id">
+                                Alterar responsavel
+                            </label>
+                            <select
+                                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                                id="responsavel_id"
+                                onChange={(event) => responsavelForm.setData('responsavel_id', event.target.value)}
+                                value={responsavelForm.data.responsavel_id}
+                            >
+                                <option value="">Selecione um responsavel</option>
+                                {responsaveisDisponiveis.map((responsavel) => (
+                                    <option key={responsavel.id} value={String(responsavel.id)}>
+                                        {responsavel.name}
+                                        {responsavel.ra ? ` (${responsavel.ra})` : ''}
+                                    </option>
+                                ))}
+                            </select>
+                            {responsavelForm.errors.responsavel_id ? (
+                                <p className="mt-1 text-sm text-red-600">{responsavelForm.errors.responsavel_id}</p>
+                            ) : null}
+                            <Button className="mt-3" disabled={responsavelForm.processing} size="sm" type="submit">
+                                <Save className="h-4 w-4" />
+                                Salvar responsavel
+                            </Button>
+                        </form>
+                    ) : null}
                 </div>
 
                 <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">

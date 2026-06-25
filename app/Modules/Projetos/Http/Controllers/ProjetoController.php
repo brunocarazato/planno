@@ -4,8 +4,10 @@ namespace App\Modules\Projetos\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Modules\Projetos\Actions\AtualizarResponsavelDoProjeto;
 use App\Modules\Projetos\Actions\AtualizarTermoDeAberturaDoProjeto;
 use App\Modules\Projetos\Actions\CriarProjeto;
+use App\Modules\Projetos\Http\Requests\AtualizarResponsavelDoProjetoRequest;
 use App\Modules\Projetos\Http\Requests\AtualizarTermoDeAberturaDoProjetoRequest;
 use App\Modules\Projetos\Http\Requests\CriarProjetoRequest;
 use App\Modules\Projetos\Models\Projeto;
@@ -31,7 +33,7 @@ class ProjetoController extends Controller
             );
 
         $projetos = (clone $projetosPermitidos)
-            ->with(['turma', 'termoDeAbertura'])
+            ->with(['turma', 'responsavel', 'termoDeAbertura'])
             ->latest()
             ->get()
             ->map(fn (Projeto $projeto) => $presenter->apresentar($projeto));
@@ -72,7 +74,11 @@ class ProjetoController extends Controller
 
     public function store(CriarProjetoRequest $request, CriarProjeto $criarProjeto): RedirectResponse
     {
-        $projeto = $criarProjeto->executar($request->validated());
+        $usuario = $request->user();
+
+        abort_unless($usuario instanceof User, 403);
+
+        $projeto = $criarProjeto->executar($request->validated(), $usuario);
 
         return to_route('projetos.show', $projeto)->with('success', 'Projeto criado com sucesso.');
     }
@@ -81,11 +87,27 @@ class ProjetoController extends Controller
     {
         $this->garantirAcessoAoProjeto($request, $projeto);
 
-        $projeto->load(['turma', 'termoDeAbertura']);
+        $projeto->load(['turma', 'responsavel', 'termoDeAbertura']);
 
         return Inertia::render('Projetos/Show', [
             'projeto' => $presenter->apresentar($projeto),
+            'podeAlterarResponsavel' => $request->user()?->professor() === true,
+            'responsaveisDisponiveis' => $request->user()?->professor() === true
+                ? $this->responsaveisDisponiveis($projeto)
+                : [],
         ]);
+    }
+
+    public function atualizarResponsavel(
+        AtualizarResponsavelDoProjetoRequest $request,
+        Projeto $projeto,
+        AtualizarResponsavelDoProjeto $atualizarResponsavel,
+    ): RedirectResponse {
+        $responsavel = User::findOrFail($request->integer('responsavel_id'));
+
+        $atualizarResponsavel->executar($projeto, $responsavel);
+
+        return to_route('projetos.show', $projeto)->with('success', 'Responsavel do projeto atualizado.');
     }
 
     public function atualizarTermoDeAbertura(
@@ -142,5 +164,37 @@ class ProjetoController extends Controller
                 ->exists(),
             403,
         );
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, ra: string|null, tipo: string}>
+     */
+    private function responsaveisDisponiveis(Projeto $projeto): array
+    {
+        $alunosIds = CadastroAluno::query()
+            ->where('turma_id', $projeto->turma_id)
+            ->aprovados()
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('valido_ate')
+                    ->orWhereDate('valido_ate', '>=', today());
+            })
+            ->pluck('user_id')
+            ->filter()
+            ->values()
+            ->all();
+
+        return User::query()
+            ->where('tipo', User::TIPO_PROFESSOR)
+            ->orWhereIn('id', $alunosIds)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (User $usuario) => [
+                'id' => $usuario->id,
+                'name' => $usuario->name,
+                'ra' => $usuario->ra,
+                'tipo' => $usuario->tipo,
+            ])
+            ->all();
     }
 }
