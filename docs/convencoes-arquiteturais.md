@@ -19,9 +19,13 @@ Este projeto segue um monolito modular pragmático. Cada modulo de negocio vive 
 - Componentes de UI compartilhados ficam em `resources/js/shared/ui`.
 - Layouts compartilhados ficam em `resources/js/shared/layouts`.
 - Chamadas de navegacao e formularios devem usar `@inertiajs/react`.
+- Todo diálogo de confirmação deve ser exibido em formato de modal, respeitando o layout e cores da aplicação.
 
 ## Nomes
 
 - Identificadores de dominio devem usar portugues sem acentos: `Turma`, `CriarTurma`, `ArquivarTurma`.
 - Termos de framework permanecem em ingles quando forem convencao: `Controller`, `Request`, `Presenter`, `Response`, `Model`.
 - Rotas publicas usam URLs em portugues sem acentos e separadas por hifen.
+
+## Testes
+- O projeto deve contar com uma cobertura de 100% para testes de unidade e testes funcionais

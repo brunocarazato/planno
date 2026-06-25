@@ -145,8 +145,6 @@ Laravel + Inertia.js + React + TypeScript
 
 Essa stack permite construir uma aplicação com experiência de SPA, mantendo a produtividade do Laravel e evitando a necessidade inicial de uma API REST separada.
 
-Garanta uma cobertura de 100% para testes de unidade e testes funcionais
-
 ---
 
 ## 4. Restrições importantes
