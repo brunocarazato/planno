@@ -86,27 +86,46 @@ O módulo `GestaoAgil` deve ficar preparado arquiteturalmente, mas não entra no
 
 O desenvolvimento deve seguir entregas verticais. Cada fase deve produzir uma parte navegável e testável da aplicação, ainda que com regras simplificadas no início.
 
+Regra de acompanhamento: ao finalizar cada implementação relevante, atualizar os checklists deste plano marcando com `[x]` os itens concluídos.
+
 ### Fase 0 — Fundação do projeto
 
 Objetivo: criar a base técnica para permitir evolução modular.
 
 Entregáveis:
 
-- Projeto Laravel configurado com Inertia.js, React e TypeScript.
-- Tailwind CSS e shadcn/ui configurados.
-- Layout principal da aplicação.
-- Estrutura inicial de módulos em `app/Modules`.
-- Estrutura inicial do frontend em `resources/js/pages`, `resources/js/features` e `resources/js/shared`.
-- Convenções de rotas, controllers, requests, presenters e responses definidas.
-- Banco de dados configurado.
-- Ambiente local documentado.
+- [x] Projeto Laravel configurado com Inertia.js, React e TypeScript.
+- [x] Tailwind CSS e shadcn/ui configurados.
+- [x] Layout principal da aplicação.
+- [x] Estrutura inicial de módulos em `app/Modules`.
+- [x] Estrutura inicial do frontend em `resources/js/pages`, `resources/js/features` e `resources/js/shared`.
+- [ ] Convenções de rotas, controllers, requests, presenters e responses definidas.
+- [x] Banco de dados configurado.
+- [x] Ambiente local documentado.
+- [x] Ambiente Docker configurado com PHP-FPM, Nginx, MySQL e Node/Vite.
 
 Critérios de aceite:
 
-- A aplicação abre uma tela inicial funcional.
-- Existe pelo menos uma rota Inertia renderizando React.
-- A estrutura modular está criada sem pastas desnecessárias em módulos ainda vazios.
-- O padrão de nomes em português está aplicado nos módulos iniciais.
+- [x] A aplicação abre uma tela inicial funcional.
+- [x] Existe pelo menos uma rota Inertia renderizando React.
+- [x] A estrutura modular está criada sem pastas desnecessárias em módulos ainda vazios.
+- [x] O padrão de nomes em português está aplicado nos módulos iniciais.
+
+Status em 25/06/2026: fundação navegável e ambiente Docker concluídos.
+
+Validações executadas:
+
+```text
+docker compose config --quiet
+docker compose up -d --build
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan test
+docker compose exec app php artisan package:discover --ansi
+docker compose exec app php artisan route:list
+docker compose exec app composer validate --no-check-publish
+docker compose run --rm node npm run build
+curl http://localhost:8080/
+```
 
 ### Fase 1 — Turmas e cadastros de alunos
 
@@ -116,15 +135,15 @@ Módulo principal: `Turmas`.
 
 Entregáveis:
 
-- Cadastro de turma.
-- Edição dos dados básicos da turma.
-- Permissão ou bloqueio de novos cadastros por turma.
-- Arquivamento de turma.
-- Tela pública ou fluxo de cadastro para aluno informar nome, RA e turma.
-- Lista de cadastros pendentes por turma.
-- Aprovação ou reprovação de cadastro de aluno por administrador ou professor.
-- Registro da validade anual do cadastro aprovado.
-- Bloqueio de uso de cadastros vencidos.
+- [ ] Cadastro de turma.
+- [ ] Edição dos dados básicos da turma.
+- [ ] Permissão ou bloqueio de novos cadastros por turma.
+- [ ] Arquivamento de turma.
+- [ ] Tela pública ou fluxo de cadastro para aluno informar nome, RA e turma.
+- [ ] Lista de cadastros pendentes por turma.
+- [ ] Aprovação ou reprovação de cadastro de aluno por administrador ou professor.
+- [ ] Registro da validade anual do cadastro aprovado.
+- [ ] Bloqueio de uso de cadastros vencidos.
 
 Casos de uso:
 
@@ -143,15 +162,15 @@ ListarCadastrosPendentesDaTurma
 
 Critérios de aceite:
 
-- O administrador ou professor consegue criar uma turma.
-- O administrador ou professor consegue permitir ou bloquear novos cadastros na turma.
-- O administrador ou professor consegue arquivar uma turma.
-- O aluno consegue solicitar cadastro informando nome, RA e turma.
-- Um cadastro solicitado fica pendente até aprovação.
-- O administrador ou professor consegue aprovar ou reprovar um cadastro.
-- Um cadastro aprovado recebe validade de 1 ano.
-- Cadastros vencidos não permitem participação ativa sem novo cadastro.
-- Turmas arquivadas não aceitam novos cadastros nem novos projetos.
+- [ ] O administrador ou professor consegue criar uma turma.
+- [ ] O administrador ou professor consegue permitir ou bloquear novos cadastros na turma.
+- [ ] O administrador ou professor consegue arquivar uma turma.
+- [ ] O aluno consegue solicitar cadastro informando nome, RA e turma.
+- [ ] Um cadastro solicitado fica pendente até aprovação.
+- [ ] O administrador ou professor consegue aprovar ou reprovar um cadastro.
+- [ ] Um cadastro aprovado recebe validade de 1 ano.
+- [ ] Cadastros vencidos não permitem participação ativa sem novo cadastro.
+- [ ] Turmas arquivadas não aceitam novos cadastros nem novos projetos.
 
 ### Fase 2 — Projetos e termo de abertura
 
@@ -448,12 +467,13 @@ Critérios de aceite:
 
 ### Épico 1 — Fundação técnica
 
-- [ ] Criar projeto Laravel com Inertia, React e TypeScript.
-- [ ] Configurar Tailwind CSS e shadcn/ui.
-- [ ] Definir layout principal.
-- [ ] Criar estrutura inicial de módulos.
+- [x] Criar projeto Laravel com Inertia, React e TypeScript.
+- [x] Configurar Tailwind CSS e shadcn/ui.
+- [x] Definir layout principal.
+- [x] Criar estrutura inicial de módulos.
 - [ ] Definir padrão de rotas e controllers.
-- [ ] Configurar banco e migrations iniciais.
+- [x] Configurar banco e migrations iniciais.
+- [x] Containerizar ambiente de desenvolvimento com Docker.
 
 ### Épico 2 — Turmas e cadastros de alunos
 
