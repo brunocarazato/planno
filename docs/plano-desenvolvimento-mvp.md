@@ -99,7 +99,7 @@ Entregáveis:
 - [x] Layout principal da aplicação.
 - [x] Estrutura inicial de módulos em `app/Modules`.
 - [x] Estrutura inicial do frontend em `resources/js/pages`, `resources/js/features` e `resources/js/shared`.
-- [ ] Convenções de rotas, controllers, requests, presenters e responses definidas.
+- [x] Convenções de rotas, controllers, requests, presenters e responses definidas.
 - [x] Banco de dados configurado.
 - [x] Ambiente local documentado.
 - [x] Ambiente Docker configurado com PHP-FPM, Nginx, MySQL e Node/Vite.
@@ -111,7 +111,7 @@ Critérios de aceite:
 - [x] A estrutura modular está criada sem pastas desnecessárias em módulos ainda vazios.
 - [x] O padrão de nomes em português está aplicado nos módulos iniciais.
 
-Status em 25/06/2026: fundação navegável e ambiente Docker concluídos.
+Status em 25/06/2026: fundação navegável, convenções arquiteturais e ambiente Docker concluídos.
 
 Validações executadas:
 
@@ -127,6 +127,12 @@ docker compose run --rm node npm run build
 curl http://localhost:8080/
 ```
 
+Documento complementar:
+
+```text
+docs/convencoes-arquiteturais.md
+```
+
 ### Fase 1 — Turmas e cadastros de alunos
 
 Objetivo: permitir que administradores e professores gerenciem turmas e aprovem os cadastros de alunos.
@@ -135,10 +141,10 @@ Módulo principal: `Turmas`.
 
 Entregáveis:
 
-- [ ] Cadastro de turma.
-- [ ] Edição dos dados básicos da turma.
-- [ ] Permissão ou bloqueio de novos cadastros por turma.
-- [ ] Arquivamento de turma.
+- [x] Cadastro de turma.
+- [x] Edição dos dados básicos da turma.
+- [x] Permissão ou bloqueio de novos cadastros por turma.
+- [x] Arquivamento de turma.
 - [ ] Tela pública ou fluxo de cadastro para aluno informar nome, RA e turma.
 - [ ] Lista de cadastros pendentes por turma.
 - [ ] Aprovação ou reprovação de cadastro de aluno por administrador ou professor.
@@ -148,11 +154,11 @@ Entregáveis:
 Casos de uso:
 
 ```text
-CriarTurma
-AtualizarTurma
-PermitirNovosCadastrosNaTurma
-BloquearNovosCadastrosNaTurma
-ArquivarTurma
+[x] CriarTurma
+[x] AtualizarTurma
+[x] PermitirNovosCadastrosNaTurma
+[x] BloquearNovosCadastrosNaTurma
+[x] ArquivarTurma
 SolicitarCadastroDeAluno
 AprovarCadastroDeAluno
 ReprovarCadastroDeAluno
@@ -162,15 +168,27 @@ ListarCadastrosPendentesDaTurma
 
 Critérios de aceite:
 
-- [ ] O administrador ou professor consegue criar uma turma.
-- [ ] O administrador ou professor consegue permitir ou bloquear novos cadastros na turma.
-- [ ] O administrador ou professor consegue arquivar uma turma.
+- [x] O administrador ou professor consegue criar uma turma.
+- [x] O administrador ou professor consegue permitir ou bloquear novos cadastros na turma.
+- [x] O administrador ou professor consegue arquivar uma turma.
 - [ ] O aluno consegue solicitar cadastro informando nome, RA e turma.
 - [ ] Um cadastro solicitado fica pendente até aprovação.
 - [ ] O administrador ou professor consegue aprovar ou reprovar um cadastro.
 - [ ] Um cadastro aprovado recebe validade de 1 ano.
 - [ ] Cadastros vencidos não permitem participação ativa sem novo cadastro.
 - [ ] Turmas arquivadas não aceitam novos cadastros nem novos projetos.
+
+Status em 25/06/2026: primeira vertical administrativa de turmas concluída, com listagem, criação, edição, bloqueio/liberação de cadastros e arquivamento. A autorização por papel ainda será incorporada quando o fluxo de usuários for definido; por enquanto as rotas representam a superfície administrativa inicial do MVP.
+
+Validações executadas:
+
+```text
+docker compose exec app php artisan test
+docker compose exec app ./vendor/bin/pint --test
+docker compose exec app php artisan route:list --path=turmas
+docker compose exec app php artisan migrate --force
+docker compose run --rm node npm run build
+```
 
 ### Fase 2 — Projetos e termo de abertura
 

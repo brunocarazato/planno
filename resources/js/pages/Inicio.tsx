@@ -1,9 +1,9 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Archive, BookOpenCheck, CheckCircle2, FolderKanban, UsersRound } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 import { AppLayout } from '../shared/layouts/AppLayout';
-import { Button } from '../shared/ui/button';
+import { Button, buttonVariants } from '../shared/ui/button';
 
 const fases = [
     {
@@ -63,7 +63,9 @@ export default function Inicio() {
                                 a trilha para projetos didaticos, artefatos e avaliacao por rubrica.
                             </p>
                             <div className="mt-6 flex flex-wrap gap-3">
-                                <Button type="button">Iniciar fase de Turmas</Button>
+                                <Link className={buttonVariants()} href="/turmas">
+                                    Iniciar fase de Turmas
+                                </Link>
                                 <Button type="button" variant="secondary">
                                     Ver plano do MVP
                                 </Button>

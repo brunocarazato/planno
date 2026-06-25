@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 
 type AppLayoutProps = PropsWithChildren<{
@@ -16,12 +17,12 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                         {subtitulo ? <p className="mt-1 max-w-3xl text-sm text-slate-600">{subtitulo}</p> : null}
                     </div>
                     <nav className="flex flex-wrap gap-2 text-sm font-medium text-slate-700">
-                        <a className="rounded-md px-3 py-2 hover:bg-slate-100" href="/">
+                        <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/">
                             Inicio
-                        </a>
-                        <a className="rounded-md px-3 py-2 hover:bg-slate-100" href="/#turmas">
+                        </Link>
+                        <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/turmas">
                             Turmas
-                        </a>
+                        </Link>
                         <a className="rounded-md px-3 py-2 hover:bg-slate-100" href="/#projetos">
                             Projetos
                         </a>
