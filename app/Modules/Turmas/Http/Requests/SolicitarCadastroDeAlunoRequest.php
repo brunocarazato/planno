@@ -2,6 +2,7 @@
 
 namespace App\Modules\Turmas\Http\Requests;
 
+use App\Models\User;
 use App\Modules\Turmas\Models\CadastroAluno;
 use App\Modules\Turmas\Models\Turma;
 use Illuminate\Foundation\Http\FormRequest;
@@ -23,6 +24,7 @@ class SolicitarCadastroDeAlunoRequest extends FormRequest
             'turma_id' => ['required', 'integer', 'exists:turmas,id'],
             'nome' => ['required', 'string', 'max:120'],
             'ra' => ['required', 'string', 'max:40'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
 
@@ -44,6 +46,12 @@ class SolicitarCadastroDeAlunoRequest extends FormRequest
 
                 $ra = mb_strtoupper((string) $this->input('ra'));
 
+                if (User::query()->where('ra', $ra)->exists()) {
+                    $validator->errors()->add('ra', 'Ja existe uma conta de usuario para este RA.');
+
+                    return;
+                }
+
                 $cadastroAtivoOuPendente = CadastroAluno::query()
                     ->where('ra', $ra)
                     ->whereIn('status', [
@@ -57,5 +65,14 @@ class SolicitarCadastroDeAlunoRequest extends FormRequest
                 }
             },
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('ra')) {
+            $this->merge([
+                'ra' => mb_strtoupper((string) $this->input('ra')),
+            ]);
+        }
     }
 }

@@ -42,6 +42,24 @@ docker compose run --rm node npm run build
 docker compose down
 ```
 
+Atalhos locais:
+
+```bash
+./dev.sh help
+./dev.sh up
+./dev.sh migrate
+./dev.sh test
+./dev.sh build
+./dev.sh professor
+```
+
+O comando `./dev.sh professor` cria ou atualiza o professor de teste padrao:
+
+```text
+RA: PROF001
+Senha: senha-professor
+```
+
 Serviços expostos:
 
 ```text

@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 
 type AppLayoutProps = PropsWithChildren<{
@@ -7,6 +7,22 @@ type AppLayoutProps = PropsWithChildren<{
 }>;
 
 export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
+    const { auth } = usePage<{
+        auth?: {
+            user?: {
+                name: string;
+                ra: string | null;
+                tipo: string;
+            } | null;
+        };
+    }>().props;
+    const usuario = auth?.user;
+    const ehProfessor = usuario?.tipo === 'professor';
+
+    function sair() {
+        router.post('/sair');
+    }
+
     return (
         <div className="min-h-screen bg-slate-50">
             <header className="border-b border-slate-200 bg-white">
@@ -20,15 +36,30 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                         <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/">
                             Inicio
                         </Link>
-                        <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/turmas">
-                            Turmas
-                        </Link>
+                        {ehProfessor ? (
+                            <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/turmas">
+                                Turmas
+                            </Link>
+                        ) : null}
                         <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/cadastros-alunos/solicitar">
                             Cadastro aluno
                         </Link>
                         <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/projetos">
                             Projetos
                         </Link>
+                        {usuario ? (
+                            <button
+                                className="rounded-md px-3 py-2 text-left hover:bg-slate-100"
+                                onClick={sair}
+                                type="button"
+                            >
+                                Sair de {usuario.name}
+                            </button>
+                        ) : (
+                            <Link className="rounded-md px-3 py-2 hover:bg-slate-100" href="/entrar">
+                                Entrar
+                            </Link>
+                        )}
                     </nav>
                 </div>
             </header>

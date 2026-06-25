@@ -146,6 +146,12 @@ Entregáveis:
 - [x] Permissão ou bloqueio de novos cadastros por turma.
 - [x] Arquivamento de turma.
 - [x] Tela pública ou fluxo de cadastro para aluno informar nome, RA e turma.
+- [x] Definição de senha no cadastro inicial do aluno.
+- [x] Login simples por RA e senha.
+- [x] Bloqueio de login de aluno sem vínculo aprovado e válido com uma turma.
+- [x] Tipo de usuário `aluno` aplicado por padrão em novos cadastros.
+- [x] Tipo de usuário `professor` disponível via banco.
+- [x] Acesso à rota de turmas restrito a usuários do tipo `professor`.
 - [x] Lista de cadastros pendentes por turma.
 - [x] Aprovação ou reprovação de cadastro de aluno por administrador ou professor.
 - [x] Registro da validade anual do cadastro aprovado.
@@ -178,7 +184,7 @@ Critérios de aceite:
 - [x] Cadastros vencidos não permitem participação ativa sem novo cadastro.
 - [x] Turmas arquivadas não aceitam novos cadastros nem novos projetos.
 
-Status em 25/06/2026: vertical de turmas e cadastros de alunos concluída no escopo inicial, com listagem, criação, edição, bloqueio/liberação, arquivamento, solicitação pública de cadastro, fila de pendências, aprovação/reprovação, validade anual e expiração de cadastros vencidos. A autorização por papel ainda será incorporada quando o fluxo de usuários for definido; por enquanto as rotas representam a superfície administrativa inicial do MVP.
+Status em 25/06/2026: vertical de turmas e cadastros de alunos concluída no escopo inicial, com listagem, criação, edição, bloqueio/liberação, arquivamento, solicitação pública de cadastro, senha inicial, login simples por RA, bloqueio de login de aluno sem vínculo aprovado e válido, fila de pendências, aprovação/reprovação, validade anual e expiração de cadastros vencidos. A primeira regra de autorização por papel está aplicada: a rota de turmas exige usuário autenticado do tipo `professor`.
 
 Validações executadas:
 
@@ -186,6 +192,7 @@ Validações executadas:
 docker compose exec app php artisan migrate --force
 docker compose exec app php artisan test
 docker compose exec app ./vendor/bin/pint --test
+docker compose exec app php artisan route:list --path=entrar
 docker compose exec app php artisan route:list --path=cadastros-alunos
 docker compose run --rm node npm run build
 ```

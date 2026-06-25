@@ -16,6 +16,16 @@ class HandleInertiaRequests extends Middleware
             'app' => [
                 'name' => config('app.name', 'Planno'),
             ],
+            'auth' => [
+                'user' => fn () => $request->user()
+                    ? [
+                        'id' => $request->user()->id,
+                        'name' => $request->user()->name,
+                        'ra' => $request->user()->ra,
+                        'tipo' => $request->user()->tipo,
+                    ]
+                    : null,
+            ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
             ],

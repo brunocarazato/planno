@@ -2,6 +2,7 @@
 
 namespace App\Modules\Turmas\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,6 +20,7 @@ class CadastroAluno extends Model
     protected $table = 'cadastros_alunos';
 
     protected $fillable = [
+        'user_id',
         'turma_id',
         'nome',
         'ra',
@@ -42,6 +44,14 @@ class CadastroAluno extends Model
     public function turma(): BelongsTo
     {
         return $this->belongsTo(Turma::class);
+    }
+
+    /**
+     * @return BelongsTo<User, CadastroAluno>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function scopePendentes(Builder $query): Builder

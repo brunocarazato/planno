@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Autenticacao\Http\Controllers\SessaoController;
 use App\Modules\Projetos\Http\Controllers\ProjetoController;
 use App\Modules\Turmas\Http\Controllers\CadastroAlunoController;
 use App\Modules\Turmas\Http\Controllers\TurmaController;
@@ -10,7 +11,11 @@ Route::get('/', function () {
     return Inertia::render('Inicio');
 })->name('inicio');
 
-Route::prefix('turmas')->name('turmas.')->group(function (): void {
+Route::get('/entrar', [SessaoController::class, 'create'])->name('login');
+Route::post('/entrar', [SessaoController::class, 'store'])->name('login.store');
+Route::post('/sair', [SessaoController::class, 'destroy'])->name('logout');
+
+Route::prefix('turmas')->name('turmas.')->middleware(['auth', 'professor'])->group(function (): void {
     Route::get('/', [TurmaController::class, 'index'])->name('index');
     Route::post('/', [TurmaController::class, 'store'])->name('store');
     Route::put('/{turma}', [TurmaController::class, 'update'])->name('update');
@@ -24,8 +29,10 @@ Route::prefix('turmas')->name('turmas.')->group(function (): void {
 Route::prefix('cadastros-alunos')->name('cadastros-alunos.')->group(function (): void {
     Route::get('/solicitar', [CadastroAlunoController::class, 'create'])->name('create');
     Route::post('/', [CadastroAlunoController::class, 'store'])->name('store');
-    Route::patch('/{cadastroAluno}/aprovar', [CadastroAlunoController::class, 'aprovar'])->name('aprovar');
-    Route::patch('/{cadastroAluno}/reprovar', [CadastroAlunoController::class, 'reprovar'])->name('reprovar');
+    Route::middleware(['auth', 'professor'])->group(function (): void {
+        Route::patch('/{cadastroAluno}/aprovar', [CadastroAlunoController::class, 'aprovar'])->name('aprovar');
+        Route::patch('/{cadastroAluno}/reprovar', [CadastroAlunoController::class, 'reprovar'])->name('reprovar');
+    });
 });
 
 Route::prefix('projetos')->name('projetos.')->group(function (): void {

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Turmas;
 
+use App\Models\User;
 use App\Modules\Turmas\Models\Turma;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,6 +18,29 @@ class GerenciarTurmasTest extends TestCase
         parent::setUp();
 
         $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->actingAs(User::factory()->create([
+            'tipo' => User::TIPO_PROFESSOR,
+        ]));
+    }
+
+    public function test_visitante_nao_acessa_a_rota_de_turmas(): void
+    {
+        auth()->logout();
+
+        $this->get('/turmas')
+            ->assertRedirect('/entrar');
+    }
+
+    public function test_aluno_nao_acessa_a_rota_de_turmas(): void
+    {
+        auth()->logout();
+
+        $this->actingAs(User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]));
+
+        $this->get('/turmas')
+            ->assertForbidden();
     }
 
     public function test_exibe_a_tela_de_turmas(): void

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Turmas;
 
+use App\Models\User;
 use App\Modules\Turmas\Actions\ExpirarCadastrosDeAlunoVencidos;
 use App\Modules\Turmas\Models\CadastroAluno;
 use App\Modules\Turmas\Models\Turma;
@@ -56,9 +57,17 @@ class GerenciarCadastrosAlunosTest extends TestCase
             'turma_id' => $turma->id,
             'nome' => 'Ana Souza',
             'ra' => 'ra123',
+            'password' => 'senha-segura',
+            'password_confirmation' => 'senha-segura',
         ])->assertRedirect('/cadastros-alunos/solicitar');
 
+        $usuario = User::query()->where('ra', 'RA123')->firstOrFail();
+
+        $this->assertSame(User::TIPO_ALUNO, $usuario->tipo);
+        $this->assertSame('Ana Souza', $usuario->name);
+
         $this->assertDatabaseHas('cadastros_alunos', [
+            'user_id' => $usuario->id,
             'turma_id' => $turma->id,
             'nome' => 'Ana Souza',
             'ra' => 'RA123',
@@ -79,6 +88,8 @@ class GerenciarCadastrosAlunosTest extends TestCase
                 'turma_id' => $turmaBloqueada->id,
                 'nome' => 'Ana Souza',
                 'ra' => 'RA123',
+                'password' => 'senha-segura',
+                'password_confirmation' => 'senha-segura',
             ])
             ->assertRedirect('/cadastros-alunos/solicitar')
             ->assertSessionHasErrors('turma_id');
@@ -95,6 +106,8 @@ class GerenciarCadastrosAlunosTest extends TestCase
                 'turma_id' => $turmaArquivada->id,
                 'nome' => 'Bruno Lima',
                 'ra' => 'RA456',
+                'password' => 'senha-segura',
+                'password_confirmation' => 'senha-segura',
             ])
             ->assertRedirect('/cadastros-alunos/solicitar')
             ->assertSessionHasErrors('turma_id');
@@ -120,13 +133,69 @@ class GerenciarCadastrosAlunosTest extends TestCase
                 'turma_id' => $turma->id,
                 'nome' => 'Ana Souza',
                 'ra' => 'ra123',
+                'password' => 'senha-segura',
+                'password_confirmation' => 'senha-segura',
             ])
             ->assertRedirect('/cadastros-alunos/solicitar')
             ->assertSessionHasErrors('ra');
     }
 
+    public function test_exige_senha_confirmada_no_cadastro_de_aluno(): void
+    {
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        $this->from('/cadastros-alunos/solicitar')
+            ->post('/cadastros-alunos', [
+                'turma_id' => $turma->id,
+                'nome' => 'Ana Souza',
+                'ra' => 'RA123',
+                'password' => 'senha-segura',
+                'password_confirmation' => 'senha-diferente',
+            ])
+            ->assertRedirect('/cadastros-alunos/solicitar')
+            ->assertSessionHasErrors('password');
+
+        $this->assertDatabaseCount('users', 0);
+        $this->assertDatabaseCount('cadastros_alunos', 0);
+    }
+
+    public function test_nao_permite_ra_ja_associado_a_usuario(): void
+    {
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        User::factory()->create([
+            'ra' => 'RA123',
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+
+        $this->from('/cadastros-alunos/solicitar')
+            ->post('/cadastros-alunos', [
+                'turma_id' => $turma->id,
+                'nome' => 'Ana Souza',
+                'ra' => 'ra123',
+                'password' => 'senha-segura',
+                'password_confirmation' => 'senha-segura',
+            ])
+            ->assertRedirect('/cadastros-alunos/solicitar')
+            ->assertSessionHasErrors('ra');
+
+        $this->assertDatabaseCount('cadastros_alunos', 0);
+    }
+
     public function test_lista_cadastros_pendentes_na_tela_de_turmas(): void
     {
+        $this->actingAs(User::factory()->create([
+            'tipo' => User::TIPO_PROFESSOR,
+        ]));
+
         $turma = Turma::create([
             'nome' => 'Gestao de Projetos',
             'codigo' => 'GP-2026-1A',
@@ -151,6 +220,10 @@ class GerenciarCadastrosAlunosTest extends TestCase
 
     public function test_aprova_cadastro_com_validade_anual(): void
     {
+        $this->actingAs(User::factory()->create([
+            'tipo' => User::TIPO_PROFESSOR,
+        ]));
+
         $this->travelTo(now()->setDate(2026, 6, 25)->startOfDay());
 
         $turma = Turma::create([
@@ -178,6 +251,10 @@ class GerenciarCadastrosAlunosTest extends TestCase
 
     public function test_reprova_cadastro_de_aluno(): void
     {
+        $this->actingAs(User::factory()->create([
+            'tipo' => User::TIPO_PROFESSOR,
+        ]));
+
         $turma = Turma::create([
             'nome' => 'Gestao de Projetos',
             'codigo' => 'GP-2026-1A',

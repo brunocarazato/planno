@@ -16,6 +16,8 @@ type CadastroAlunoForm = {
     turma_id: string;
     nome: string;
     ra: string;
+    password: string;
+    password_confirmation: string;
 };
 
 type SolicitarCadastroProps = {
@@ -29,6 +31,8 @@ const formularioInicial: CadastroAlunoForm = {
     turma_id: '',
     nome: '',
     ra: '',
+    password: '',
+    password_confirmation: '',
 };
 
 export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroProps) {
@@ -100,6 +104,7 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                             label="Nome completo"
                             onChange={(valor) => form.setData('nome', valor)}
                             placeholder="Nome do aluno"
+                            type="text"
                             value={form.data.nome}
                         />
                         <CampoTexto
@@ -108,7 +113,26 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                             label="RA"
                             onChange={(valor) => form.setData('ra', valor)}
                             placeholder="Registro academico"
+                            type="text"
                             value={form.data.ra}
+                        />
+                        <CampoTexto
+                            erro={form.errors.password}
+                            id="password"
+                            label="Senha"
+                            onChange={(valor) => form.setData('password', valor)}
+                            placeholder="Minimo de 8 caracteres"
+                            type="password"
+                            value={form.data.password}
+                        />
+                        <CampoTexto
+                            erro={form.errors.password_confirmation}
+                            id="password_confirmation"
+                            label="Confirmar senha"
+                            onChange={(valor) => form.setData('password_confirmation', valor)}
+                            placeholder="Repita a senha"
+                            type="password"
+                            value={form.data.password_confirmation}
                         />
 
                         <Button disabled={form.processing || turmas.length === 0} type="submit">
@@ -164,13 +188,15 @@ function CampoTexto({
     label,
     onChange,
     placeholder,
+    type,
     value,
 }: {
     erro?: string;
-    id: keyof Pick<CadastroAlunoForm, 'nome' | 'ra'>;
+    id: keyof Pick<CadastroAlunoForm, 'nome' | 'ra' | 'password' | 'password_confirmation'>;
     label: string;
     onChange: (valor: string) => void;
     placeholder: string;
+    type: 'password' | 'text';
     value: string;
 }) {
     return (
@@ -183,7 +209,7 @@ function CampoTexto({
                 id={id}
                 onChange={(event) => onChange(event.target.value)}
                 placeholder={placeholder}
-                type="text"
+                type={type}
                 value={value}
             />
             {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
