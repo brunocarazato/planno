@@ -70,7 +70,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                             ) : null}
                             {usuario ? (
                                 <button
-                                    className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-left hover:bg-[#edf2e9] hover:text-[#17211f]"
+                                    className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md px-3 text-left hover:bg-[#edf2e9] hover:text-[#17211f]"
                                     onClick={sair}
                                     type="button"
                                 >
@@ -79,7 +79,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                                 </button>
                             ) : (
                                 <button
-                                    className="inline-flex h-10 items-center gap-2 rounded-md px-3 transition hover:bg-[#edf2e9] hover:text-[#17211f]"
+                                    className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md px-3 transition hover:bg-[#edf2e9] hover:text-[#17211f]"
                                     onClick={() => setLoginAberto(true)}
                                     type="button"
                                 >

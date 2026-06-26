@@ -83,7 +83,7 @@ export default function Inicio() {
                             Cadastro aluno
                         </Link>
                         <button
-                            className="inline-flex h-10 items-center gap-2 rounded-md bg-[#17211f] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#273633]"
+                            className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md bg-[#17211f] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#273633]"
                             onClick={() => setLoginAberto(true)}
                             type="button"
                         >
@@ -200,7 +200,7 @@ export default function Inicio() {
                     </div>
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <button
-                            className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-[#17211f] px-5 text-sm font-bold text-white hover:bg-[#273633]"
+                            className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-[#17211f] px-5 text-sm font-bold text-white hover:bg-[#273633]"
                             onClick={() => setLoginAberto(true)}
                             type="button"
                         >
