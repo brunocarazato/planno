@@ -64,7 +64,7 @@ export function Dialog({ aberto, children, className, descricao, onClose, titulo
                     </div>
                     <button
                         aria-label="Fechar dialogo"
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-[#66756f] hover:bg-[#f4f7ef] hover:text-[#17211f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#66756f]"
+                        className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-[#66756f] hover:bg-[#f4f7ef] hover:text-[#17211f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#66756f]"
                         onClick={onClose}
                         type="button"
                     >
