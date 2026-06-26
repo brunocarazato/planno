@@ -50,8 +50,8 @@ class Projeto extends Model
     public function situacaoFormatada(): string
     {
         return match ($this->situacao) {
-            self::SITUACAO_EM_INICIACAO => 'Em iniciacao',
-            default => 'Situacao nao mapeada',
+            self::SITUACAO_EM_INICIACAO => 'Em iniciação',
+            default => 'Situação não mapeada',
         };
     }
 }

@@ -97,10 +97,10 @@ export default function ProjetosShow({
         });
     }
 
-    const nomeResponsavel = projeto.responsavel.name ?? 'Nao definido';
+    const nomeResponsavel = projeto.responsavel.name ?? 'Não definido';
 
     return (
-        <AppLayout titulo={projeto.nome} subtitulo="Detalhe do projeto didatico e termo de abertura inicial.">
+        <AppLayout titulo={projeto.nome} subtitulo="Detalhe do projeto didático e termo de abertura inicial.">
             <Head title={projeto.nome} />
 
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -120,32 +120,32 @@ export default function ProjetosShow({
             ) : null}
 
             <section className="grid gap-4 md:grid-cols-4">
-                <Resumo icon={ClipboardCheck} rotulo="Codigo" valor={projeto.codigo} />
+                <Resumo icon={ClipboardCheck} rotulo="Código" valor={projeto.codigo} />
                 <Resumo icon={School} rotulo="Turma" valor={`${projeto.turma.nome} (${projeto.turma.codigo})`} />
-                <Resumo icon={UserRound} rotulo="Responsavel" valor={nomeResponsavel} />
-                <Resumo icon={Target} rotulo="Situacao" valor={projeto.situacaoFormatada} />
+                <Resumo icon={UserRound} rotulo="Responsável" valor={nomeResponsavel} />
+                <Resumo icon={Target} rotulo="Situação" valor={projeto.situacaoFormatada} />
             </section>
 
             <section className="mt-8 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
                 <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
                     <h2 className="text-lg font-semibold text-[#17211f]">Resumo do projeto</h2>
                     <p className="mt-3 text-sm leading-6 text-[#53635e]">
-                        {projeto.descricao || 'Descricao ainda nao informada para este projeto.'}
+                        {projeto.descricao || 'Descrição ainda não informada para este projeto.'}
                     </p>
                     <dl className="mt-6 space-y-4 text-sm">
                         <div>
-                            <dt className="font-medium text-[#51605c]">Periodo da turma</dt>
-                            <dd className="mt-1 text-[#53635e]">{projeto.turma.periodoFormatado || 'Nao informado'}</dd>
+                            <dt className="font-medium text-[#51605c]">Período da turma</dt>
+                            <dd className="mt-1 text-[#53635e]">{projeto.turma.periodoFormatado || 'Não informado'}</dd>
                         </div>
                         <div>
-                            <dt className="font-medium text-[#51605c]">Responsavel</dt>
+                            <dt className="font-medium text-[#51605c]">Responsável</dt>
                             <dd className="mt-1 text-[#53635e]">
                                 {nomeResponsavel}
                                 {projeto.responsavel.ra ? ` (${projeto.responsavel.ra})` : null}
                             </dd>
                         </div>
                         <div>
-                            <dt className="font-medium text-[#51605c]">Proxima etapa</dt>
+                            <dt className="font-medium text-[#51605c]">Próxima etapa</dt>
                             <dd className="mt-1 text-[#53635e]">
                                 Completar o termo de abertura para seguir para a trilha dos grupos de processos.
                             </dd>
@@ -155,7 +155,7 @@ export default function ProjetosShow({
                     {podeAlterarResponsavel ? (
                         <form className="mt-6 border-t border-[#dfe5d8] pt-5" onSubmit={enviarResponsavel}>
                             <label className="text-sm font-medium text-[#51605c]" htmlFor="responsavel_id">
-                                Alterar responsavel
+                                Alterar responsável
                             </label>
                             <select
                                 className="mt-1 w-full rounded-md border border-[#b9c4b7] bg-white px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
@@ -163,7 +163,7 @@ export default function ProjetosShow({
                                 onChange={(event) => responsavelForm.setData('responsavel_id', event.target.value)}
                                 value={responsavelForm.data.responsavel_id}
                             >
-                                <option value="">Selecione um responsavel</option>
+                                <option value="">Selecione um responsável</option>
                                 {responsaveisDisponiveis.map((responsavel) => (
                                     <option key={responsavel.id} value={String(responsavel.id)}>
                                         {responsavel.name}
@@ -176,7 +176,7 @@ export default function ProjetosShow({
                             ) : null}
                             <Button className="mt-3" disabled={responsavelForm.processing} size="sm" type="submit">
                                 <Save className="h-4 w-4" />
-                                Salvar responsavel
+                                Salvar responsável
                             </Button>
                         </form>
                     ) : null}
@@ -201,7 +201,7 @@ export default function ProjetosShow({
                             id="objetivo"
                             label="Objetivo"
                             onChange={(valor) => form.setData('objetivo', valor)}
-                            placeholder="Qual resultado o projeto pretende alcancar?"
+                            placeholder="Qual resultado o projeto pretende alcançar?"
                             value={form.data.objetivo}
                         />
                         <CampoTextoArea
@@ -215,7 +215,7 @@ export default function ProjetosShow({
                         <CampoTextoArea
                             erro={form.errors.restricoes}
                             id="restricoes"
-                            label="Restricoes"
+                            label="Restrições"
                             onChange={(valor) => form.setData('restricoes', valor)}
                             placeholder="Limites de prazo, custo, escopo, tecnologias ou recursos."
                             value={form.data.restricoes}
@@ -225,7 +225,7 @@ export default function ProjetosShow({
                             id="premissas"
                             label="Premissas"
                             onChange={(valor) => form.setData('premissas', valor)}
-                            placeholder="Condicoes assumidas como verdadeiras para planejar o projeto."
+                            placeholder="Condições assumidas como verdadeiras para planejar o projeto."
                             value={form.data.premissas}
                         />
                         <CampoTextoArea
@@ -233,7 +233,7 @@ export default function ProjetosShow({
                             id="entregas_esperadas"
                             label="Entregas esperadas"
                             onChange={(valor) => form.setData('entregas_esperadas', valor)}
-                            placeholder="Produtos, servicos ou resultados esperados ao final."
+                            placeholder="Produtos, serviços ou resultados esperados ao final."
                             value={form.data.entregas_esperadas}
                         />
 

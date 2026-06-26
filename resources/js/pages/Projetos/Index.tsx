@@ -68,7 +68,7 @@ export default function ProjetosIndex({ projetos, turmas, flash }: ProjetosIndex
     return (
         <AppLayout
             titulo="Projetos"
-            subtitulo="Projetos didaticos vinculados a turmas ativas e preparados para o termo de abertura."
+            subtitulo="Projetos didáticos vinculados a turmas ativas e preparados para o termo de abertura."
         >
             <Head title="Projetos" />
 
@@ -87,7 +87,7 @@ export default function ProjetosIndex({ projetos, turmas, flash }: ProjetosIndex
                         <div>
                             <h2 className="text-lg font-semibold text-[#17211f]">Novo projeto</h2>
                             <p className="text-sm text-[#53635e]">
-                                Crie o projeto didatico inicial e associe-o a uma turma ativa.
+                                Crie o projeto didático inicial e associe-o a uma turma ativa.
                             </p>
                         </div>
                     </div>
@@ -99,7 +99,7 @@ export default function ProjetosIndex({ projetos, turmas, flash }: ProjetosIndex
                                 <p className="mt-1">
                                     {turmaDoAluno ? `${turmaDoAluno.nome} (${turmaDoAluno.codigo})` : null}
                                     {!turmaDoAluno && alunoPossuiTurmaAtiva
-                                        ? 'Seu projeto sera associado automaticamente a uma turma com vinculo aprovado.'
+                                        ? 'Seu projeto será associado automaticamente a uma turma com vínculo aprovado.'
                                         : null}
                                     {!alunoPossuiTurmaAtiva
                                         ? 'Seu cadastro precisa ter uma turma ativa aprovada para criar projetos.'
@@ -138,19 +138,19 @@ export default function ProjetosIndex({ projetos, turmas, flash }: ProjetosIndex
                             id="nome"
                             label="Nome"
                             onChange={(valor) => form.setData('nome', valor)}
-                            placeholder="Aplicativo de gestao de tarefas academicas"
+                            placeholder="Aplicativo de gestão de tarefas acadêmicas"
                             value={form.data.nome}
                         />
 
                         <div>
                             <label className="text-sm font-medium text-[#51605c]" htmlFor="descricao">
-                                Descricao
+                                Descrição
                             </label>
                             <textarea
                                 className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                                 id="descricao"
                                 onChange={(event) => form.setData('descricao', event.target.value)}
-                                placeholder="Contexto do projeto didatico, cliente ficticio ou problema escolhido pela turma."
+                                placeholder="Contexto do projeto didático, cliente fictício ou problema escolhido pela turma."
                                 value={form.data.descricao}
                             />
                             {form.errors.descricao ? (
@@ -182,7 +182,7 @@ export default function ProjetosIndex({ projetos, turmas, flash }: ProjetosIndex
                         <div className="p-8 text-center">
                             <p className="font-medium text-[#17211f]">Nenhum projeto cadastrado ainda.</p>
                             <p className="mt-2 text-sm text-[#53635e]">
-                                Crie o primeiro projeto assim que houver uma turma ativa disponivel.
+                                Crie o primeiro projeto assim que houver uma turma ativa disponível.
                             </p>
                         </div>
                     ) : (

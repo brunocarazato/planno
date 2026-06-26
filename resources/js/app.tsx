@@ -17,7 +17,7 @@ createInertiaApp({
         const page = pages[`./pages/${name}.tsx`];
 
         if (!page) {
-            throw new Error(`Pagina Inertia nao encontrada: ${name}`);
+            throw new Error(`Página Inertia não encontrada: ${name}`);
         }
 
         return page;

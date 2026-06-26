@@ -52,7 +52,7 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
     return (
         <AppLayout
             titulo="Solicitar cadastro"
-            subtitulo="Informe seus dados para participar de uma turma ativa. A aprovacao depende do professor ou administrador."
+            subtitulo="Informe seus dados para participar de uma turma ativa. A aprovação depende do professor ou administrador."
         >
             <Head title="Solicitar cadastro de aluno" />
 
@@ -71,7 +71,7 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                         <div>
                             <h2 className="text-lg font-semibold text-[#17211f]">Dados do aluno</h2>
                             <p className="text-sm text-[#53635e]">
-                                O cadastro ficara pendente ate a avaliacao da equipe responsavel.
+                                O cadastro ficará pendente até a avaliação da equipe responsável.
                             </p>
                         </div>
                     </div>
@@ -114,7 +114,7 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                             id="ra"
                             label="RA"
                             onChange={(valor) => form.setData('ra', valor)}
-                            placeholder="Registro academico"
+                            placeholder="Registro acadêmico"
                             type="text"
                             value={form.data.ra}
                         />
@@ -123,7 +123,7 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                             id="password"
                             label="Senha"
                             onChange={(valor) => form.setData('password', valor)}
-                            placeholder="Minimo de 8 caracteres"
+                            placeholder="Mínimo de 8 caracteres"
                             type="password"
                             value={form.data.password}
                         />
@@ -152,14 +152,14 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                         <div>
                             <h2 className="text-lg font-semibold text-[#17211f]">Turmas abertas</h2>
                             <p className="text-sm text-[#53635e]">
-                                Apenas turmas ativas e liberadas aparecem para solicitacao.
+                                Apenas turmas ativas e liberadas aparecem para solicitação.
                             </p>
                         </div>
                     </div>
 
                     {turmas.length === 0 ? (
                         <div className="mt-6 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                            Nenhuma turma esta recebendo novos cadastros no momento.
+                            Nenhuma turma está recebendo novos cadastros no momento.
                         </div>
                     ) : (
                         <div className="mt-6 divide-y divide-[#dfe5d8] rounded-md border border-[#dfe5d8]">
@@ -172,7 +172,7 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                                         </span>
                                     </div>
                                     <p className="mt-1 text-sm text-[#53635e]">
-                                        {turma.periodoFormatado || 'Periodo nao informado'}
+                                        {turma.periodoFormatado || 'Período não informado'}
                                     </p>
                                 </article>
                             ))}

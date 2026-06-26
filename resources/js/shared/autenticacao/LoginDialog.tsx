@@ -63,7 +63,7 @@ export function LoginDialog({ aberto, onClose }: LoginDialogProps) {
                     id="ra"
                     label="RA"
                     onChange={(valor) => form.setData('ra', valor)}
-                    placeholder="Registro academico"
+                    placeholder="Registro acadêmico"
                     type="text"
                     value={form.data.ra}
                 />

@@ -110,7 +110,7 @@ class ProjetoController extends Controller
 
         $atualizarResponsavel->executar($projeto, $responsavel);
 
-        return to_route('projetos.show', $projeto)->with('success', 'Responsavel do projeto atualizado.');
+        return to_route('projetos.show', $projeto)->with('success', 'Responsável do projeto atualizado.');
     }
 
     public function atualizarTermoDeAbertura(

@@ -47,19 +47,19 @@ export default function ProfessorDashboard({ metricas }: ProfessorDashboardProps
     const grupos = [
         {
             titulo: 'Projetos',
-            descricao: 'Panorama dos projetos didaticos em andamento.',
+            descricao: 'Panorama dos projetos didáticos em andamento.',
             href: '/projetos',
             acao: 'Abrir projetos',
             itens: [
                 {
                     rotulo: 'Projetos cadastrados',
                     valor: metricas.projetos.total,
-                    apoio: 'Total de projetos visiveis para acompanhamento docente.',
+                    apoio: 'Total de projetos visíveis para acompanhamento docente.',
                     icon: FolderKanban,
                     tom: 'bg-[#e7f5f2] text-[#0f766e] ring-[#bfe3dc]',
                 },
                 {
-                    rotulo: 'Em iniciacao',
+                    rotulo: 'Em iniciação',
                     valor: metricas.projetos.emIniciacao,
                     apoio: 'Projetos ainda na fase inicial do termo de abertura.',
                     icon: Target,
@@ -69,28 +69,28 @@ export default function ProfessorDashboard({ metricas }: ProfessorDashboardProps
         },
         {
             titulo: 'Turmas',
-            descricao: 'Situacao das turmas que sustentam os cadastros e os projetos.',
+            descricao: 'Situação das turmas que sustentam os cadastros e os projetos.',
             href: '/turmas',
             acao: 'Gerenciar turmas',
             itens: [
                 {
                     rotulo: 'Turmas cadastradas',
                     valor: metricas.turmas.total,
-                    apoio: 'Historico completo, incluindo turmas arquivadas.',
+                    apoio: 'Histórico completo, incluindo turmas arquivadas.',
                     icon: School,
                     tom: 'bg-[#eef5e8] text-[#54732f] ring-[#d2e4bd]',
                 },
                 {
                     rotulo: 'Turmas ativas',
                     valor: metricas.turmas.ativas,
-                    apoio: 'Turmas abertas para operacao no semestre.',
+                    apoio: 'Turmas abertas para operação no semestre.',
                     icon: CheckCircle2,
                     tom: 'bg-[#e7f5f2] text-[#0f766e] ring-[#bfe3dc]',
                 },
                 {
                     rotulo: 'Aceitando cadastros',
                     valor: metricas.turmas.aceitandoCadastros,
-                    apoio: 'Turmas ativas disponiveis para novas solicitacoes.',
+                    apoio: 'Turmas ativas disponíveis para novas solicitações.',
                     icon: ClipboardList,
                     tom: 'bg-[#fff1e8] text-[#c45132] ring-[#ffd5bf]',
                 },
@@ -98,28 +98,28 @@ export default function ProfessorDashboard({ metricas }: ProfessorDashboardProps
         },
         {
             titulo: 'Alunos',
-            descricao: 'Leitura rapida das solicitacoes e dos vinculos ativos.',
+            descricao: 'Leitura rápida das solicitações e dos vínculos ativos.',
             href: '/turmas',
             acao: 'Revisar cadastros',
             itens: [
                 {
                     rotulo: 'Cadastros de alunos',
                     valor: metricas.alunos.cadastros,
-                    apoio: 'Solicitacoes registradas em qualquer status.',
+                    apoio: 'Solicitações registradas em qualquer status.',
                     icon: UsersRound,
                     tom: 'bg-[#eef5e8] text-[#54732f] ring-[#d2e4bd]',
                 },
                 {
                     rotulo: 'Cadastros pendentes',
                     valor: metricas.alunos.pendentes,
-                    apoio: 'Solicitacoes aguardando aprovacao ou reprovacao.',
+                    apoio: 'Solicitações aguardando aprovação ou reprovação.',
                     icon: Clock3,
                     tom: 'bg-[#fff7d6] text-[#8a6500] ring-[#f4df91]',
                 },
                 {
                     rotulo: 'Alunos aprovados',
                     valor: metricas.alunos.aprovadosAtivos,
-                    apoio: 'Vinculos aprovados e ainda validos.',
+                    apoio: 'Vínculos aprovados e ainda válidos.',
                     icon: UserCheck,
                     tom: 'bg-[#e7f5f2] text-[#0f766e] ring-[#bfe3dc]',
                 },
@@ -128,7 +128,7 @@ export default function ProfessorDashboard({ metricas }: ProfessorDashboardProps
     ];
 
     return (
-        <AppLayout titulo="Dashboard do professor" subtitulo="Indicadores centrais de projetos, turmas e alunos em um unico lugar.">
+        <AppLayout titulo="Dashboard do professor" subtitulo="Indicadores centrais de projetos, turmas e alunos em um único lugar.">
             <Head title="Dashboard do professor" />
 
             <div className="grid gap-6">

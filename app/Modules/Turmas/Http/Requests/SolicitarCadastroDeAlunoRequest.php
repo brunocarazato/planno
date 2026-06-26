@@ -39,7 +39,7 @@ class SolicitarCadastroDeAlunoRequest extends FormRequest
                 $turma = Turma::find($this->integer('turma_id'));
 
                 if (! $turma?->aceitaCadastroDeAluno()) {
-                    $validator->errors()->add('turma_id', 'Esta turma nao esta recebendo novos cadastros.');
+                    $validator->errors()->add('turma_id', 'Esta turma não está recebendo novos cadastros.');
 
                     return;
                 }
@@ -47,7 +47,7 @@ class SolicitarCadastroDeAlunoRequest extends FormRequest
                 $ra = mb_strtoupper((string) $this->input('ra'));
 
                 if (User::query()->where('ra', $ra)->exists()) {
-                    $validator->errors()->add('ra', 'Ja existe uma conta de usuario para este RA.');
+                    $validator->errors()->add('ra', 'Já existe uma conta de usuário para este RA.');
 
                     return;
                 }
@@ -61,7 +61,7 @@ class SolicitarCadastroDeAlunoRequest extends FormRequest
                     ->exists();
 
                 if ($cadastroAtivoOuPendente) {
-                    $validator->errors()->add('ra', 'Ja existe um cadastro pendente ou aprovado para este RA.');
+                    $validator->errors()->add('ra', 'Já existe um cadastro pendente ou aprovado para este RA.');
                 }
             },
         ];

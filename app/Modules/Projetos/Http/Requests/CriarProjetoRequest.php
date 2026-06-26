@@ -38,7 +38,7 @@ class CriarProjetoRequest extends FormRequest
                 $turma = Turma::find($this->integer('turma_id'));
 
                 if ($turma?->estaArquivada()) {
-                    $validator->errors()->add('turma_id', 'Turmas arquivadas nao aceitam novos projetos.');
+                    $validator->errors()->add('turma_id', 'Turmas arquivadas não aceitam novos projetos.');
                 }
 
                 if ($this->user()?->aluno()
@@ -46,7 +46,7 @@ class CriarProjetoRequest extends FormRequest
                 ) {
                     $validator->errors()->add(
                         'turma_id',
-                        'Alunos so podem criar projetos nas turmas em que possuem vinculo aprovado.',
+                        'Alunos só podem criar projetos nas turmas em que possuem vínculo aprovado.',
                     );
                 }
             },

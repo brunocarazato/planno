@@ -44,7 +44,7 @@ class AtualizarResponsavelDoProjetoRequest extends FormRequest
                 if (! $this->responsavelPodeAssumirProjeto($responsavel, $projeto)) {
                     $validator->errors()->add(
                         'responsavel_id',
-                        'O responsavel deve ser professor ou aluno com vinculo aprovado na turma do projeto.',
+                        'O responsável deve ser professor ou aluno com vínculo aprovado na turma do projeto.',
                     );
                 }
             },

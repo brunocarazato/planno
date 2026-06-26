@@ -159,7 +159,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
     return (
         <AppLayout
             titulo="Turmas"
-            subtitulo="Gestao inicial das turmas que receberao cadastros de alunos e projetos didaticos."
+            subtitulo="Gestão inicial das turmas que receberão cadastros de alunos e projetos didáticos."
         >
             <Head title="Turmas" />
 
@@ -178,7 +178,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
                         <div>
                             <h2 className="text-lg font-semibold text-[#17211f]">Cadastros pendentes</h2>
                             <p className="text-sm text-[#53635e]">
-                                Solicitações aguardando aprovacao para receber validade anual.
+                                Solicitações aguardando aprovação para receber validade anual.
                             </p>
                         </div>
                     </div>
@@ -197,7 +197,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
                     <div className="p-8 text-center">
                         <p className="font-medium text-[#17211f]">Nenhum cadastro pendente.</p>
                         <p className="mt-2 text-sm text-[#53635e]">
-                            Novas solicitacoes de alunos aparecerao aqui para aprovacao.
+                            Novas solicitações de alunos aparecerão aqui para aprovação.
                         </p>
                     </div>
                 ) : (
@@ -243,8 +243,8 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
                             </h2>
                             <p className="text-sm text-[#53635e]">
                                 {turmaEmEdicao
-                                    ? 'Atualize os dados basicos da turma selecionada.'
-                                    : 'Crie uma turma ativa para receber futuras solicitacoes de alunos.'}
+                                    ? 'Atualize os dados básicos da turma selecionada.'
+                                    : 'Crie uma turma ativa para receber futuras solicitações de alunos.'}
                             </p>
                         </div>
                     </div>
@@ -271,13 +271,13 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
 
                         <div>
                             <label className="text-sm font-medium text-[#51605c]" htmlFor="descricao">
-                                Descricao
+                                Descrição
                             </label>
                             <textarea
                                 className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                                 id="descricao"
                                 onChange={(event) => form.setData('descricao', event.target.value)}
-                                placeholder="Contexto, professor responsavel ou observacoes da turma."
+                                placeholder="Contexto, professor responsável ou observações da turma."
                                 value={form.data.descricao}
                             />
                             {form.errors.descricao ? (
@@ -287,7 +287,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
 
                         <div className="flex flex-wrap gap-3">
                             <Button disabled={form.processing} type="submit">
-                                {turmaEmEdicao ? 'Salvar alteracoes' : 'Criar turma'}
+                                {turmaEmEdicao ? 'Salvar alterações' : 'Criar turma'}
                             </Button>
                             {turmaEmEdicao ? (
                                 <Button disabled={form.processing} onClick={cancelarEdicao} type="button" variant="secondary">
@@ -303,7 +303,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
                         <div>
                             <h2 className="text-lg font-semibold text-[#17211f]">Turmas cadastradas</h2>
                             <p className="mt-1 text-sm text-[#53635e]">
-                                Controle se cada turma aceita novos cadastros antes da etapa de aprovacao de alunos.
+                                Controle se cada turma aceita novos cadastros antes da etapa de aprovação de alunos.
                             </p>
                         </div>
                         <UsersRound className="h-5 w-5 shrink-0 text-[#0f766e]" />
@@ -329,7 +329,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
                                                 </span>
                                             </div>
                                             <p className="mt-1 text-sm text-[#53635e]">
-                                                {turma.periodoFormatado || 'Periodo nao informado'}
+                                                {turma.periodoFormatado || 'Período não informado'}
                                             </p>
                                             {turma.descricao ? (
                                                 <p className="mt-3 max-w-2xl text-sm leading-6 text-[#53635e]">
@@ -381,7 +381,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
                 aberto={Boolean(turmaParaArquivar)}
                 descricao={
                     turmaParaArquivar
-                        ? `A turma ${turmaParaArquivar.codigo} sera marcada como arquivada e nao aceitara novos cadastros.`
+                        ? `A turma ${turmaParaArquivar.codigo} será marcada como arquivada e não aceitará novos cadastros.`
                         : undefined
                 }
                 onClose={() => setTurmaParaArquivar(null)}
@@ -401,7 +401,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
                 aberto={Boolean(cadastroParaReprovar)}
                 descricao={
                     cadastroParaReprovar
-                        ? `Informe o motivo da reprovacao de ${cadastroParaReprovar.nome}, se quiser registrar essa justificativa.`
+                        ? `Informe o motivo da reprovação de ${cadastroParaReprovar.nome}, se quiser registrar essa justificativa.`
                         : undefined
                 }
                 onClose={() => setCadastroParaReprovar(null)}
@@ -409,7 +409,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
             >
                 <div>
                     <label className="text-sm font-medium text-[#51605c]" htmlFor="motivo_reprovacao">
-                        Motivo da reprovacao
+                        Motivo da reprovação
                     </label>
                     <textarea
                         className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
@@ -484,7 +484,7 @@ function CampoPeriodo({
     return (
         <div>
             <label className="text-sm font-medium text-[#51605c]" htmlFor="periodo">
-                Periodo
+                Período
             </label>
             <select
                 className="mt-1 w-full rounded-md border border-[#b9c4b7] bg-white px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
@@ -492,7 +492,7 @@ function CampoPeriodo({
                 onChange={(event) => onChange(event.target.value)}
                 value={value}
             >
-                <option value="">Selecione o periodo</option>
+                <option value="">Selecione o período</option>
                 <option value="1">1º Semestre</option>
                 <option value="2">2º Semestre</option>
             </select>
@@ -540,7 +540,7 @@ function aplicarMascaraAno(valor: string): string {
 
 function validarAno(valor: string): string | null {
     if (!new RegExp(`^\\d{${TOTAL_DIGITOS_ANO}}$`).test(valor)) {
-        return 'Informe um ano com 4 digitos.';
+        return 'Informe um ano com 4 dígitos.';
     }
 
     return null;

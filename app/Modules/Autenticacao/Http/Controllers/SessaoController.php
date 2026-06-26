@@ -34,7 +34,7 @@ class SessaoController extends Controller
             'password' => $credenciais['password'],
         ])) {
             return back()
-                ->withErrors(['ra' => 'As credenciais informadas nao conferem.'])
+                ->withErrors(['ra' => 'As credenciais informadas não conferem.'])
                 ->onlyInput('ra');
         }
 
@@ -44,7 +44,7 @@ class SessaoController extends Controller
             Auth::logout();
 
             return back()
-                ->withErrors(['ra' => 'Seu cadastro de aluno ainda nao possui vinculo aprovado com uma turma. Entre em contato com o professor solicitando a aprovação do seu cadastro.'])
+                ->withErrors(['ra' => 'Seu cadastro de aluno ainda não possui vínculo aprovado com uma turma. Entre em contato com o professor solicitando a aprovação do seu cadastro.'])
                 ->onlyInput('ra');
         }
 
@@ -68,6 +68,6 @@ class SessaoController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return to_route('inicio')->with('success', 'Voce saiu da aplicacao.');
+        return to_route('inicio')->with('success', 'Você saiu da aplicação.');
     }
 }

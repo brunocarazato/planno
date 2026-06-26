@@ -49,7 +49,7 @@ class CadastroAlunoController extends Controller
         $solicitarCadastro->executar($request->validated());
 
         return to_route('cadastros-alunos.create')
-            ->with('success', 'Cadastro solicitado com sucesso. Aguarde a aprovacao do professor.');
+            ->with('success', 'Cadastro solicitado com sucesso. Aguarde a aprovação do professor.');
     }
 
     public function aprovar(

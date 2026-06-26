@@ -48,7 +48,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
 
                         <nav className="flex flex-wrap gap-2 text-sm font-semibold text-[#51605c]">
                             <NavLink ativo={url === '/'} href="/">
-                                Inicio
+                                Início
                             </NavLink>
                             {ehProfessor ? (
                                 <NavLink ativo={url.startsWith('/dashboard')} href="/dashboard">

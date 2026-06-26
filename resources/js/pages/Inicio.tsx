@@ -22,14 +22,14 @@ const trilhas = [
         tom: 'bg-teal-50 text-teal-800 ring-teal-200',
     },
     {
-        titulo: 'Projetos ageis',
-        descricao: 'Backlog, ciclos curtos, quadro de trabalho e acompanhamento visual para aproximar teoria e pratica.',
+        titulo: 'Projetos ágeis',
+        descricao: 'Backlog, ciclos curtos, quadro de trabalho e acompanhamento visual para aproximar teoria e prática.',
         icon: Gauge,
         tom: 'bg-orange-50 text-orange-800 ring-orange-200',
     },
     {
         titulo: 'Aprendizagem guiada',
-        descricao: 'Rubricas, artefatos e orientacao de professor para transformar cada decisao do grupo em evidencia pedagogica.',
+        descricao: 'Rubricas, artefatos e orientação de professor para transformar cada decisão do grupo em evidência pedagógica.',
         icon: GraduationCap,
         tom: 'bg-emerald-50 text-emerald-800 ring-emerald-200',
     },
@@ -39,14 +39,14 @@ const jornada = [
     'Forme turmas e grupos de projeto',
     'Conduza o termo de abertura',
     'Planeje por escopo, tempo, custos e riscos',
-    'Compare fluxo tradicional e ciclos ageis',
-    'Avalie artefatos com criterios claros',
+    'Compare fluxo tradicional e ciclos ágeis',
+    'Avalie artefatos com critérios claros',
 ];
 
 const metricas = [
     { valor: '01', rotulo: 'ambiente para professor e aluno' },
-    { valor: '02', rotulo: 'abordagens de gestao na mesma trilha' },
-    { valor: '05', rotulo: 'etapas didaticas ate a avaliacao' },
+    { valor: '02', rotulo: 'abordagens de gestão na mesma trilha' },
+    { valor: '05', rotulo: 'etapas didáticas até a avaliação' },
 ];
 
 export default function Inicio() {
@@ -79,7 +79,7 @@ export default function Inicio() {
 
     return (
         <main className="min-h-screen bg-[#f6f7f2] text-[#17211f]">
-            <Head title="Inicio" />
+            <Head title="Início" />
 
             <section className="relative isolate overflow-hidden border-b border-[#dfe5d8] bg-[#fbfcf7]">
                 <div className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(23,33,31,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(23,33,31,0.055)_1px,transparent_1px)] bg-[size:44px_44px]" />
@@ -117,16 +117,16 @@ export default function Inicio() {
                     <div className="max-w-3xl py-6">
                         <span className="inline-flex items-center gap-2 rounded-md border border-[#cdd9cf] bg-white px-3 py-2 text-sm font-semibold text-[#0f766e] shadow-sm">
                             <BookOpenCheck className="h-4 w-4" />
-                            Gestao de projetos ensinada pela pratica
+                            Gestão de projetos ensinada pela prática
                         </span>
 
                         <h1 className="mt-5 max-w-4xl text-5xl font-semibold leading-[1.02] text-[#17211f] sm:text-6xl lg:text-7xl">
-                            O laboratorio didatico para aprender a planejar, executar e avaliar projetos.
+                            O laboratório didático para aprender a planejar, executar e avaliar projetos.
                         </h1>
 
                         <p className="mt-6 max-w-2xl text-lg leading-8 text-[#53635e]">
-                            O Planno organiza turmas, grupos e artefatos para que alunos experimentem gestao
-                            tradicional e agil dentro de uma jornada educacional acompanhada por evidencias.
+                            O Planno organiza turmas, grupos e artefatos para que alunos experimentem gestão
+                            tradicional e ágil dentro de uma jornada educacional acompanhada por evidências.
                         </p>
 
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -169,12 +169,12 @@ export default function Inicio() {
                     <div>
                         <p className="text-sm font-bold text-[#0f766e]">Da sala de aula ao artefato</p>
                         <h2 className="mt-3 text-4xl font-semibold leading-tight text-[#17211f]">
-                            Um produto feito para ensinar decisao, nao apenas registrar tarefas.
+                            Um produto feito para ensinar decisão, não apenas registrar tarefas.
                         </h2>
                     </div>
                     <p className="max-w-3xl text-lg leading-8 text-[#53635e]">
-                        A pagina inicial agora apresenta o Planno como uma plataforma educacional: cada modulo existe
-                        para transformar conceitos de gestao em producoes avaliaveis, comparaveis e acompanhadas.
+                        A página inicial agora apresenta o Planno como uma plataforma educacional: cada módulo existe
+                        para transformar conceitos de gestão em produções avaliáveis, comparáveis e acompanhadas.
                     </p>
                 </div>
 
@@ -188,11 +188,11 @@ export default function Inicio() {
             <section className="bg-[#17211f] text-white">
                 <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:py-18">
                     <div>
-                        <p className="text-sm font-bold text-[#6de1d2]">Trilha pedagogica</p>
-                        <h2 className="mt-3 text-4xl font-semibold leading-tight">Planejamento com contexto, pratica e feedback.</h2>
+                        <p className="text-sm font-bold text-[#6de1d2]">Trilha pedagógica</p>
+                        <h2 className="mt-3 text-4xl font-semibold leading-tight">Planejamento com contexto, prática e feedback.</h2>
                         <p className="mt-5 max-w-2xl text-base leading-7 text-white/72">
-                            O foco educacional aparece na sequencia das atividades: professor estrutura, aluno
-                            constroi, grupo decide e a avaliacao nasce dos artefatos gerados no caminho.
+                            O foco educacional aparece na sequência das atividades: professor estrutura, aluno
+                            constrói, grupo decide e a avaliação nasce dos artefatos gerados no caminho.
                         </p>
                     </div>
 
@@ -313,7 +313,7 @@ function DiagramaPlanno() {
 
                 <div className="grid gap-4 lg:grid-cols-[0.78fr_1.22fr]">
                     <div className="space-y-3">
-                        {['Iniciacao', 'Planejamento', 'Execucao'].map((etapa, index) => (
+                        {['Iniciação', 'Planejamento', 'Execução'].map((etapa, index) => (
                             <div
                                 className="flex items-center gap-3 rounded-lg border border-[#dfe5d8] bg-[#fbfcf7] p-3"
                                 key={etapa}
@@ -323,7 +323,7 @@ function DiagramaPlanno() {
                                 </span>
                                 <div>
                                     <p className="text-sm font-bold text-[#17211f]">{etapa}</p>
-                                    <p className="text-xs font-medium text-[#66756f]">evidencia do grupo</p>
+                                    <p className="text-xs font-medium text-[#66756f]">evidência do grupo</p>
                                 </div>
                             </div>
                         ))}
@@ -331,7 +331,7 @@ function DiagramaPlanno() {
 
                     <div className="rounded-lg border border-[#dfe5d8] bg-white p-4">
                         <div className="mb-3 flex items-center justify-between">
-                            <p className="text-sm font-bold text-[#17211f]">Quadro hibrido</p>
+                            <p className="text-sm font-bold text-[#17211f]">Quadro híbrido</p>
                             <Gauge className="h-5 w-5 text-[#f06f45]" />
                         </div>
                         <div className="grid grid-cols-3 gap-3">
@@ -361,7 +361,7 @@ function DiagramaPlanno() {
                 <div className="grid gap-3 sm:grid-cols-3">
                     {[
                         ['PMBOK', 'termo + cronograma'],
-                        ['Agil', 'backlog + ciclo'],
+                        ['Ágil', 'backlog + ciclo'],
                         ['Ensino', 'rubrica + feedback'],
                     ].map(([titulo, texto]) => (
                         <div className="rounded-lg border border-[#dfe5d8] bg-[#fbfcf7] p-3" key={titulo}>
