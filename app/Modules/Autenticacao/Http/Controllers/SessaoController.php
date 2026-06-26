@@ -10,8 +10,18 @@ use Illuminate\Support\Facades\Auth;
 
 class SessaoController extends Controller
 {
-    public function create(): RedirectResponse
+    public function create(Request $request): RedirectResponse
     {
+        $usuario = $request->user();
+
+        if ($usuario?->professor()) {
+            return to_route('dashboard.professor');
+        }
+
+        if ($usuario?->aluno()) {
+            return to_route('projetos.index');
+        }
+
         return to_route('inicio', ['login' => 1]);
     }
 

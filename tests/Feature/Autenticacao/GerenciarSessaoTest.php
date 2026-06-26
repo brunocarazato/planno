@@ -26,6 +26,30 @@ class GerenciarSessaoTest extends TestCase
             ->assertRedirect('/?login=1');
     }
 
+    public function test_professor_logado_que_acessa_login_vai_para_dashboard(): void
+    {
+        $usuario = User::factory()->create([
+            'ra' => 'PROF001',
+            'tipo' => User::TIPO_PROFESSOR,
+        ]);
+
+        $this->actingAs($usuario)
+            ->get('/entrar')
+            ->assertRedirect('/dashboard');
+    }
+
+    public function test_aluno_logado_que_acessa_login_vai_para_projetos(): void
+    {
+        $usuario = User::factory()->create([
+            'ra' => 'RA123',
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+
+        $this->actingAs($usuario)
+            ->get('/entrar')
+            ->assertRedirect('/projetos');
+    }
+
     public function test_professor_entra_com_ra_e_senha(): void
     {
         $usuario = User::factory()->create([

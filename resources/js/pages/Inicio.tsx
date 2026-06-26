@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
     BookOpenCheck,
@@ -50,14 +50,31 @@ const metricas = [
 ];
 
 export default function Inicio() {
-    const { url } = usePage();
+    const { props, url } = usePage<{
+        auth?: {
+            user?: {
+                tipo: string;
+            } | null;
+        };
+    }>();
+    const usuario = props.auth?.user;
     const [loginAberto, setLoginAberto] = useState(false);
 
     useEffect(() => {
-        if (url.includes('login=1')) {
+        if (!usuario && url.includes('login=1')) {
             setLoginAberto(true);
         }
-    }, [url]);
+    }, [url, usuario]);
+
+    function entrar() {
+        if (!usuario) {
+            setLoginAberto(true);
+
+            return;
+        }
+
+        router.visit(usuario.tipo === 'professor' ? '/dashboard' : '/projetos');
+    }
 
     return (
         <main className="min-h-screen bg-[#f6f7f2] text-[#17211f]">
@@ -84,7 +101,7 @@ export default function Inicio() {
                         </Link>
                         <button
                             className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md bg-[#17211f] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#273633]"
-                            onClick={() => setLoginAberto(true)}
+                            onClick={entrar}
                             type="button"
                         >
                             Entrar
@@ -201,7 +218,7 @@ export default function Inicio() {
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <button
                             className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-[#17211f] px-5 text-sm font-bold text-white hover:bg-[#273633]"
-                            onClick={() => setLoginAberto(true)}
+                            onClick={entrar}
                             type="button"
                         >
                             Entrar no Planno
