@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { LogOut, Route } from 'lucide-react';
+import { LayoutDashboard, LogOut, Route } from 'lucide-react';
 import { PropsWithChildren } from 'react';
 
 type AppLayoutProps = PropsWithChildren<{
@@ -45,6 +45,12 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                                 Inicio
                             </NavLink>
                             {ehProfessor ? (
+                                <NavLink ativo={url.startsWith('/dashboard')} href="/dashboard">
+                                    <LayoutDashboard className="h-4 w-4" />
+                                    Dashboard
+                                </NavLink>
+                            ) : null}
+                            {ehProfessor ? (
                                 <NavLink ativo={url.startsWith('/turmas')} href="/turmas">
                                     Turmas
                                 </NavLink>
@@ -87,7 +93,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
 function NavLink({ ativo, children, href }: PropsWithChildren<{ ativo: boolean; href: string }>) {
     return (
         <Link
-            className={`inline-flex h-10 items-center rounded-md px-3 transition ${
+            className={`inline-flex h-10 items-center gap-2 rounded-md px-3 transition ${
                 ativo ? 'bg-[#17211f] text-white shadow-sm' : 'hover:bg-[#edf2e9] hover:text-[#17211f]'
             }`}
             href={href}

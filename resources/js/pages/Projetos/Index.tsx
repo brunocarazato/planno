@@ -1,5 +1,5 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { ClipboardCheck, Eye, FolderKanban, Plus, School, Target } from 'lucide-react';
+import { ClipboardCheck, Eye, Plus } from 'lucide-react';
 import { FormEvent } from 'react';
 
 import { AppLayout } from '../../shared/layouts/AppLayout';
@@ -23,12 +23,6 @@ type Projeto = {
     turma: TurmaOpcao;
 };
 
-type Metricas = {
-    total: number;
-    emIniciacao: number;
-    turmasAtivas: number;
-};
-
 type ProjetoForm = {
     turma_id: string;
     nome: string;
@@ -38,7 +32,6 @@ type ProjetoForm = {
 type ProjetosIndexProps = {
     projetos: Projeto[];
     turmas: TurmaOpcao[];
-    metricas: Metricas;
     flash?: {
         success?: string | null;
     };
@@ -50,7 +43,7 @@ const formularioInicial: ProjetoForm = {
     descricao: '',
 };
 
-export default function ProjetosIndex({ projetos, turmas, metricas, flash }: ProjetosIndexProps) {
+export default function ProjetosIndex({ projetos, turmas, flash }: ProjetosIndexProps) {
     const form = useForm<ProjetoForm>(formularioInicial);
     const { auth } = usePage<{
         auth?: {
@@ -85,13 +78,7 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
                 </div>
             ) : null}
 
-            <section className="grid gap-4 md:grid-cols-3">
-                <Indicador icon={FolderKanban} rotulo="Projetos cadastrados" valor={metricas.total} />
-                <Indicador icon={Target} rotulo="Em iniciacao" valor={metricas.emIniciacao} />
-                <Indicador icon={School} rotulo="Turmas ativas" valor={metricas.turmasAtivas} />
-            </section>
-
-            <section className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+            <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
                 <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
                     <div className="flex items-center gap-3">
                         <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
@@ -233,24 +220,6 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
                 </div>
             </section>
         </AppLayout>
-    );
-}
-
-function Indicador({
-    icon: Icon,
-    rotulo,
-    valor,
-}: {
-    icon: typeof FolderKanban;
-    rotulo: string;
-    valor: number;
-}) {
-    return (
-        <div className="rounded-lg border border-[#dfe5d8] bg-white p-5 shadow-sm">
-            <Icon className="h-5 w-5 text-[#0f766e]" />
-            <p className="mt-4 text-sm text-[#66756f]">{rotulo}</p>
-            <p className="mt-1 text-3xl font-semibold text-[#17211f]">{valor}</p>
-        </div>
     );
 }
 

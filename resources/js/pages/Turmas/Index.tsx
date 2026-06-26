@@ -19,13 +19,6 @@ type Turma = {
     status: string;
 };
 
-type Metricas = {
-    total: number;
-    ativas: number;
-    aceitandoCadastros: number;
-    cadastrosPendentes: number;
-};
-
 type CadastroPendente = {
     id: number;
     nome: string;
@@ -48,7 +41,6 @@ type TurmaForm = {
 type TurmasIndexProps = {
     turmas: Turma[];
     cadastrosPendentes: CadastroPendente[];
-    metricas: Metricas;
     flash?: {
         success?: string | null;
     };
@@ -63,7 +55,7 @@ const formularioInicial: TurmaForm = {
 
 const TOTAL_DIGITOS_ANO = 4;
 
-export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flash }: TurmasIndexProps) {
+export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: TurmasIndexProps) {
     const [turmaEmEdicao, setTurmaEmEdicao] = useState<Turma | null>(null);
     const [turmaParaArquivar, setTurmaParaArquivar] = useState<Turma | null>(null);
     const [cadastroParaReprovar, setCadastroParaReprovar] = useState<CadastroPendente | null>(null);
@@ -177,13 +169,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                 </div>
             ) : null}
 
-            <section className="grid gap-4 md:grid-cols-3">
-                <Indicador rotulo="Turmas cadastradas" valor={metricas.total} />
-                <Indicador rotulo="Turmas ativas" valor={metricas.ativas} />
-                <Indicador rotulo="Aceitando cadastros" valor={metricas.aceitandoCadastros} />
-            </section>
-
-            <section className="mt-8 rounded-lg border border-[#dfe5d8] bg-white shadow-sm">
+            <section className="rounded-lg border border-[#dfe5d8] bg-white shadow-sm">
                 <div className="flex flex-col gap-4 border-b border-[#dfe5d8] p-6 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
                         <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
@@ -198,7 +184,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
                         <span className="rounded-full bg-[#f4f7ef] px-3 py-1 text-sm font-medium text-[#51605c]">
-                            {metricas.cadastrosPendentes} pendente(s)
+                            {cadastrosPendentes.length} pendente(s)
                         </span>
                         <Link className="inline-flex items-center gap-2 rounded-md border border-[#b9c4b7] px-3 py-2 text-sm font-medium text-[#17211f] hover:bg-[#f6f7f2]" href="/cadastros-alunos/solicitar">
                             <UserPlus className="h-4 w-4" />
@@ -450,15 +436,6 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                 </div>
             </Dialog>
         </AppLayout>
-    );
-}
-
-function Indicador({ rotulo, valor }: { rotulo: string; valor: number }) {
-    return (
-        <div className="rounded-lg border border-[#dfe5d8] bg-white p-5 shadow-sm">
-            <p className="text-sm text-[#66756f]">{rotulo}</p>
-            <p className="mt-2 text-3xl font-semibold text-[#17211f]">{valor}</p>
-        </div>
     );
 }
 

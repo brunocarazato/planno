@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardProfessorController;
 use App\Modules\Autenticacao\Http\Controllers\SessaoController;
 use App\Modules\Projetos\Http\Controllers\ProjetoController;
 use App\Modules\Turmas\Http\Controllers\CadastroAlunoController;
@@ -21,6 +22,10 @@ Route::prefix('cadastros-alunos')->name('cadastros-alunos.')->group(function ():
 
 Route::middleware('auth')->group(function (): void {
     Route::post('/sair', [SessaoController::class, 'destroy'])->name('logout');
+
+    Route::get('/dashboard', DashboardProfessorController::class)
+        ->middleware('professor')
+        ->name('dashboard.professor');
 
     Route::prefix('turmas')->name('turmas.')->middleware('professor')->group(function (): void {
         Route::get('/', [TurmaController::class, 'index'])->name('index');

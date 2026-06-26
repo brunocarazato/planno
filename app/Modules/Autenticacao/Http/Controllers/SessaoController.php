@@ -42,6 +42,10 @@ class SessaoController extends Controller
 
         $request->session()->regenerate();
 
+        if ($usuario?->professor()) {
+            return to_route('dashboard.professor')->with('success', 'Login realizado com sucesso.');
+        }
+
         return to_route('inicio')->with('success', 'Login realizado com sucesso.');
     }
 

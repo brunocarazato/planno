@@ -40,7 +40,7 @@ class GerenciarSessaoTest extends TestCase
         $this->post('/entrar', [
             'ra' => 'prof001',
             'password' => 'senha-segura',
-        ])->assertRedirect('/');
+        ])->assertRedirect('/dashboard');
 
         $this->assertAuthenticatedAs($usuario);
     }
