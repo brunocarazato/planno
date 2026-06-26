@@ -10,14 +10,15 @@ class CriarTurma
     public function __construct(private readonly GeradorDeCodigoDaTurma $geradorDeCodigo) {}
 
     /**
-     * @param  array{nome: string, periodo?: ?string, descricao?: ?string}  $dados
+     * @param  array{nome: string, periodo: string, ano: int|string, descricao?: ?string}  $dados
      */
     public function executar(array $dados): Turma
     {
         return Turma::create([
             'nome' => $dados['nome'],
-            'codigo' => $this->geradorDeCodigo->gerar($dados['periodo'] ?? null),
-            'periodo' => $dados['periodo'] ?? null,
+            'codigo' => $this->geradorDeCodigo->gerar((int) $dados['ano'], $dados['periodo']),
+            'periodo' => $dados['periodo'],
+            'ano' => (int) $dados['ano'],
             'descricao' => $dados['descricao'] ?? null,
             'aceita_novos_cadastros' => true,
         ]);

@@ -22,12 +22,14 @@ class CadastroAlunoController extends Controller
             ->ativas()
             ->where('aceita_novos_cadastros', true)
             ->orderBy('nome')
-            ->get(['id', 'nome', 'codigo', 'periodo'])
+            ->get(['id', 'nome', 'codigo', 'periodo', 'ano'])
             ->map(fn (Turma $turma) => [
                 'id' => $turma->id,
                 'nome' => $turma->nome,
                 'codigo' => $turma->codigo,
                 'periodo' => $turma->periodo,
+                'ano' => $turma->ano,
+                'periodoFormatado' => $turma->periodoFormatado(),
             ]);
 
         return Inertia::render('CadastrosAlunos/Solicitar', [

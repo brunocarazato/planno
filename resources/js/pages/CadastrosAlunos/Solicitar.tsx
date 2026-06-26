@@ -10,6 +10,8 @@ type TurmaDisponivel = {
     nome: string;
     codigo: string;
     periodo: string | null;
+    ano: number | null;
+    periodoFormatado: string | null;
 };
 
 type CadastroAlunoForm = {
@@ -170,7 +172,7 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                                         </span>
                                     </div>
                                     <p className="mt-1 text-sm text-slate-600">
-                                        {turma.periodo || 'Periodo nao informado'}
+                                        {turma.periodoFormatado || 'Periodo nao informado'}
                                     </p>
                                 </article>
                             ))}

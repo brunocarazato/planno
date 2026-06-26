@@ -27,7 +27,8 @@ class GerenciarCadastrosAlunosTest extends TestCase
         Turma::create([
             'nome' => 'Gestao de Projetos',
             'codigo' => 'GP-2026-1A',
-            'periodo' => '2026.1',
+            'periodo' => '1',
+            'ano' => 2026,
             'aceita_novos_cadastros' => true,
         ]);
 

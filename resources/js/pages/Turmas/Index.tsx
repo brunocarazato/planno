@@ -11,6 +11,8 @@ type Turma = {
     nome: string;
     codigo: string;
     periodo: string | null;
+    ano: number | null;
+    periodoFormatado: string | null;
     descricao: string | null;
     aceitaNovosCadastros: boolean;
     arquivadaEm: string | null;
@@ -39,6 +41,7 @@ type CadastroPendente = {
 type TurmaForm = {
     nome: string;
     periodo: string;
+    ano: string;
     descricao: string;
 };
 
@@ -54,8 +57,11 @@ type TurmasIndexProps = {
 const formularioInicial: TurmaForm = {
     nome: '',
     periodo: '',
+    ano: String(new Date().getFullYear()),
     descricao: '',
 };
+
+const TOTAL_DIGITOS_ANO = 4;
 
 export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flash }: TurmasIndexProps) {
     const [turmaEmEdicao, setTurmaEmEdicao] = useState<Turma | null>(null);
@@ -66,6 +72,21 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
 
     function enviarFormulario(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
+        const ano = aplicarMascaraAno(form.data.ano);
+        const erroAno = validarAno(ano);
+
+        if (ano !== form.data.ano) {
+            form.setData('ano', ano);
+        }
+
+        if (erroAno) {
+            form.setError('ano', erroAno);
+
+            return;
+        }
+
+        form.clearErrors('ano');
 
         if (turmaEmEdicao) {
             form.put(`/turmas/${turmaEmEdicao.id}`, {
@@ -87,6 +108,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
         form.setData({
             nome: turma.nome,
             periodo: turma.periodo ?? '',
+            ano: turma.ano ? String(turma.ano) : '',
             descricao: turma.descricao ?? '',
         });
         form.clearErrors();
@@ -247,16 +269,18 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                             id="nome"
                             label="Nome"
                             onChange={(valor) => form.setData('nome', valor)}
-                            placeholder="Gestao de Projetos 2026.1"
+                            placeholder="3ADS"
                             value={form.data.nome}
                         />
-                        <CampoTexto
+                        <CampoPeriodo
                             erro={form.errors.periodo}
-                            id="periodo"
-                            label="Periodo"
                             onChange={(valor) => form.setData('periodo', valor)}
-                            placeholder="1o semestre de 2026"
                             value={form.data.periodo}
+                        />
+                        <CampoAno
+                            erro={form.errors.ano}
+                            onChange={(valor) => form.setData('ano', valor)}
+                            value={form.data.ano}
                         />
 
                         <div>
@@ -319,7 +343,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                                                 </span>
                                             </div>
                                             <p className="mt-1 text-sm text-slate-600">
-                                                {turma.periodo || 'Periodo nao informado'}
+                                                {turma.periodoFormatado || 'Periodo nao informado'}
                                             </p>
                                             {turma.descricao ? (
                                                 <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
@@ -469,6 +493,80 @@ function CampoTexto({
             {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
         </div>
     );
+}
+
+function CampoPeriodo({
+    erro,
+    onChange,
+    value,
+}: {
+    erro?: string;
+    onChange: (valor: string) => void;
+    value: string;
+}) {
+    return (
+        <div>
+            <label className="text-sm font-medium text-slate-700" htmlFor="periodo">
+                Periodo
+            </label>
+            <select
+                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                id="periodo"
+                onChange={(event) => onChange(event.target.value)}
+                value={value}
+            >
+                <option value="">Selecione o periodo</option>
+                <option value="1">1º Semestre</option>
+                <option value="2">2º Semestre</option>
+            </select>
+            {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
+        </div>
+    );
+}
+
+function CampoAno({
+    erro,
+    onChange,
+    value,
+}: {
+    erro?: string;
+    onChange: (valor: string) => void;
+    value: string;
+}) {
+    return (
+        <div>
+            <label className="text-sm font-medium text-slate-700" htmlFor="ano">
+                Ano
+            </label>
+            <input
+                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                aria-invalid={Boolean(erro)}
+                id="ano"
+                inputMode="numeric"
+                maxLength={TOTAL_DIGITOS_ANO}
+                minLength={TOTAL_DIGITOS_ANO}
+                onChange={(event) => onChange(aplicarMascaraAno(event.target.value))}
+                pattern={`[0-9]{${TOTAL_DIGITOS_ANO}}`}
+                placeholder="2026"
+                required
+                type="text"
+                value={value}
+            />
+            {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
+        </div>
+    );
+}
+
+function aplicarMascaraAno(valor: string): string {
+    return valor.replace(/\D/g, '').slice(0, TOTAL_DIGITOS_ANO);
+}
+
+function validarAno(valor: string): string | null {
+    if (!new RegExp(`^\\d{${TOTAL_DIGITOS_ANO}}$`).test(valor)) {
+        return 'Informe um ano com 4 digitos.';
+    }
+
+    return null;
 }
 
 function StatusTurma({ turma }: { turma: Turma }) {

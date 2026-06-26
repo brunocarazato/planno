@@ -48,7 +48,8 @@ class GerenciarTurmasTest extends TestCase
         Turma::create([
             'nome' => 'Gestao de Projetos',
             'codigo' => 'GP-2026-1A',
-            'periodo' => '2026.1',
+            'periodo' => '1',
+            'ano' => 2026,
             'aceita_novos_cadastros' => true,
         ]);
 
@@ -57,6 +58,7 @@ class GerenciarTurmasTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Turmas/Index')
                 ->has('turmas', 1)
+                ->where('turmas.0.periodoFormatado', '1º Semestre de 2026')
                 ->where('metricas.total', 1)
                 ->where('metricas.ativas', 1)
                 ->where('metricas.aceitandoCadastros', 1));
@@ -66,14 +68,16 @@ class GerenciarTurmasTest extends TestCase
     {
         $this->post('/turmas', [
             'nome' => 'Gestao de Projetos',
-            'periodo' => '2026.1',
+            'periodo' => '1',
+            'ano' => 2026,
             'descricao' => 'Turma piloto do MVP.',
         ])->assertRedirect('/turmas');
 
         $this->assertDatabaseHas('turmas', [
             'nome' => 'Gestao de Projetos',
             'codigo' => 'TUR-2026-1-001',
-            'periodo' => '2026.1',
+            'periodo' => '1',
+            'ano' => 2026,
             'descricao' => 'Turma piloto do MVP.',
             'aceita_novos_cadastros' => true,
             'arquivada_em' => null,
@@ -90,7 +94,8 @@ class GerenciarTurmasTest extends TestCase
 
         $this->post('/turmas', [
             'nome' => 'Nova turma',
-            'periodo' => '2026.1',
+            'periodo' => '1',
+            'ano' => 2026,
         ])->assertRedirect('/turmas');
 
         $this->assertDatabaseHas('turmas', [
@@ -110,7 +115,8 @@ class GerenciarTurmasTest extends TestCase
         $this->put("/turmas/{$turma->id}", [
             'nome' => 'Nome atualizado',
             'codigo' => 'nova',
-            'periodo' => '2026.2',
+            'periodo' => '2',
+            'ano' => 2026,
             'descricao' => 'Descricao atualizada.',
         ])->assertRedirect('/turmas');
 
@@ -118,9 +124,22 @@ class GerenciarTurmasTest extends TestCase
             'id' => $turma->id,
             'nome' => 'Nome atualizado',
             'codigo' => 'ANTIGA',
-            'periodo' => '2026.2',
+            'periodo' => '2',
+            'ano' => 2026,
             'descricao' => 'Descricao atualizada.',
         ]);
+    }
+
+    public function test_valida_periodo_e_ano_da_turma(): void
+    {
+        $this->from('/turmas')
+            ->post('/turmas', [
+                'nome' => 'Gestao de Projetos',
+                'periodo' => '3',
+                'ano' => '26',
+            ])
+            ->assertRedirect('/turmas')
+            ->assertSessionHasErrors(['periodo', 'ano']);
     }
 
     public function test_permite_bloqueia_e_arquiva_turma(): void

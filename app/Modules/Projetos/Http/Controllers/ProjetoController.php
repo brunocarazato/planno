@@ -51,6 +51,8 @@ class ProjetoController extends Controller
                 'nome' => $turma->nome,
                 'codigo' => $turma->codigo,
                 'periodo' => $turma->periodo,
+                'ano' => $turma->ano,
+                'periodoFormatado' => $turma->periodoFormatado(),
             ]);
 
         return Inertia::render('Projetos/Index', [

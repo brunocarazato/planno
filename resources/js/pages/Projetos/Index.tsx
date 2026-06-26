@@ -10,6 +10,8 @@ type TurmaOpcao = {
     nome: string;
     codigo: string;
     periodo: string | null;
+    ano: number | null;
+    periodoFormatado: string | null;
 };
 
 type Projeto = {

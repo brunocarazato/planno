@@ -24,6 +24,8 @@ class ProjetoPresenter
                 'nome' => $projeto->turma?->nome,
                 'codigo' => $projeto->turma?->codigo,
                 'periodo' => $projeto->turma?->periodo,
+                'ano' => $projeto->turma?->ano,
+                'periodoFormatado' => $projeto->turma?->periodoFormatado(),
             ],
             'responsavel' => [
                 'id' => $projeto->responsavel?->id,

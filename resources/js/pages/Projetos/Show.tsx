@@ -16,6 +16,8 @@ type Projeto = {
         nome: string;
         codigo: string;
         periodo: string | null;
+        ano: number | null;
+        periodoFormatado: string | null;
     };
     responsavel: UsuarioResumo;
     termoDeAbertura: {
@@ -133,7 +135,7 @@ export default function ProjetosShow({
                     <dl className="mt-6 space-y-4 text-sm">
                         <div>
                             <dt className="font-medium text-slate-700">Periodo da turma</dt>
-                            <dd className="mt-1 text-slate-600">{projeto.turma.periodo || 'Nao informado'}</dd>
+                            <dd className="mt-1 text-slate-600">{projeto.turma.periodoFormatado || 'Nao informado'}</dd>
                         </div>
                         <div>
                             <dt className="font-medium text-slate-700">Responsavel</dt>

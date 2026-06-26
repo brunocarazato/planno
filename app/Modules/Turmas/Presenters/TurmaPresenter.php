@@ -16,6 +16,8 @@ class TurmaPresenter
             'nome' => $turma->nome,
             'codigo' => $turma->codigo,
             'periodo' => $turma->periodo,
+            'ano' => $turma->ano,
+            'periodoFormatado' => $turma->periodoFormatado(),
             'descricao' => $turma->descricao,
             'aceitaNovosCadastros' => $turma->aceita_novos_cadastros,
             'arquivadaEm' => $turma->arquivada_em?->toDateTimeString(),
