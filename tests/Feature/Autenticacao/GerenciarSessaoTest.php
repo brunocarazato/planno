@@ -7,7 +7,6 @@ use App\Modules\Turmas\Models\CadastroAluno;
 use App\Modules\Turmas\Models\Turma;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class GerenciarSessaoTest extends TestCase
@@ -21,12 +20,10 @@ class GerenciarSessaoTest extends TestCase
         $this->withoutMiddleware(ValidateCsrfToken::class);
     }
 
-    public function test_exibe_a_tela_de_login(): void
+    public function test_redireciona_login_para_inicio_com_modal_aberta(): void
     {
         $this->get('/entrar')
-            ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('Autenticacao/Entrar'));
+            ->assertRedirect('/?login=1');
     }
 
     public function test_professor_entra_com_ra_e_senha(): void
@@ -96,12 +93,12 @@ class GerenciarSessaoTest extends TestCase
             'status' => CadastroAluno::STATUS_PENDENTE,
         ]);
 
-        $this->from('/entrar')
+        $this->from('/?login=1')
             ->post('/entrar', [
                 'ra' => 'ra123',
                 'password' => 'senha-segura',
             ])
-            ->assertRedirect('/entrar')
+            ->assertRedirect('/?login=1')
             ->assertSessionHasErrors('ra');
 
         $this->assertGuest();
@@ -129,12 +126,12 @@ class GerenciarSessaoTest extends TestCase
             'valido_ate' => now()->subDay()->toDateString(),
         ]);
 
-        $this->from('/entrar')
+        $this->from('/?login=1')
             ->post('/entrar', [
                 'ra' => 'ra123',
                 'password' => 'senha-segura',
             ])
-            ->assertRedirect('/entrar')
+            ->assertRedirect('/?login=1')
             ->assertSessionHasErrors('ra');
 
         $this->assertGuest();
@@ -147,12 +144,12 @@ class GerenciarSessaoTest extends TestCase
             'password' => 'senha-segura',
         ]);
 
-        $this->from('/entrar')
+        $this->from('/?login=1')
             ->post('/entrar', [
                 'ra' => 'RA123',
                 'password' => 'senha-errada',
             ])
-            ->assertRedirect('/entrar')
+            ->assertRedirect('/?login=1')
             ->assertSessionHasErrors('ra');
 
         $this->assertGuest();
@@ -167,7 +164,7 @@ class GerenciarSessaoTest extends TestCase
 
         $this->actingAs($usuario)
             ->post('/sair')
-            ->assertRedirect('/entrar');
+            ->assertRedirect('/');
 
         $this->assertGuest();
     }

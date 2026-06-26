@@ -13,6 +13,11 @@ type DialogProps = PropsWithChildren<{
 
 export function Dialog({ aberto, children, className, descricao, onClose, titulo }: DialogProps) {
     const dialogRef = useRef<HTMLDivElement>(null);
+    const onCloseRef = useRef(onClose);
+
+    useEffect(() => {
+        onCloseRef.current = onClose;
+    }, [onClose]);
 
     useEffect(() => {
         if (!aberto) {
@@ -23,14 +28,14 @@ export function Dialog({ aberto, children, className, descricao, onClose, titulo
 
         function handleKeyDown(event: KeyboardEvent) {
             if (event.key === 'Escape') {
-                onClose();
+                onCloseRef.current();
             }
         }
 
         document.addEventListener('keydown', handleKeyDown);
 
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [aberto, onClose]);
+    }, [aberto]);
 
     if (!aberto) {
         return null;

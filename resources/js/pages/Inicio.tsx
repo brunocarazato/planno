@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
     BookOpenCheck,
@@ -10,7 +10,9 @@ import {
     Route,
     UsersRound,
 } from 'lucide-react';
-import type { ComponentType } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
+
+import { LoginDialog } from '../shared/autenticacao/LoginDialog';
 
 const trilhas = [
     {
@@ -48,6 +50,15 @@ const metricas = [
 ];
 
 export default function Inicio() {
+    const { url } = usePage();
+    const [loginAberto, setLoginAberto] = useState(false);
+
+    useEffect(() => {
+        if (url.includes('login=1')) {
+            setLoginAberto(true);
+        }
+    }, [url]);
+
     return (
         <main className="min-h-screen bg-[#f6f7f2] text-[#17211f]">
             <Head title="Inicio" />
@@ -71,13 +82,14 @@ export default function Inicio() {
                         >
                             Cadastro aluno
                         </Link>
-                        <Link
+                        <button
                             className="inline-flex h-10 items-center gap-2 rounded-md bg-[#17211f] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#273633]"
-                            href="/entrar"
+                            onClick={() => setLoginAberto(true)}
+                            type="button"
                         >
                             Entrar
                             <ArrowRight className="h-4 w-4" />
-                        </Link>
+                        </button>
                     </nav>
                 </header>
 
@@ -187,13 +199,14 @@ export default function Inicio() {
                         </h2>
                     </div>
                     <div className="flex flex-col gap-3 sm:flex-row">
-                        <Link
+                        <button
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-[#17211f] px-5 text-sm font-bold text-white hover:bg-[#273633]"
-                            href="/entrar"
+                            onClick={() => setLoginAberto(true)}
+                            type="button"
                         >
                             Entrar no Planno
                             <ArrowRight className="h-4 w-4" />
-                        </Link>
+                        </button>
                         <Link
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#b9c4b7] bg-white px-5 text-sm font-bold text-[#17211f] hover:bg-[#f7f8f4]"
                             href="/cadastros-alunos/solicitar"
@@ -204,6 +217,8 @@ export default function Inicio() {
                     </div>
                 </div>
             </section>
+
+            <LoginDialog aberto={loginAberto} onClose={() => setLoginAberto(false)} />
         </main>
     );
 }

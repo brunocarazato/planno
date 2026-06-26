@@ -1,6 +1,8 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { LayoutDashboard, LogOut, Route } from 'lucide-react';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useState } from 'react';
+
+import { LoginDialog } from '../autenticacao/LoginDialog';
 
 type AppLayoutProps = PropsWithChildren<{
     titulo: string;
@@ -20,6 +22,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
     const { auth } = props;
     const usuario = auth?.user;
     const ehProfessor = usuario?.tipo === 'professor';
+    const [loginAberto, setLoginAberto] = useState(false);
 
     function sair() {
         router.post('/sair');
@@ -71,9 +74,13 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                                     Sair de {usuario.name}
                                 </button>
                             ) : (
-                                <NavLink ativo={url.startsWith('/entrar')} href="/entrar">
+                                <button
+                                    className="inline-flex h-10 items-center gap-2 rounded-md px-3 transition hover:bg-[#edf2e9] hover:text-[#17211f]"
+                                    onClick={() => setLoginAberto(true)}
+                                    type="button"
+                                >
                                     Entrar
-                                </NavLink>
+                                </button>
                             )}
                         </nav>
                     </div>
@@ -86,6 +93,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                 </div>
             </header>
             <main className="mx-auto max-w-7xl px-5 py-8 sm:px-8">{children}</main>
+            <LoginDialog aberto={loginAberto} onClose={() => setLoginAberto(false)} />
         </div>
     );
 }

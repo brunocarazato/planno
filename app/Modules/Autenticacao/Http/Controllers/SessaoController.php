@@ -7,14 +7,12 @@ use App\Modules\Autenticacao\Http\Requests\EntrarRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use Inertia\Response;
 
 class SessaoController extends Controller
 {
-    public function create(): Response
+    public function create(): RedirectResponse
     {
-        return Inertia::render('Autenticacao/Entrar');
+        return to_route('inicio', ['login' => 1]);
     }
 
     public function store(EntrarRequest $request): RedirectResponse
@@ -56,6 +54,6 @@ class SessaoController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return to_route('login')->with('success', 'Voce saiu da aplicacao.');
+        return to_route('inicio')->with('success', 'Voce saiu da aplicacao.');
     }
 }
