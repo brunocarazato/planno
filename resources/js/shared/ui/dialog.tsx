@@ -1,4 +1,5 @@
 import { PropsWithChildren, useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
 
 import { cn } from '../lib/utils';
 
@@ -38,13 +39,13 @@ export function Dialog({ aberto, children, className, descricao, onClose, titulo
     return (
         <div
             aria-modal="true"
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4 py-6"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#17211f]/45 px-4 py-6"
             onClick={onClose}
             role="dialog"
         >
             <div
                 className={cn(
-                    'w-full max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-xl outline-none',
+                    'w-full max-w-lg rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-2xl shadow-[#17211f]/12 outline-none',
                     className,
                 )}
                 onClick={(event) => event.stopPropagation()}
@@ -53,16 +54,16 @@ export function Dialog({ aberto, children, className, descricao, onClose, titulo
             >
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <h2 className="text-lg font-semibold text-slate-950">{titulo}</h2>
-                        {descricao ? <p className="mt-2 text-sm leading-6 text-slate-600">{descricao}</p> : null}
+                        <h2 className="text-lg font-semibold text-[#17211f]">{titulo}</h2>
+                        {descricao ? <p className="mt-2 text-sm leading-6 text-[#53635e]">{descricao}</p> : null}
                     </div>
                     <button
                         aria-label="Fechar dialogo"
-                        className="rounded-md px-2 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-[#66756f] hover:bg-[#f4f7ef] hover:text-[#17211f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#66756f]"
                         onClick={onClose}
                         type="button"
                     >
-                        x
+                        <X className="h-4 w-4" />
                     </button>
                 </div>
 

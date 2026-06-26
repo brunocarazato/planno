@@ -183,24 +183,24 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                 <Indicador rotulo="Aceitando cadastros" valor={metricas.aceitandoCadastros} />
             </section>
 
-            <section className="mt-8 rounded-lg border border-slate-200 bg-white shadow-sm">
-                <div className="flex flex-col gap-4 border-b border-slate-200 p-6 md:flex-row md:items-center md:justify-between">
+            <section className="mt-8 rounded-lg border border-[#dfe5d8] bg-white shadow-sm">
+                <div className="flex flex-col gap-4 border-b border-[#dfe5d8] p-6 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="rounded-md bg-cyan-50 p-2 text-cyan-700">
+                        <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
                             <ClipboardList className="h-5 w-5" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-slate-950">Cadastros pendentes</h2>
-                            <p className="text-sm text-slate-600">
+                            <h2 className="text-lg font-semibold text-[#17211f]">Cadastros pendentes</h2>
+                            <p className="text-sm text-[#53635e]">
                                 Solicitações aguardando aprovacao para receber validade anual.
                             </p>
                         </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
+                        <span className="rounded-full bg-[#f4f7ef] px-3 py-1 text-sm font-medium text-[#51605c]">
                             {metricas.cadastrosPendentes} pendente(s)
                         </span>
-                        <Link className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50" href="/cadastros-alunos/solicitar">
+                        <Link className="inline-flex items-center gap-2 rounded-md border border-[#b9c4b7] px-3 py-2 text-sm font-medium text-[#17211f] hover:bg-[#f6f7f2]" href="/cadastros-alunos/solicitar">
                             <UserPlus className="h-4 w-4" />
                             Solicitar cadastro
                         </Link>
@@ -209,23 +209,23 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
 
                 {cadastrosPendentes.length === 0 ? (
                     <div className="p-8 text-center">
-                        <p className="font-medium text-slate-950">Nenhum cadastro pendente.</p>
-                        <p className="mt-2 text-sm text-slate-600">
+                        <p className="font-medium text-[#17211f]">Nenhum cadastro pendente.</p>
+                        <p className="mt-2 text-sm text-[#53635e]">
                             Novas solicitacoes de alunos aparecerao aqui para aprovacao.
                         </p>
                     </div>
                 ) : (
-                    <div className="divide-y divide-slate-200">
+                    <div className="divide-y divide-[#dfe5d8]">
                         {cadastrosPendentes.map((cadastro) => (
                             <article className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between" key={cadastro.id}>
                                 <div>
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <h3 className="font-semibold text-slate-950">{cadastro.nome}</h3>
-                                        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                                        <h3 className="font-semibold text-[#17211f]">{cadastro.nome}</h3>
+                                        <span className="rounded-full bg-[#f4f7ef] px-2.5 py-1 text-xs font-medium text-[#51605c]">
                                             RA {cadastro.ra}
                                         </span>
                                     </div>
-                                    <p className="mt-1 text-sm text-slate-600">
+                                    <p className="mt-1 text-sm text-[#53635e]">
                                         {cadastro.turma.nome} ({cadastro.turma.codigo})
                                     </p>
                                 </div>
@@ -246,16 +246,16 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
             </section>
 
             <section className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-                <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="rounded-md bg-cyan-50 p-2 text-cyan-700">
+                        <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
                             {turmaEmEdicao ? <Pencil className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-slate-950">
+                            <h2 className="text-lg font-semibold text-[#17211f]">
                                 {turmaEmEdicao ? 'Editar turma' : 'Nova turma'}
                             </h2>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-[#53635e]">
                                 {turmaEmEdicao
                                     ? 'Atualize os dados basicos da turma selecionada.'
                                     : 'Crie uma turma ativa para receber futuras solicitacoes de alunos.'}
@@ -284,11 +284,11 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                         />
 
                         <div>
-                            <label className="text-sm font-medium text-slate-700" htmlFor="descricao">
+                            <label className="text-sm font-medium text-[#51605c]" htmlFor="descricao">
                                 Descricao
                             </label>
                             <textarea
-                                className="mt-1 min-h-28 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                                className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                                 id="descricao"
                                 onChange={(event) => form.setData('descricao', event.target.value)}
                                 placeholder="Contexto, professor responsavel ou observacoes da turma."
@@ -312,41 +312,41 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                     </form>
                 </div>
 
-                <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
-                    <div className="flex items-center justify-between gap-4 border-b border-slate-200 p-6">
+                <div className="rounded-lg border border-[#dfe5d8] bg-white shadow-sm">
+                    <div className="flex items-center justify-between gap-4 border-b border-[#dfe5d8] p-6">
                         <div>
-                            <h2 className="text-lg font-semibold text-slate-950">Turmas cadastradas</h2>
-                            <p className="mt-1 text-sm text-slate-600">
+                            <h2 className="text-lg font-semibold text-[#17211f]">Turmas cadastradas</h2>
+                            <p className="mt-1 text-sm text-[#53635e]">
                                 Controle se cada turma aceita novos cadastros antes da etapa de aprovacao de alunos.
                             </p>
                         </div>
-                        <UsersRound className="h-5 w-5 shrink-0 text-cyan-700" />
+                        <UsersRound className="h-5 w-5 shrink-0 text-[#0f766e]" />
                     </div>
 
                     {turmas.length === 0 ? (
                         <div className="p-8 text-center">
-                            <p className="font-medium text-slate-950">Nenhuma turma cadastrada ainda.</p>
-                            <p className="mt-2 text-sm text-slate-600">
+                            <p className="font-medium text-[#17211f]">Nenhuma turma cadastrada ainda.</p>
+                            <p className="mt-2 text-sm text-[#53635e]">
                                 Crie a primeira turma para iniciar o fluxo administrativo do MVP.
                             </p>
                         </div>
                     ) : (
-                        <div className="divide-y divide-slate-200">
+                        <div className="divide-y divide-[#dfe5d8]">
                             {turmas.map((turma) => (
                                 <article className="p-5" key={turma.id}>
                                     <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                                         <div>
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <h3 className="font-semibold text-slate-950">{turma.nome}</h3>
-                                                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                                                <h3 className="font-semibold text-[#17211f]">{turma.nome}</h3>
+                                                <span className="rounded-full bg-[#f4f7ef] px-2.5 py-1 text-xs font-medium text-[#51605c]">
                                                     {turma.codigo}
                                                 </span>
                                             </div>
-                                            <p className="mt-1 text-sm text-slate-600">
+                                            <p className="mt-1 text-sm text-[#53635e]">
                                                 {turma.periodoFormatado || 'Periodo nao informado'}
                                             </p>
                                             {turma.descricao ? (
-                                                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+                                                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#53635e]">
                                                     {turma.descricao}
                                                 </p>
                                             ) : null}
@@ -422,11 +422,11 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                 titulo="Reprovar cadastro?"
             >
                 <div>
-                    <label className="text-sm font-medium text-slate-700" htmlFor="motivo_reprovacao">
+                    <label className="text-sm font-medium text-[#51605c]" htmlFor="motivo_reprovacao">
                         Motivo da reprovacao
                     </label>
                     <textarea
-                        className="mt-1 min-h-28 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                        className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                         id="motivo_reprovacao"
                         onChange={(event) => setMotivoReprovacao(event.target.value)}
                         placeholder="Opcional"
@@ -455,9 +455,9 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
 
 function Indicador({ rotulo, valor }: { rotulo: string; valor: number }) {
     return (
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">{rotulo}</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-950">{valor}</p>
+        <div className="rounded-lg border border-[#dfe5d8] bg-white p-5 shadow-sm">
+            <p className="text-sm text-[#66756f]">{rotulo}</p>
+            <p className="mt-2 text-3xl font-semibold text-[#17211f]">{valor}</p>
         </div>
     );
 }
@@ -479,11 +479,11 @@ function CampoTexto({
 }) {
     return (
         <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor={id}>
+            <label className="text-sm font-medium text-[#51605c]" htmlFor={id}>
                 {label}
             </label>
             <input
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                className="mt-1 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                 id={id}
                 onChange={(event) => onChange(event.target.value)}
                 placeholder={placeholder}
@@ -506,11 +506,11 @@ function CampoPeriodo({
 }) {
     return (
         <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor="periodo">
+            <label className="text-sm font-medium text-[#51605c]" htmlFor="periodo">
                 Periodo
             </label>
             <select
-                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                className="mt-1 w-full rounded-md border border-[#b9c4b7] bg-white px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                 id="periodo"
                 onChange={(event) => onChange(event.target.value)}
                 value={value}
@@ -535,11 +535,11 @@ function CampoAno({
 }) {
     return (
         <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor="ano">
+            <label className="text-sm font-medium text-[#51605c]" htmlFor="ano">
                 Ano
             </label>
             <input
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                className="mt-1 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                 aria-invalid={Boolean(erro)}
                 id="ano"
                 inputMode="numeric"
@@ -571,7 +571,7 @@ function validarAno(valor: string): string | null {
 
 function StatusTurma({ turma }: { turma: Turma }) {
     const classes = turma.arquivadaEm
-        ? 'border-slate-200 bg-slate-100 text-slate-700'
+        ? 'border-[#dfe5d8] bg-[#f4f7ef] text-[#51605c]'
         : turma.aceitaNovosCadastros
           ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
           : 'border-amber-200 bg-amber-50 text-amber-800';

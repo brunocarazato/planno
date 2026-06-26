@@ -63,14 +63,14 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
             ) : null}
 
             <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-                <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="rounded-md bg-cyan-50 p-2 text-cyan-700">
+                        <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
                             <ClipboardCheck className="h-5 w-5" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-slate-950">Dados do aluno</h2>
-                            <p className="text-sm text-slate-600">
+                            <h2 className="text-lg font-semibold text-[#17211f]">Dados do aluno</h2>
+                            <p className="text-sm text-[#53635e]">
                                 O cadastro ficara pendente ate a avaliacao da equipe responsavel.
                             </p>
                         </div>
@@ -78,11 +78,11 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
 
                     <form className="mt-6 space-y-5" onSubmit={enviarFormulario}>
                         <div>
-                            <label className="text-sm font-medium text-slate-700" htmlFor="turma_id">
+                            <label className="text-sm font-medium text-[#51605c]" htmlFor="turma_id">
                                 Turma
                             </label>
                             <select
-                                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                                className="mt-1 w-full rounded-md border border-[#b9c4b7] bg-white px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                                 disabled={turmas.length === 0}
                                 id="turma_id"
                                 onChange={(event) => form.setData('turma_id', event.target.value)}
@@ -144,14 +144,14 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                     </form>
                 </div>
 
-                <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="rounded-md bg-slate-100 p-2 text-slate-700">
+                        <div className="rounded-md bg-[#f4f7ef] p-2 text-[#51605c]">
                             <UsersRound className="h-5 w-5" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-slate-950">Turmas abertas</h2>
-                            <p className="text-sm text-slate-600">
+                            <h2 className="text-lg font-semibold text-[#17211f]">Turmas abertas</h2>
+                            <p className="text-sm text-[#53635e]">
                                 Apenas turmas ativas e liberadas aparecem para solicitacao.
                             </p>
                         </div>
@@ -162,16 +162,16 @@ export default function SolicitarCadastro({ turmas, flash }: SolicitarCadastroPr
                             Nenhuma turma esta recebendo novos cadastros no momento.
                         </div>
                     ) : (
-                        <div className="mt-6 divide-y divide-slate-200 rounded-md border border-slate-200">
+                        <div className="mt-6 divide-y divide-[#dfe5d8] rounded-md border border-[#dfe5d8]">
                             {turmas.map((turma) => (
                                 <article className="p-4" key={turma.id}>
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <h3 className="font-semibold text-slate-950">{turma.nome}</h3>
-                                        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                                        <h3 className="font-semibold text-[#17211f]">{turma.nome}</h3>
+                                        <span className="rounded-full bg-[#f4f7ef] px-2.5 py-1 text-xs font-medium text-[#51605c]">
                                             {turma.codigo}
                                         </span>
                                     </div>
-                                    <p className="mt-1 text-sm text-slate-600">
+                                    <p className="mt-1 text-sm text-[#53635e]">
                                         {turma.periodoFormatado || 'Periodo nao informado'}
                                     </p>
                                 </article>
@@ -203,11 +203,11 @@ function CampoTexto({
 }) {
     return (
         <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor={id}>
+            <label className="text-sm font-medium text-[#51605c]" htmlFor={id}>
                 {label}
             </label>
             <input
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                className="mt-1 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                 id={id}
                 onChange={(event) => onChange(event.target.value)}
                 placeholder={placeholder}

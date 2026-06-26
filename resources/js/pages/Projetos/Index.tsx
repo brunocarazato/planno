@@ -92,14 +92,14 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
             </section>
 
             <section className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-                <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="rounded-md bg-cyan-50 p-2 text-cyan-700">
+                        <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
                             <Plus className="h-5 w-5" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-slate-950">Novo projeto</h2>
-                            <p className="text-sm text-slate-600">
+                            <h2 className="text-lg font-semibold text-[#17211f]">Novo projeto</h2>
+                            <p className="text-sm text-[#53635e]">
                                 Crie o projeto didatico inicial e associe-o a uma turma ativa.
                             </p>
                         </div>
@@ -107,7 +107,7 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
 
                     <form className="mt-6 space-y-5" onSubmit={enviarFormulario}>
                         {ehAluno ? (
-                            <div className="rounded-md border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm text-cyan-900">
+                            <div className="rounded-md border border-[#d9e2d7] bg-[#eff5ed] px-4 py-3 text-sm text-[#17211f]">
                                 <p className="font-medium">Turma vinculada automaticamente</p>
                                 <p className="mt-1">
                                     {turmaDoAluno ? `${turmaDoAluno.nome} (${turmaDoAluno.codigo})` : null}
@@ -124,11 +124,11 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
                             </div>
                         ) : (
                             <div>
-                                <label className="text-sm font-medium text-slate-700" htmlFor="turma_id">
+                                <label className="text-sm font-medium text-[#51605c]" htmlFor="turma_id">
                                     Turma
                                 </label>
                                 <select
-                                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                                    className="mt-1 w-full rounded-md border border-[#b9c4b7] bg-white px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                                     id="turma_id"
                                     onChange={(event) => form.setData('turma_id', event.target.value)}
                                     value={form.data.turma_id}
@@ -156,11 +156,11 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
                         />
 
                         <div>
-                            <label className="text-sm font-medium text-slate-700" htmlFor="descricao">
+                            <label className="text-sm font-medium text-[#51605c]" htmlFor="descricao">
                                 Descricao
                             </label>
                             <textarea
-                                className="mt-1 min-h-28 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                                className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                                 id="descricao"
                                 onChange={(event) => form.setData('descricao', event.target.value)}
                                 placeholder="Contexto do projeto didatico, cliente ficticio ou problema escolhido pela turma."
@@ -180,44 +180,44 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
                     </form>
                 </div>
 
-                <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
-                    <div className="flex items-center justify-between gap-4 border-b border-slate-200 p-6">
+                <div className="rounded-lg border border-[#dfe5d8] bg-white shadow-sm">
+                    <div className="flex items-center justify-between gap-4 border-b border-[#dfe5d8] p-6">
                         <div>
-                            <h2 className="text-lg font-semibold text-slate-950">Projetos cadastrados</h2>
-                            <p className="mt-1 text-sm text-slate-600">
+                            <h2 className="text-lg font-semibold text-[#17211f]">Projetos cadastrados</h2>
+                            <p className="mt-1 text-sm text-[#53635e]">
                                 Acesse o detalhe para preencher e revisar o termo de abertura.
                             </p>
                         </div>
-                        <ClipboardCheck className="h-5 w-5 shrink-0 text-cyan-700" />
+                        <ClipboardCheck className="h-5 w-5 shrink-0 text-[#0f766e]" />
                     </div>
 
                     {projetos.length === 0 ? (
                         <div className="p-8 text-center">
-                            <p className="font-medium text-slate-950">Nenhum projeto cadastrado ainda.</p>
-                            <p className="mt-2 text-sm text-slate-600">
+                            <p className="font-medium text-[#17211f]">Nenhum projeto cadastrado ainda.</p>
+                            <p className="mt-2 text-sm text-[#53635e]">
                                 Crie o primeiro projeto assim que houver uma turma ativa disponivel.
                             </p>
                         </div>
                     ) : (
-                        <div className="divide-y divide-slate-200">
+                        <div className="divide-y divide-[#dfe5d8]">
                             {projetos.map((projeto) => (
                                 <article className="flex flex-col gap-4 p-5 xl:flex-row xl:items-start xl:justify-between" key={projeto.id}>
                                     <div>
                                         <div className="flex flex-wrap items-center gap-2">
-                                            <h3 className="font-semibold text-slate-950">{projeto.nome}</h3>
-                                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                                            <h3 className="font-semibold text-[#17211f]">{projeto.nome}</h3>
+                                            <span className="rounded-full bg-[#f4f7ef] px-2.5 py-1 text-xs font-medium text-[#51605c]">
                                                 {projeto.codigo}
                                             </span>
                                         </div>
-                                        <p className="mt-1 text-sm text-slate-600">
+                                        <p className="mt-1 text-sm text-[#53635e]">
                                             {projeto.turma.nome} ({projeto.turma.codigo})
                                         </p>
                                         {projeto.descricao ? (
-                                            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+                                            <p className="mt-3 max-w-2xl text-sm leading-6 text-[#53635e]">
                                                 {projeto.descricao}
                                             </p>
                                         ) : null}
-                                        <span className="mt-4 inline-flex rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-medium text-cyan-800">
+                                        <span className="mt-4 inline-flex rounded-full border border-[#cdd9cf] bg-[#eff5ed] px-3 py-1 text-xs font-medium text-[#0d625c]">
                                             {projeto.situacaoFormatada}
                                         </span>
                                     </div>
@@ -246,10 +246,10 @@ function Indicador({
     valor: number;
 }) {
     return (
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <Icon className="h-5 w-5 text-cyan-700" />
-            <p className="mt-4 text-sm text-slate-500">{rotulo}</p>
-            <p className="mt-1 text-3xl font-semibold text-slate-950">{valor}</p>
+        <div className="rounded-lg border border-[#dfe5d8] bg-white p-5 shadow-sm">
+            <Icon className="h-5 w-5 text-[#0f766e]" />
+            <p className="mt-4 text-sm text-[#66756f]">{rotulo}</p>
+            <p className="mt-1 text-3xl font-semibold text-[#17211f]">{valor}</p>
         </div>
     );
 }
@@ -271,11 +271,11 @@ function CampoTexto({
 }) {
     return (
         <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor={id}>
+            <label className="text-sm font-medium text-[#51605c]" htmlFor={id}>
                 {label}
             </label>
             <input
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-100"
+                className="mt-1 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                 id={id}
                 onChange={(event) => onChange(event.target.value)}
                 placeholder={placeholder}
