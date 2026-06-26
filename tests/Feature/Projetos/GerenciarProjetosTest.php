@@ -67,11 +67,14 @@ class GerenciarProjetosTest extends TestCase
                 ->where('metricas.emIniciacao', 1));
     }
 
-    public function test_aluno_lista_apenas_projetos_das_suas_turmas_com_vinculo_aprovado(): void
+    public function test_aluno_lista_apenas_projetos_em_que_e_responsavel(): void
     {
         auth()->logout();
 
         $aluno = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+        $outroAluno = User::factory()->create([
             'tipo' => User::TIPO_ALUNO,
         ]);
         $this->actingAs($aluno);
@@ -113,18 +116,28 @@ class GerenciarProjetosTest extends TestCase
 
         Projeto::create([
             'turma_id' => $turmaDoAluno->id,
+            'responsavel_id' => $aluno->id,
             'nome' => 'Projeto visivel',
             'codigo' => 'PROJ-ALUNO',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
         ])->termoDeAbertura()->create();
         Projeto::create([
+            'turma_id' => $turmaDoAluno->id,
+            'responsavel_id' => $outroAluno->id,
+            'nome' => 'Projeto de outro responsavel na mesma turma',
+            'codigo' => 'PROJ-MESMA-TURMA',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ])->termoDeAbertura()->create();
+        Projeto::create([
             'turma_id' => $turmaDeOutroAluno->id,
+            'responsavel_id' => $outroAluno->id,
             'nome' => 'Projeto de outra turma',
             'codigo' => 'PROJ-OUTRO',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
         ])->termoDeAbertura()->create();
         Projeto::create([
             'turma_id' => $turmaPendente->id,
+            'responsavel_id' => $outroAluno->id,
             'nome' => 'Projeto ainda pendente',
             'codigo' => 'PROJ-PENDENTE',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
@@ -143,11 +156,14 @@ class GerenciarProjetosTest extends TestCase
                 ->where('metricas.turmasAtivas', 1));
     }
 
-    public function test_aluno_nao_acessa_detalhe_de_projeto_de_outra_turma(): void
+    public function test_aluno_nao_acessa_detalhe_de_projeto_de_outro_responsavel(): void
     {
         auth()->logout();
 
         $aluno = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+        $outroAluno = User::factory()->create([
             'tipo' => User::TIPO_ALUNO,
         ]);
         $this->actingAs($aluno);
@@ -155,11 +171,6 @@ class GerenciarProjetosTest extends TestCase
         $turmaDoAluno = Turma::create([
             'nome' => 'Gestao de Projetos',
             'codigo' => 'GP-2026-1A',
-            'aceita_novos_cadastros' => true,
-        ]);
-        $turmaDeOutroAluno = Turma::create([
-            'nome' => 'Engenharia de Software',
-            'codigo' => 'ES-2026-1A',
             'aceita_novos_cadastros' => true,
         ]);
 
@@ -174,6 +185,7 @@ class GerenciarProjetosTest extends TestCase
 
         $projetoDoAluno = Projeto::create([
             'turma_id' => $turmaDoAluno->id,
+            'responsavel_id' => $aluno->id,
             'nome' => 'Projeto visivel',
             'codigo' => 'PROJ-ALUNO',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
@@ -181,8 +193,9 @@ class GerenciarProjetosTest extends TestCase
         $projetoDoAluno->termoDeAbertura()->create();
 
         $projetoDeOutroAluno = Projeto::create([
-            'turma_id' => $turmaDeOutroAluno->id,
-            'nome' => 'Projeto de outra turma',
+            'turma_id' => $turmaDoAluno->id,
+            'responsavel_id' => $outroAluno->id,
+            'nome' => 'Projeto de outro responsavel',
             'codigo' => 'PROJ-OUTRO',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
         ]);
@@ -552,6 +565,55 @@ class GerenciarProjetosTest extends TestCase
             'restricoes' => 'Prazo de oito semanas.',
             'premissas' => 'A turma tera acesso ao laboratorio.',
             'entregas_esperadas' => 'Prototipo navegavel e relatorio final.',
+        ]);
+    }
+
+    public function test_aluno_nao_atualiza_termo_de_abertura_de_projeto_de_outro_responsavel(): void
+    {
+        auth()->logout();
+
+        $aluno = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+        $outroAluno = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+        $this->actingAs($aluno);
+
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        CadastroAluno::create([
+            'user_id' => $aluno->id,
+            'turma_id' => $turma->id,
+            'nome' => 'Ana Souza',
+            'ra' => 'RA123',
+            'status' => CadastroAluno::STATUS_APROVADO,
+            'valido_ate' => now()->addMonth()->toDateString(),
+        ]);
+
+        $projeto = Projeto::create([
+            'turma_id' => $turma->id,
+            'responsavel_id' => $outroAluno->id,
+            'nome' => 'Projeto de outro responsavel',
+            'codigo' => 'PROJ-OUTRO',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+
+        $projeto->termoDeAbertura()->create([
+            'objetivo' => 'Objetivo original.',
+        ]);
+
+        $this->put("/projetos/{$projeto->id}/termo-de-abertura", [
+            'objetivo' => 'Tentativa indevida.',
+        ])->assertForbidden();
+
+        $this->assertDatabaseHas('termos_de_abertura', [
+            'projeto_id' => $projeto->id,
+            'objetivo' => 'Objetivo original.',
         ]);
     }
 }

@@ -24,12 +24,13 @@ class ProjetoController extends Controller
 {
     public function index(Request $request, ProjetoPresenter $presenter): Response
     {
+        $usuario = $request->user();
         $turmasIdsDoAluno = $this->turmasIdsDoAluno($request->user());
 
         $projetosPermitidos = Projeto::query()
             ->when(
-                $turmasIdsDoAluno !== null,
-                fn (Builder $query) => $query->whereIn('turma_id', $turmasIdsDoAluno),
+                $usuario?->aluno() === true,
+                fn (Builder $query) => $query->where('responsavel_id', $usuario?->id),
             );
 
         $projetos = (clone $projetosPermitidos)
@@ -154,16 +155,7 @@ class ProjetoController extends Controller
         }
 
         abort_unless(
-            CadastroAluno::query()
-                ->where('user_id', $usuario->id)
-                ->where('turma_id', $projeto->turma_id)
-                ->aprovados()
-                ->where(function (Builder $query): void {
-                    $query
-                        ->whereNull('valido_ate')
-                        ->orWhereDate('valido_ate', '>=', today());
-                })
-                ->exists(),
+            $projeto->responsavel_id === $usuario->id,
             403,
         );
     }
