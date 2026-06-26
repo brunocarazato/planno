@@ -61,7 +61,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                                 </NavLink>
                             ) : null}
                             <NavLink ativo={url.startsWith('/cadastros-alunos')} href="/cadastros-alunos/solicitar">
-                                Cadastro aluno
+                                Cadastro
                             </NavLink>
                             {exibirMenuProjetos ? (
                                 <NavLink ativo={url.startsWith('/projetos')} href="/projetos">

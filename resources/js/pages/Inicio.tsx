@@ -80,7 +80,7 @@ export default function Inicio() {
                             className="hidden rounded-md px-3 py-2 text-sm font-semibold text-[#51605c] hover:bg-[#edf2e9] sm:inline-flex"
                             href="/cadastros-alunos/solicitar"
                         >
-                            Cadastro aluno
+                            Cadastro
                         </Link>
                         <button
                             className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md bg-[#17211f] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#273633]"
@@ -211,7 +211,7 @@ export default function Inicio() {
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#b9c4b7] bg-white px-5 text-sm font-bold text-[#17211f] hover:bg-[#f7f8f4]"
                             href="/cadastros-alunos/solicitar"
                         >
-                            Cadastro aluno
+                            Cadastro
                             <UsersRound className="h-4 w-4" />
                         </Link>
                     </div>
