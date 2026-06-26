@@ -22,6 +22,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
     const { auth } = props;
     const usuario = auth?.user;
     const ehProfessor = usuario?.tipo === 'professor';
+    const ehAluno = usuario?.tipo === 'aluno';
     const rotaAtual = url.split('?')[0];
     const exibirMenuProjetos = Boolean(usuario) || rotaAtual !== '/cadastros-alunos/solicitar';
     const [loginAberto, setLoginAberto] = useState(false);
@@ -60,9 +61,11 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                                     Turmas
                                 </NavLink>
                             ) : null}
-                            <NavLink ativo={url.startsWith('/cadastros-alunos')} href="/cadastros-alunos/solicitar">
-                                Cadastrar
-                            </NavLink>
+                            {!ehAluno ? (
+                                <NavLink ativo={url.startsWith('/cadastros-alunos')} href="/cadastros-alunos/solicitar">
+                                    Cadastrar
+                                </NavLink>
+                            ) : null}
                             {exibirMenuProjetos ? (
                                 <NavLink ativo={url.startsWith('/projetos')} href="/projetos">
                                     Projetos

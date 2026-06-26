@@ -46,6 +46,17 @@ class GerenciarCadastrosAlunosTest extends TestCase
                 ->where('turmas.0.codigo', 'GP-2026-1A'));
     }
 
+    public function test_aluno_logado_nao_visualiza_tela_de_solicitacao_de_cadastro(): void
+    {
+        $usuario = User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]);
+
+        $this->actingAs($usuario)
+            ->get('/cadastros-alunos/solicitar')
+            ->assertRedirect('/projetos');
+    }
+
     public function test_aluno_solicita_cadastro_para_turma_ativa(): void
     {
         $turma = Turma::create([

@@ -11,13 +11,18 @@ use App\Modules\Turmas\Http\Requests\SolicitarCadastroDeAlunoRequest;
 use App\Modules\Turmas\Models\CadastroAluno;
 use App\Modules\Turmas\Models\Turma;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class CadastroAlunoController extends Controller
 {
-    public function create(): Response
+    public function create(Request $request): Response|RedirectResponse
     {
+        if ($request->user()?->aluno()) {
+            return to_route('projetos.index');
+        }
+
         $turmas = Turma::query()
             ->ativas()
             ->where('aceita_novos_cadastros', true)

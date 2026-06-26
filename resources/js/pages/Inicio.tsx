@@ -58,6 +58,7 @@ export default function Inicio() {
         };
     }>();
     const usuario = props.auth?.user;
+    const ehAluno = usuario?.tipo === 'aluno';
     const [loginAberto, setLoginAberto] = useState(false);
 
     useEffect(() => {
@@ -93,12 +94,14 @@ export default function Inicio() {
                     </Link>
 
                     <nav className="flex items-center gap-2">
-                        <Link
-                            className="hidden rounded-md px-3 py-2 text-sm font-semibold text-[#51605c] hover:bg-[#edf2e9] sm:inline-flex"
-                            href="/cadastros-alunos/solicitar"
-                        >
-                            Cadastrar
-                        </Link>
+                        {!ehAluno ? (
+                            <Link
+                                className="hidden rounded-md px-3 py-2 text-sm font-semibold text-[#51605c] hover:bg-[#edf2e9] sm:inline-flex"
+                                href="/cadastros-alunos/solicitar"
+                            >
+                                Cadastrar
+                            </Link>
+                        ) : null}
                         <button
                             className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md bg-[#17211f] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#273633]"
                             onClick={entrar}
@@ -127,13 +130,15 @@ export default function Inicio() {
                         </p>
 
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                            <Link
-                                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#f06f45] px-5 text-sm font-bold text-white shadow-lg shadow-[#f06f45]/18 hover:bg-[#dc5e38]"
-                                href="/cadastros-alunos/solicitar"
-                            >
-                                Solicitar cadastro
-                                <ArrowRight className="h-4 w-4" />
-                            </Link>
+                            {!ehAluno ? (
+                                <Link
+                                    className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#f06f45] px-5 text-sm font-bold text-white shadow-lg shadow-[#f06f45]/18 hover:bg-[#dc5e38]"
+                                    href="/cadastros-alunos/solicitar"
+                                >
+                                    Solicitar cadastro
+                                    <ArrowRight className="h-4 w-4" />
+                                </Link>
+                            ) : null}
                             <Link
                                 className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-[#b9c4b7] bg-white px-5 text-sm font-bold text-[#17211f] hover:bg-[#f4f7ef]"
                                 href="/projetos"
@@ -224,13 +229,15 @@ export default function Inicio() {
                             Entrar no Planno
                             <ArrowRight className="h-4 w-4" />
                         </button>
-                        <Link
-                            className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#b9c4b7] bg-white px-5 text-sm font-bold text-[#17211f] hover:bg-[#f7f8f4]"
-                            href="/cadastros-alunos/solicitar"
-                        >
-                            Cadastrar
-                            <UsersRound className="h-4 w-4" />
-                        </Link>
+                        {!ehAluno ? (
+                            <Link
+                                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#b9c4b7] bg-white px-5 text-sm font-bold text-[#17211f] hover:bg-[#f7f8f4]"
+                                href="/cadastros-alunos/solicitar"
+                            >
+                                Cadastrar
+                                <UsersRound className="h-4 w-4" />
+                            </Link>
+                        ) : null}
                     </div>
                 </div>
             </section>
