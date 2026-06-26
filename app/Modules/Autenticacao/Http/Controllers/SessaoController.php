@@ -44,6 +44,10 @@ class SessaoController extends Controller
             return to_route('dashboard.professor')->with('success', 'Login realizado com sucesso.');
         }
 
+        if ($usuario?->aluno()) {
+            return to_route('projetos.index')->with('success', 'Login realizado com sucesso.');
+        }
+
         return to_route('inicio')->with('success', 'Login realizado com sucesso.');
     }
 
