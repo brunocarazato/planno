@@ -203,21 +203,29 @@ class GerenciarProjetosTest extends TestCase
             'aceita_novos_cadastros' => true,
         ]);
 
+        Projeto::create([
+            'turma_id' => $turma->id,
+            'nome' => 'Projeto existente',
+            'codigo' => 'GP-2026-1A-P001',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+
         $this->post('/projetos', [
             'turma_id' => $turma->id,
             'nome' => 'Sistema de biblioteca escolar',
-            'codigo' => 'proj-2026-01',
             'descricao' => 'Projeto didatico do primeiro semestre.',
         ])->assertRedirect();
 
-        $projeto = Projeto::query()->firstOrFail();
+        $projeto = Projeto::query()
+            ->where('nome', 'Sistema de biblioteca escolar')
+            ->firstOrFail();
 
         $this->assertDatabaseHas('projetos', [
             'id' => $projeto->id,
             'turma_id' => $turma->id,
             'responsavel_id' => auth()->id(),
             'nome' => 'Sistema de biblioteca escolar',
-            'codigo' => 'PROJ-2026-01',
+            'codigo' => 'GP-2026-1A-P002',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
         ]);
 
@@ -252,7 +260,6 @@ class GerenciarProjetosTest extends TestCase
 
         $this->post('/projetos', [
             'nome' => 'Projeto do aluno',
-            'codigo' => 'PROJ-ALUNO-NOVO',
         ])->assertRedirect();
 
         $projeto = Projeto::query()->firstOrFail();
@@ -262,7 +269,7 @@ class GerenciarProjetosTest extends TestCase
             'turma_id' => $turmaDoAluno->id,
             'responsavel_id' => $aluno->id,
             'nome' => 'Projeto do aluno',
-            'codigo' => 'PROJ-ALUNO-NOVO',
+            'codigo' => 'GP-2026-1A-P001',
             'situacao' => Projeto::SITUACAO_EM_INICIACAO,
         ]);
 
@@ -312,10 +319,13 @@ class GerenciarProjetosTest extends TestCase
             'turma_id' => $turmaDoAluno->id,
             'responsavel_id' => $aluno->id,
             'nome' => 'Projeto do aluno',
-            'codigo' => 'PROJ-OUTRO',
+            'codigo' => 'GP-2026-1A-P001',
         ]);
         $this->assertDatabaseMissing('projetos', [
             'turma_id' => $turmaDeOutroAluno->id,
+            'codigo' => 'PROJ-OUTRO',
+        ]);
+        $this->assertDatabaseMissing('projetos', [
             'codigo' => 'PROJ-OUTRO',
         ]);
     }
@@ -333,7 +343,6 @@ class GerenciarProjetosTest extends TestCase
             ->post('/projetos', [
                 'turma_id' => $turma->id,
                 'nome' => 'Projeto indevido',
-                'codigo' => 'PROJ-ARQ',
             ])
             ->assertRedirect('/projetos')
             ->assertSessionHasErrors('turma_id');

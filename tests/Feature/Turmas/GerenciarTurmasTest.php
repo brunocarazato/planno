@@ -66,14 +66,13 @@ class GerenciarTurmasTest extends TestCase
     {
         $this->post('/turmas', [
             'nome' => 'Gestao de Projetos',
-            'codigo' => 'gp-2026-1a',
             'periodo' => '2026.1',
             'descricao' => 'Turma piloto do MVP.',
         ])->assertRedirect('/turmas');
 
         $this->assertDatabaseHas('turmas', [
             'nome' => 'Gestao de Projetos',
-            'codigo' => 'GP-2026-1A',
+            'codigo' => 'TUR-2026-1-001',
             'periodo' => '2026.1',
             'descricao' => 'Turma piloto do MVP.',
             'aceita_novos_cadastros' => true,
@@ -81,21 +80,23 @@ class GerenciarTurmasTest extends TestCase
         ]);
     }
 
-    public function test_valida_codigo_unico_ao_criar_turma(): void
+    public function test_gera_codigo_sequencial_ao_criar_turma(): void
     {
         Turma::create([
             'nome' => 'Turma existente',
-            'codigo' => 'GP-2026-1A',
+            'codigo' => 'TUR-2026-1-001',
             'aceita_novos_cadastros' => true,
         ]);
 
-        $this->from('/turmas')
-            ->post('/turmas', [
-                'nome' => 'Nova turma',
-                'codigo' => 'GP-2026-1A',
-            ])
-            ->assertRedirect('/turmas')
-            ->assertSessionHasErrors('codigo');
+        $this->post('/turmas', [
+            'nome' => 'Nova turma',
+            'periodo' => '2026.1',
+        ])->assertRedirect('/turmas');
+
+        $this->assertDatabaseHas('turmas', [
+            'nome' => 'Nova turma',
+            'codigo' => 'TUR-2026-1-002',
+        ]);
     }
 
     public function test_atualiza_os_dados_basicos_da_turma(): void
@@ -116,7 +117,7 @@ class GerenciarTurmasTest extends TestCase
         $this->assertDatabaseHas('turmas', [
             'id' => $turma->id,
             'nome' => 'Nome atualizado',
-            'codigo' => 'NOVA',
+            'codigo' => 'ANTIGA',
             'periodo' => '2026.2',
             'descricao' => 'Descricao atualizada.',
         ]);

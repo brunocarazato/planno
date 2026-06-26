@@ -38,7 +38,6 @@ type CadastroPendente = {
 
 type TurmaForm = {
     nome: string;
-    codigo: string;
     periodo: string;
     descricao: string;
 };
@@ -54,7 +53,6 @@ type TurmasIndexProps = {
 
 const formularioInicial: TurmaForm = {
     nome: '',
-    codigo: '',
     periodo: '',
     descricao: '',
 };
@@ -88,7 +86,6 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
         setTurmaEmEdicao(turma);
         form.setData({
             nome: turma.nome,
-            codigo: turma.codigo,
             periodo: turma.periodo ?? '',
             descricao: turma.descricao ?? '',
         });
@@ -252,14 +249,6 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, metricas, flas
                             onChange={(valor) => form.setData('nome', valor)}
                             placeholder="Gestao de Projetos 2026.1"
                             value={form.data.nome}
-                        />
-                        <CampoTexto
-                            erro={form.errors.codigo}
-                            id="codigo"
-                            label="Codigo"
-                            onChange={(valor) => form.setData('codigo', valor)}
-                            placeholder="GP-2026-1A"
-                            value={form.data.codigo}
                         />
                         <CampoTexto
                             erro={form.errors.periodo}

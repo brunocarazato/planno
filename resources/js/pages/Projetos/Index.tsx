@@ -30,7 +30,6 @@ type Metricas = {
 type ProjetoForm = {
     turma_id: string;
     nome: string;
-    codigo: string;
     descricao: string;
 };
 
@@ -46,7 +45,6 @@ type ProjetosIndexProps = {
 const formularioInicial: ProjetoForm = {
     turma_id: '',
     nome: '',
-    codigo: '',
     descricao: '',
 };
 
@@ -153,14 +151,6 @@ export default function ProjetosIndex({ projetos, turmas, metricas, flash }: Pro
                             onChange={(valor) => form.setData('nome', valor)}
                             placeholder="Aplicativo de gestao de tarefas academicas"
                             value={form.data.nome}
-                        />
-                        <CampoTexto
-                            erro={form.errors.codigo}
-                            id="codigo"
-                            label="Codigo"
-                            onChange={(valor) => form.setData('codigo', valor)}
-                            placeholder="PROJ-2026-01"
-                            value={form.data.codigo}
                         />
 
                         <div>
