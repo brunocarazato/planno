@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Minimalista"
+  short_description: "Interfaces limpas com diagramas vetoriais"
+  default_prompt: "Use $frontend-minimalista para criar uma landing page limpa, minimalista e vetorial."
