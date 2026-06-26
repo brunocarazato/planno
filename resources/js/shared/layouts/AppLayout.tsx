@@ -22,6 +22,8 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
     const { auth } = props;
     const usuario = auth?.user;
     const ehProfessor = usuario?.tipo === 'professor';
+    const rotaAtual = url.split('?')[0];
+    const exibirMenuProjetos = rotaAtual !== '/cadastros-alunos/solicitar';
     const [loginAberto, setLoginAberto] = useState(false);
 
     function sair() {
@@ -61,9 +63,11 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                             <NavLink ativo={url.startsWith('/cadastros-alunos')} href="/cadastros-alunos/solicitar">
                                 Cadastro aluno
                             </NavLink>
-                            <NavLink ativo={url.startsWith('/projetos')} href="/projetos">
-                                Projetos
-                            </NavLink>
+                            {exibirMenuProjetos ? (
+                                <NavLink ativo={url.startsWith('/projetos')} href="/projetos">
+                                    Projetos
+                                </NavLink>
+                            ) : null}
                             {usuario ? (
                                 <button
                                     className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-left hover:bg-[#edf2e9] hover:text-[#17211f]"
