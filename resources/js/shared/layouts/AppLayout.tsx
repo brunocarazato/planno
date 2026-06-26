@@ -23,7 +23,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
     const usuario = auth?.user;
     const ehProfessor = usuario?.tipo === 'professor';
     const rotaAtual = url.split('?')[0];
-    const exibirMenuProjetos = rotaAtual !== '/cadastros-alunos/solicitar';
+    const exibirMenuProjetos = Boolean(usuario) || rotaAtual !== '/cadastros-alunos/solicitar';
     const [loginAberto, setLoginAberto] = useState(false);
 
     function sair() {
