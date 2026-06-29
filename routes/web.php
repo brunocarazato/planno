@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardProfessorController;
 use App\Modules\Autenticacao\Http\Controllers\SessaoController;
+use App\Modules\GruposDeProcessos\Http\Controllers\TrilhaDoProjetoController;
 use App\Modules\Projetos\Http\Controllers\ProjetoController;
 use App\Modules\Turmas\Http\Controllers\CadastroAlunoController;
 use App\Modules\Turmas\Http\Controllers\TurmaController;
@@ -52,10 +53,13 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/', [ProjetoController::class, 'index'])->name('index');
         Route::post('/', [ProjetoController::class, 'store'])->name('store');
         Route::get('/{projeto}', [ProjetoController::class, 'show'])->name('show');
+        Route::put('/{projeto}', [ProjetoController::class, 'update'])->name('update');
         Route::patch('/{projeto}/responsavel', [ProjetoController::class, 'atualizarResponsavel'])
             ->middleware('professor')
             ->name('responsavel.update');
         Route::put('/{projeto}/termo-de-abertura', [ProjetoController::class, 'atualizarTermoDeAbertura'])
             ->name('termo-de-abertura.update');
+        Route::patch('/{projeto}/trilha/atividades/{atividade}', [TrilhaDoProjetoController::class, 'atualizarConclusao'])
+            ->name('trilha.atividades.update');
     });
 });

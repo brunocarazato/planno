@@ -3,6 +3,7 @@
 namespace App\Modules\Projetos\Actions;
 
 use App\Models\User;
+use App\Modules\GruposDeProcessos\Actions\IniciarTrilhaDoProjeto;
 use App\Modules\Projetos\Models\Projeto;
 use App\Modules\Projetos\Support\GeradorDeCodigoDoProjeto;
 use App\Modules\Turmas\Models\Turma;
@@ -13,6 +14,7 @@ class CriarProjeto
     public function __construct(
         private readonly CriarTermoDeAberturaDoProjeto $criarTermoDeAbertura,
         private readonly GeradorDeCodigoDoProjeto $geradorDeCodigo,
+        private readonly IniciarTrilhaDoProjeto $iniciarTrilha,
     ) {}
 
     /**
@@ -33,6 +35,7 @@ class CriarProjeto
             ]);
 
             $this->criarTermoDeAbertura->executar($projeto);
+            $this->iniciarTrilha->executar($projeto);
 
             return $projeto;
         });

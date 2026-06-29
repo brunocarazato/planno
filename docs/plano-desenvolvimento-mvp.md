@@ -216,7 +216,7 @@ Casos de uso:
 
 ```text
 [x] CriarProjeto
-[ ] AtualizarProjeto
+[x] AtualizarProjeto
 [x] CriarTermoDeAberturaDoProjeto
 [x] AtualizarTermoDeAberturaDoProjeto
 [ ] AtualizarSituacaoIntegradaDoProjeto
@@ -228,9 +228,9 @@ Critérios de aceite:
 - [x] O projeto criado fica vinculado a uma turma ativa.
 - [x] O projeto possui termo de abertura vinculado.
 - [x] O sistema exibe uma visão resumida do projeto.
-- [ ] O projeto criado pode seguir para a trilha dos grupos de processos.
+- [x] O projeto criado pode seguir para a trilha dos grupos de processos.
 
-Status em 25/06/2026: vertical inicial de projetos criada, com listagem, cadastro vinculado a turma ativa, bloqueio de criação em turma arquivada, termo de abertura gerado automaticamente, tela de detalhe e edição dos campos pedagógicos iniciais do termo.
+Status em 29/06/2026: vertical de projetos concluída para o escopo atual, com listagem, cadastro vinculado a turma ativa, bloqueio de criação em turma arquivada, definição de responsável, termo de abertura gerado automaticamente, edição dos dados básicos e dos campos pedagógicos do termo, além da integração com a trilha dos grupos de processos.
 
 Validações executadas:
 
@@ -250,25 +250,39 @@ Módulo principal: `GruposDeProcessos`.
 
 Entregáveis:
 
-- Tela com os grupos: Iniciação, Planejamento, Execução, Monitoramento e Controle, Encerramento.
-- Lista de atividades pedagógicas por grupo.
-- Controle simples de progresso por projeto.
-- Associação entre atividades e artefatos esperados.
+- [x] Tela com os grupos: Iniciação, Planejamento, Execução, Monitoramento e Controle, Encerramento.
+- [x] Lista de atividades pedagógicas por grupo.
+- [x] Controle simples de progresso por projeto.
+- [x] Associação entre atividades e artefatos esperados.
 
 Casos de uso:
 
 ```text
-IniciarTrilhaDoProjeto
-MarcarAtividadeDoGrupoComoConcluida
-AtualizarProgressoDoGrupoDeProcessos
-ListarArtefatosEsperadosDoProjeto
+[x] IniciarTrilhaDoProjeto
+[x] MarcarAtividadeDoGrupoComoConcluida
+[x] AtualizarProgressoDoGrupoDeProcessos
+[x] ListarArtefatosEsperadosDoProjeto
 ```
 
 Critérios de aceite:
 
-- Cada projeto possui uma trilha de grupos de processos.
-- O usuário consegue marcar atividades como concluídas.
-- O progresso é exibido por grupo e no resumo do projeto.
+- [x] Cada projeto possui uma trilha de grupos de processos.
+- [x] O usuário consegue marcar atividades como concluídas.
+- [x] O usuário consegue reabrir uma atividade concluída para revisão.
+- [x] O progresso é exibido por grupo e no resumo da trilha do projeto.
+- [x] Cada atividade informa o artefato pedagógico esperado.
+
+Status em 29/06/2026: primeira vertical navegável da jornada PMBOK concluída. Cada projeto recebe automaticamente uma trilha persistida, com catálogo inicial de 12 atividades distribuídas pelos cinco grupos de processos. No detalhe do projeto, um indicador compacto ao lado da situação apresenta o progresso e abre a trilha completa em uma modal. Nela, o usuário pode concluir e reabrir atividades, identificar quem registrou a conclusão e consultar o progresso geral e por grupo. O catálogo permanece fixo no código nesta etapa, evitando um CRUD administrativo antes de surgir uma necessidade real de configuração.
+
+Validações executadas:
+
+```text
+docker compose exec app php artisan migrate:fresh --force
+docker compose exec app php artisan test
+docker compose exec app ./vendor/bin/pint --test
+docker compose exec app php artisan route:list --path=projetos
+docker compose run --rm node npm run build
+```
 
 ### Fase 4 — Escopo e partes interessadas
 
@@ -508,40 +522,40 @@ Critérios de aceite:
 - [x] Configurar Tailwind CSS e shadcn/ui.
 - [x] Definir layout principal.
 - [x] Criar estrutura inicial de módulos.
-- [ ] Definir padrão de rotas e controllers.
+- [x] Definir padrão de rotas e controllers.
 - [x] Configurar banco e migrations iniciais.
 - [x] Containerizar ambiente de desenvolvimento com Docker.
 
 ### Épico 2 — Turmas e cadastros de alunos
 
-- [ ] Criar turma.
-- [ ] Editar turma.
-- [ ] Permitir novos cadastros na turma.
-- [ ] Bloquear novos cadastros na turma.
-- [ ] Arquivar turma.
-- [ ] Criar fluxo de solicitação de cadastro pelo aluno.
-- [ ] Registrar nome, RA e turma no cadastro do aluno.
-- [ ] Listar cadastros pendentes.
-- [ ] Aprovar cadastro de aluno.
-- [ ] Reprovar cadastro de aluno.
-- [ ] Registrar validade anual do cadastro aprovado.
-- [ ] Bloquear cadastros vencidos.
+- [x] Criar turma.
+- [x] Editar turma.
+- [x] Permitir novos cadastros na turma.
+- [x] Bloquear novos cadastros na turma.
+- [x] Arquivar turma.
+- [x] Criar fluxo de solicitação de cadastro pelo aluno.
+- [x] Registrar nome, RA e turma no cadastro do aluno.
+- [x] Listar cadastros pendentes.
+- [x] Aprovar cadastro de aluno.
+- [x] Reprovar cadastro de aluno.
+- [x] Registrar validade anual do cadastro aprovado.
+- [x] Bloquear cadastros vencidos.
 
 ### Épico 3 — Projeto didático
 
-- [ ] Criar projeto.
-- [ ] Editar projeto.
-- [ ] Vincular projeto a uma turma ativa.
-- [ ] Criar termo de abertura.
+- [x] Criar projeto.
+- [x] Editar projeto.
+- [x] Vincular projeto a uma turma ativa.
+- [x] Criar termo de abertura.
 - [ ] Atualizar situação integrada.
-- [ ] Exibir resumo do projeto.
+- [x] Exibir resumo do projeto.
 
 ### Épico 4 — Jornada PMBOK
 
-- [ ] Listar grupos de processos.
-- [ ] Exibir atividades pedagógicas por grupo.
-- [ ] Controlar progresso por projeto.
-- [ ] Relacionar artefatos aos grupos de processos.
+- [x] Listar grupos de processos.
+- [x] Exibir atividades pedagógicas por grupo.
+- [x] Controlar progresso por projeto.
+- [x] Relacionar artefatos aos grupos de processos.
 
 ### Épico 5 — Escopo
 

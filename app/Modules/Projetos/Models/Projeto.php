@@ -3,6 +3,7 @@
 namespace App\Modules\Projetos\Models;
 
 use App\Models\User;
+use App\Modules\GruposDeProcessos\Models\TrilhaDoProjeto;
 use App\Modules\Turmas\Models\Turma;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,6 +46,14 @@ class Projeto extends Model
     public function termoDeAbertura(): HasOne
     {
         return $this->hasOne(TermoDeAbertura::class);
+    }
+
+    /**
+     * @return HasOne<TrilhaDoProjeto>
+     */
+    public function trilhaDosGruposDeProcessos(): HasOne
+    {
+        return $this->hasOne(TrilhaDoProjeto::class);
     }
 
     public function situacaoFormatada(): string

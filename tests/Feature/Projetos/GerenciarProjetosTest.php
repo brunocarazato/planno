@@ -245,6 +245,10 @@ class GerenciarProjetosTest extends TestCase
         $this->assertDatabaseHas('termos_de_abertura', [
             'projeto_id' => $projeto->id,
         ]);
+
+        $this->assertDatabaseHas('trilhas_grupos_processos', [
+            'projeto_id' => $projeto->id,
+        ]);
     }
 
     public function test_aluno_cria_projeto_sem_informar_turma_usando_vinculo_aprovado(): void
@@ -530,7 +534,73 @@ class GerenciarProjetosTest extends TestCase
                 ->where('projeto.turma.codigo', 'GP-2026-1A')
                 ->where('projeto.responsavel.id', $professor?->id)
                 ->where('podeAlterarResponsavel', true)
+                ->has('trilha.grupos', 5)
+                ->where('trilha.progresso.percentual', 0)
                 ->where('projeto.termoDeAbertura.objetivo', 'Organizar emprestimos de livros.'));
+    }
+
+    public function test_atualiza_os_dados_basicos_do_projeto(): void
+    {
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        $projeto = Projeto::create([
+            'turma_id' => $turma->id,
+            'responsavel_id' => auth()->id(),
+            'nome' => 'Nome inicial',
+            'codigo' => 'PROJ-2026-01',
+            'descricao' => 'Descrição inicial.',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+
+        $this->put("/projetos/{$projeto->id}", [
+            'nome' => 'Biblioteca comunitária',
+            'descricao' => 'Projeto revisado pela equipe.',
+        ])->assertRedirect("/projetos/{$projeto->id}");
+
+        $this->assertDatabaseHas('projetos', [
+            'id' => $projeto->id,
+            'nome' => 'Biblioteca comunitária',
+            'descricao' => 'Projeto revisado pela equipe.',
+            'codigo' => 'PROJ-2026-01',
+            'turma_id' => $turma->id,
+        ]);
+    }
+
+    public function test_aluno_nao_atualiza_dados_de_projeto_de_outro_responsavel(): void
+    {
+        auth()->logout();
+
+        $aluno = User::factory()->create(['tipo' => User::TIPO_ALUNO]);
+        $outroAluno = User::factory()->create(['tipo' => User::TIPO_ALUNO]);
+        $this->actingAs($aluno);
+
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        $projeto = Projeto::create([
+            'turma_id' => $turma->id,
+            'responsavel_id' => $outroAluno->id,
+            'nome' => 'Projeto preservado',
+            'codigo' => 'PROJ-OUTRO',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+
+        $this->put("/projetos/{$projeto->id}", [
+            'nome' => 'Tentativa indevida',
+            'descricao' => null,
+        ])->assertForbidden();
+
+        $this->assertDatabaseHas('projetos', [
+            'id' => $projeto->id,
+            'nome' => 'Projeto preservado',
+        ]);
     }
 
     public function test_atualiza_o_termo_de_abertura_do_projeto(): void

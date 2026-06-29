@@ -4,9 +4,13 @@ namespace App\Modules\Projetos\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Modules\GruposDeProcessos\Actions\IniciarTrilhaDoProjeto;
+use App\Modules\GruposDeProcessos\Presenters\TrilhaDoProjetoPresenter;
+use App\Modules\Projetos\Actions\AtualizarProjeto;
 use App\Modules\Projetos\Actions\AtualizarResponsavelDoProjeto;
 use App\Modules\Projetos\Actions\AtualizarTermoDeAberturaDoProjeto;
 use App\Modules\Projetos\Actions\CriarProjeto;
+use App\Modules\Projetos\Http\Requests\AtualizarProjetoRequest;
 use App\Modules\Projetos\Http\Requests\AtualizarResponsavelDoProjetoRequest;
 use App\Modules\Projetos\Http\Requests\AtualizarTermoDeAberturaDoProjetoRequest;
 use App\Modules\Projetos\Http\Requests\CriarProjetoRequest;
@@ -86,19 +90,37 @@ class ProjetoController extends Controller
         return to_route('projetos.show', $projeto)->with('success', 'Projeto criado com sucesso.');
     }
 
-    public function show(Request $request, Projeto $projeto, ProjetoPresenter $presenter): Response
-    {
+    public function show(
+        Request $request,
+        Projeto $projeto,
+        ProjetoPresenter $presenter,
+        IniciarTrilhaDoProjeto $iniciarTrilha,
+        TrilhaDoProjetoPresenter $trilhaPresenter,
+    ): Response {
         $this->garantirAcessoAoProjeto($request, $projeto);
 
         $projeto->load(['turma', 'responsavel', 'termoDeAbertura']);
+        $trilha = $iniciarTrilha->executar($projeto);
+        $trilha->load('conclusoes.autorDaConclusao');
 
         return Inertia::render('Projetos/Show', [
             'projeto' => $presenter->apresentar($projeto),
+            'trilha' => $trilhaPresenter->apresentar($trilha),
             'podeAlterarResponsavel' => $request->user()?->professor() === true,
             'responsaveisDisponiveis' => $request->user()?->professor() === true
                 ? $this->responsaveisDisponiveis($projeto)
                 : [],
         ]);
+    }
+
+    public function update(
+        AtualizarProjetoRequest $request,
+        Projeto $projeto,
+        AtualizarProjeto $atualizarProjeto,
+    ): RedirectResponse {
+        $atualizarProjeto->executar($projeto, $request->validated());
+
+        return to_route('projetos.show', $projeto)->with('success', 'Dados do projeto atualizados.');
     }
 
     public function atualizarResponsavel(

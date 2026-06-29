@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Turma extends Model
 {
     public const PERIODO_PRIMEIRO_SEMESTRE = '1';
+
     public const PERIODO_SEGUNDO_SEMESTRE = '2';
 
     protected $table = 'turmas';
