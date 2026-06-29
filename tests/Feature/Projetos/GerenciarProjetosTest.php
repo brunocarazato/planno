@@ -568,6 +568,37 @@ class GerenciarProjetosTest extends TestCase
         ]);
     }
 
+    public function test_atualiza_o_termo_com_formatacao_de_texto_segura(): void
+    {
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        $projeto = Projeto::create([
+            'turma_id' => $turma->id,
+            'nome' => 'Sistema de biblioteca escolar',
+            'codigo' => 'PROJ-2026-01',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+
+        $this->put("/projetos/{$projeto->id}/termo-de-abertura", [
+            'objetivo' => '<p><strong>Organizar</strong> empréstimos.</p><script>alert("xss")</script>',
+            'justificativa' => '<p><em>Reduzir</em> controles manuais.</p>',
+            'restricoes' => '<ul><li>Prazo</li><li>Custo</li></ul>',
+            'premissas' => '<ol><li>Acesso ao laboratório</li></ol>',
+        ])->assertRedirect("/projetos/{$projeto->id}");
+
+        $this->assertDatabaseHas('termos_de_abertura', [
+            'projeto_id' => $projeto->id,
+            'objetivo' => '<p><strong>Organizar</strong> empréstimos.</p>',
+            'justificativa' => '<p><em>Reduzir</em> controles manuais.</p>',
+            'restricoes' => '<ul><li>Prazo</li><li>Custo</li></ul>',
+            'premissas' => '<ol><li>Acesso ao laboratório</li></ol>',
+        ]);
+    }
+
     public function test_aluno_nao_atualiza_termo_de_abertura_de_projeto_de_outro_responsavel(): void
     {
         auth()->logout();

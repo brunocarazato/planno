@@ -40,6 +40,52 @@
 }
 
 @layer components {
+    .rich-text-editor__content {
+        min-height: 6rem;
+        padding: 0.625rem 0.75rem;
+        color: #17211f;
+        font-size: 0.875rem;
+        line-height: 1.55;
+        outline: none;
+    }
+
+    .rich-text-editor__content p.is-editor-empty:first-child::before {
+        content: attr(data-placeholder);
+        float: left;
+        height: 0;
+        color: #7a8883;
+        pointer-events: none;
+    }
+
+    .rich-text-editor__content p + p,
+    .rich-text-editor__content p + ul,
+    .rich-text-editor__content p + ol,
+    .rich-text-editor__content ul + p,
+    .rich-text-editor__content ol + p {
+        margin-top: 0.5rem;
+    }
+
+    .rich-text-editor__content ul,
+    .rich-text-editor__content ol {
+        padding-left: 1.35rem;
+    }
+
+    .rich-text-editor__content ul {
+        list-style: disc;
+    }
+
+    .rich-text-editor__content ol {
+        list-style: decimal;
+    }
+
+    .rich-text-editor__content li {
+        margin-block: 0.2rem;
+    }
+
+    .rich-text-editor__content li p {
+        margin: 0;
+    }
+
     .motion-button {
         transition:
             transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),

@@ -4,6 +4,7 @@ import { FormEvent } from 'react';
 
 import { AppLayout } from '../../shared/layouts/AppLayout';
 import { Button, buttonVariants } from '../../shared/ui/button';
+import { RichTextEditor } from '../../shared/ui/rich-text-editor';
 import { Select } from '../../shared/ui/select';
 
 type Projeto = {
@@ -287,10 +288,10 @@ function CampoTextoArea({
             <label className="text-sm font-medium text-[#51605c]" htmlFor={id}>
                 {label}
             </label>
-            <textarea
-                className="mt-1 min-h-24 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
+            <RichTextEditor
                 id={id}
-                onChange={(event) => onChange(event.target.value)}
+                invalid={Boolean(erro)}
+                onChange={onChange}
                 placeholder={placeholder}
                 value={value}
             />
