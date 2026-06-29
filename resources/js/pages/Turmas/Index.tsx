@@ -5,6 +5,7 @@ import { FormEvent, useState } from 'react';
 import { AppLayout } from '../../shared/layouts/AppLayout';
 import { Button } from '../../shared/ui/button';
 import { Dialog } from '../../shared/ui/dialog';
+import { Select } from '../../shared/ui/select';
 
 type Turma = {
     id: number;
@@ -348,16 +349,18 @@ function CampoPeriodo({
             <label className="text-sm font-medium text-[#51605c]" htmlFor="periodo">
                 Período
             </label>
-            <select
-                className="mt-1 w-full rounded-md border border-[#b9c4b7] bg-white px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
+            <Select
+                className="mt-1"
                 id="periodo"
-                onChange={(event) => onChange(event.target.value)}
+                invalid={Boolean(erro)}
+                onValueChange={onChange}
+                options={[
+                    { label: 'Selecione o período', value: '' },
+                    { label: '1º Semestre', value: '1' },
+                    { label: '2º Semestre', value: '2' },
+                ]}
                 value={value}
-            >
-                <option value="">Selecione o período</option>
-                <option value="1">1º Semestre</option>
-                <option value="2">2º Semestre</option>
-            </select>
+            />
             {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
         </div>
     );

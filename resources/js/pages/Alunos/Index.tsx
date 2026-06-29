@@ -15,6 +15,7 @@ import { FormEvent, ReactNode, useMemo, useState } from 'react';
 import { AppLayout } from '../../shared/layouts/AppLayout';
 import { Button } from '../../shared/ui/button';
 import { Dialog } from '../../shared/ui/dialog';
+import { Select } from '../../shared/ui/select';
 
 type StatusCadastro = 'aprovado' | 'expirado' | 'pendente' | 'reprovado';
 
@@ -201,35 +202,34 @@ export default function AlunosIndex({ cadastros, turmas, turmasAtivas, metricas,
                             value={busca}
                         />
                     </label>
-                    <label>
-                        <span className="sr-only">Filtrar por status</span>
-                        <select
-                            className="h-10 w-full rounded-md border border-[#b9c4b7] bg-white px-3 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
-                            onChange={(event) => setStatus(event.target.value as 'todos' | StatusCadastro)}
+                    <div>
+                        <Select
+                            ariaLabel="Filtrar por status"
+                            onValueChange={(value) => setStatus(value as 'todos' | StatusCadastro)}
+                            options={[
+                                { label: 'Todos os status', value: 'todos' },
+                                { label: 'Pendente', value: 'pendente' },
+                                { label: 'Aprovado', value: 'aprovado' },
+                                { label: 'Reprovado', value: 'reprovado' },
+                                { label: 'Expirado', value: 'expirado' },
+                            ]}
                             value={status}
-                        >
-                            <option value="todos">Todos os status</option>
-                            <option value="pendente">Pendente</option>
-                            <option value="aprovado">Aprovado</option>
-                            <option value="reprovado">Reprovado</option>
-                            <option value="expirado">Expirado</option>
-                        </select>
-                    </label>
-                    <label>
-                        <span className="sr-only">Filtrar por turma</span>
-                        <select
-                            className="h-10 w-full rounded-md border border-[#b9c4b7] bg-white px-3 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
-                            onChange={(event) => setTurmaId(event.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Select
+                            ariaLabel="Filtrar por turma"
+                            onValueChange={setTurmaId}
+                            options={[
+                                { label: 'Todas as turmas', value: 'todas' },
+                                ...turmas.map((turma) => ({
+                                    label: `${turma.nome} (${turma.codigo})`,
+                                    value: String(turma.id),
+                                })),
+                            ]}
                             value={turmaId}
-                        >
-                            <option value="todas">Todas as turmas</option>
-                            {turmas.map((turma) => (
-                                <option key={turma.id} value={String(turma.id)}>
-                                    {turma.nome} ({turma.codigo})
-                                </option>
-                            ))}
-                        </select>
-                    </label>
+                        />
+                    </div>
                 </div>
 
                 {cadastrosFiltrados.length === 0 ? (
@@ -323,19 +323,20 @@ export default function AlunosIndex({ cadastros, turmas, turmasAtivas, metricas,
                             <label className="text-sm font-medium text-[#51605c]" htmlFor="turma_id">
                                 Turma
                             </label>
-                            <select
-                                className="mt-1 w-full rounded-md border border-[#b9c4b7] bg-white px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
+                            <Select
+                                className="mt-1"
                                 id="turma_id"
-                                onChange={(event) => form.setData('turma_id', event.target.value)}
+                                invalid={Boolean(form.errors.turma_id)}
+                                onValueChange={(value) => form.setData('turma_id', value)}
+                                options={[
+                                    { label: 'Selecione uma turma', value: '' },
+                                    ...turmasAtivas.map((turma) => ({
+                                        label: `${turma.nome} (${turma.codigo})`,
+                                        value: String(turma.id),
+                                    })),
+                                ]}
                                 value={form.data.turma_id}
-                            >
-                                <option value="">Selecione uma turma</option>
-                                {turmasAtivas.map((turma) => (
-                                    <option key={turma.id} value={String(turma.id)}>
-                                        {turma.nome} ({turma.codigo})
-                                    </option>
-                                ))}
-                            </select>
+                            />
                             <ErroCampo erro={form.errors.turma_id} />
                         </div>
 

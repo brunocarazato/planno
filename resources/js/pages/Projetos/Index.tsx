@@ -4,6 +4,7 @@ import { FormEvent } from 'react';
 
 import { AppLayout } from '../../shared/layouts/AppLayout';
 import { Button, buttonVariants } from '../../shared/ui/button';
+import { Select } from '../../shared/ui/select';
 
 type TurmaOpcao = {
     id: number;
@@ -114,19 +115,20 @@ export default function ProjetosIndex({ projetos, turmas, flash }: ProjetosIndex
                                 <label className="text-sm font-medium text-[#51605c]" htmlFor="turma_id">
                                     Turma
                                 </label>
-                                <select
-                                    className="mt-1 w-full rounded-md border border-[#b9c4b7] bg-white px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
+                                <Select
+                                    className="mt-1"
                                     id="turma_id"
-                                    onChange={(event) => form.setData('turma_id', event.target.value)}
+                                    invalid={Boolean(form.errors.turma_id)}
+                                    onValueChange={(value) => form.setData('turma_id', value)}
+                                    options={[
+                                        { label: 'Selecione uma turma ativa', value: '' },
+                                        ...turmas.map((turma) => ({
+                                            label: `${turma.nome} (${turma.codigo})`,
+                                            value: String(turma.id),
+                                        })),
+                                    ]}
                                     value={form.data.turma_id}
-                                >
-                                    <option value="">Selecione uma turma ativa</option>
-                                    {turmas.map((turma) => (
-                                        <option key={turma.id} value={turma.id}>
-                                            {turma.nome} ({turma.codigo})
-                                        </option>
-                                    ))}
-                                </select>
+                                />
                                 {form.errors.turma_id ? (
                                     <p className="mt-1 text-sm text-red-600">{form.errors.turma_id}</p>
                                 ) : null}

@@ -161,6 +161,42 @@
     }
 }
 
+@keyframes dropdown-open-bottom {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes dropdown-open-top {
+    from {
+        opacity: 0;
+        transform: translateY(calc(-100% + 6px)) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-100%) scale(1);
+    }
+}
+
+@keyframes notification-enter {
+    0% {
+        opacity: 0;
+        transform: scale(0.55);
+    }
+    70% {
+        transform: scale(1.08);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 .app-header {
     animation: page-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -241,6 +277,54 @@
 
 .dialog-panel {
     animation: modal-panel-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dropdown-trigger {
+    transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        background-color 180ms ease;
+}
+
+.dropdown-trigger:hover:not(:disabled) {
+    border-color: #8fa59b;
+}
+
+.dropdown-trigger:focus-visible,
+.dropdown-trigger[aria-expanded='true'] {
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgb(217 226 215 / 0.9);
+}
+
+.dropdown-trigger[aria-invalid='true'] {
+    border-color: #dc6b62;
+}
+
+.dropdown-menu[data-placement='bottom'] {
+    transform-origin: top center;
+    animation: dropdown-open-bottom 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dropdown-menu[data-placement='top'] {
+    transform: translateY(-100%);
+    transform-origin: bottom center;
+    animation: dropdown-open-top 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dropdown-option {
+    transition:
+        background-color 120ms ease,
+        color 120ms ease,
+        padding-left 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dropdown-option:hover {
+    padding-left: 0.875rem;
+    background: #eff5ed;
+}
+
+.notification-badge {
+    animation: notification-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
 }
 
 .brand-mark svg,

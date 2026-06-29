@@ -103,6 +103,7 @@ class ProfessorDashboardTest extends TestCase
                 ->where('metricas.turmas.aceitandoCadastros', 1)
                 ->where('metricas.alunos.cadastros', 3)
                 ->where('metricas.alunos.pendentes', 1)
-                ->where('metricas.alunos.aprovadosAtivos', 1));
+                ->where('metricas.alunos.aprovadosAtivos', 1)
+                ->where('navegacao.alunosAguardandoAprovacao', 1));
     }
 }

@@ -4,6 +4,7 @@ import { FormEvent } from 'react';
 
 import { AppLayout } from '../../shared/layouts/AppLayout';
 import { Button, buttonVariants } from '../../shared/ui/button';
+import { Select } from '../../shared/ui/select';
 
 type Projeto = {
     id: number;
@@ -157,20 +158,20 @@ export default function ProjetosShow({
                             <label className="text-sm font-medium text-[#51605c]" htmlFor="responsavel_id">
                                 Alterar responsável
                             </label>
-                            <select
-                                className="mt-1 w-full rounded-md border border-[#b9c4b7] bg-white px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
+                            <Select
+                                className="mt-1"
                                 id="responsavel_id"
-                                onChange={(event) => responsavelForm.setData('responsavel_id', event.target.value)}
+                                invalid={Boolean(responsavelForm.errors.responsavel_id)}
+                                onValueChange={(value) => responsavelForm.setData('responsavel_id', value)}
+                                options={[
+                                    { label: 'Selecione um responsável', value: '' },
+                                    ...responsaveisDisponiveis.map((responsavel) => ({
+                                        label: `${responsavel.name}${responsavel.ra ? ` (${responsavel.ra})` : ''}`,
+                                        value: String(responsavel.id),
+                                    })),
+                                ]}
                                 value={responsavelForm.data.responsavel_id}
-                            >
-                                <option value="">Selecione um responsável</option>
-                                {responsaveisDisponiveis.map((responsavel) => (
-                                    <option key={responsavel.id} value={String(responsavel.id)}>
-                                        {responsavel.name}
-                                        {responsavel.ra ? ` (${responsavel.ra})` : ''}
-                                    </option>
-                                ))}
-                            </select>
+                            />
                             {responsavelForm.errors.responsavel_id ? (
                                 <p className="mt-1 text-sm text-red-600">{responsavelForm.errors.responsavel_id}</p>
                             ) : null}

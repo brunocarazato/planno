@@ -18,11 +18,14 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                 tipo: string;
             } | null;
         };
+        navegacao?: {
+            alunosAguardandoAprovacao?: number;
+        };
     }>();
     const { auth } = props;
     const usuario = auth?.user;
     const ehProfessor = usuario?.tipo === 'professor';
-    const ehAluno = usuario?.tipo === 'aluno';
+    const alunosAguardandoAprovacao = props.navegacao?.alunosAguardandoAprovacao ?? 0;
     const rotaAtual = url.split('?')[0];
     const exibirMenuProjetos = Boolean(usuario) || rotaAtual !== '/cadastros-alunos/solicitar';
     const [loginAberto, setLoginAberto] = useState(false);
@@ -67,6 +70,15 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                                 <NavLink ativo={url.startsWith('/alunos')} href="/alunos">
                                     <UsersRound className="h-4 w-4" />
                                     Alunos
+                                    {alunosAguardandoAprovacao > 0 ? (
+                                        <span
+                                            aria-label={`${alunosAguardandoAprovacao} aluno${alunosAguardandoAprovacao === 1 ? '' : 's'} aguardando aprovação`}
+                                            className="notification-badge inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#f06f45] px-1.5 text-[0.68rem] font-bold leading-none text-white shadow-sm"
+                                            title={`${alunosAguardandoAprovacao} aguardando aprovação`}
+                                        >
+                                            {alunosAguardandoAprovacao}
+                                        </span>
+                                    ) : null}
                                 </NavLink>
                             ) : null}
                             {!usuario ? (

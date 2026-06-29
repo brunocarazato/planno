@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Modules\Turmas\Models\CadastroAluno;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -25,6 +26,11 @@ class HandleInertiaRequests extends Middleware
                         'tipo' => $request->user()->tipo,
                     ]
                     : null,
+            ],
+            'navegacao' => [
+                'alunosAguardandoAprovacao' => fn () => $request->user()?->professor()
+                    ? CadastroAluno::query()->pendentes()->count()
+                    : 0,
             ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
