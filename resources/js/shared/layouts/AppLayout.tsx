@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { LayoutDashboard, LogOut, Route, UsersRound } from 'lucide-react';
+import { FolderKanban, House, LayoutDashboard, LogIn, LogOut, Route, School, UserPlus, UsersRound } from 'lucide-react';
 import { PropsWithChildren, useState } from 'react';
 
 import { LoginDialog } from '../autenticacao/LoginDialog';
@@ -48,6 +48,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
 
                         <nav className="flex flex-wrap gap-2 text-sm font-semibold text-[#51605c]">
                             <NavLink ativo={url === '/'} href="/">
+                                <House className="h-4 w-4" />
                                 Início
                             </NavLink>
                             {ehProfessor ? (
@@ -58,6 +59,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                             ) : null}
                             {ehProfessor ? (
                                 <NavLink ativo={url.startsWith('/turmas')} href="/turmas">
+                                    <School className="h-4 w-4" />
                                     Turmas
                                 </NavLink>
                             ) : null}
@@ -69,11 +71,13 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                             ) : null}
                             {!usuario ? (
                                 <NavLink ativo={url.startsWith('/cadastros-alunos')} href="/cadastros-alunos/solicitar">
+                                    <UserPlus className="h-4 w-4" />
                                     Solicitar cadastro
                                 </NavLink>
                             ) : null}
                             {exibirMenuProjetos ? (
                                 <NavLink ativo={url.startsWith('/projetos')} href="/projetos">
+                                    <FolderKanban className="h-4 w-4" />
                                     Projetos
                                 </NavLink>
                             ) : null}
@@ -92,6 +96,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                                     onClick={() => setLoginAberto(true)}
                                     type="button"
                                 >
+                                    <LogIn className="h-4 w-4" />
                                     Entrar
                                 </button>
                             )}
