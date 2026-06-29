@@ -13,6 +13,12 @@ const pages = import.meta.glob<PageModule>('./pages/**/*.tsx', { eager: true });
 
 createInertiaApp({
     title: (title) => (title ? `${title} - Planno` : 'Planno'),
+    defaults: {
+        visitOptions: (_href, options) => ({
+            ...options,
+            viewTransition: !options.method || options.method === 'get',
+        }),
+    },
     resolve: (name) => {
         const page = pages[`./pages/${name}.tsx`];
 

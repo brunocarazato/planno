@@ -33,14 +33,14 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
 
     return (
         <div className="min-h-screen bg-[#f6f7f2] text-[#17211f]">
-            <header className="relative isolate overflow-hidden border-b border-[#dfe5d8] bg-[#fbfcf7]">
+            <header className="app-header relative isolate overflow-hidden border-b border-[#dfe5d8] bg-[#fbfcf7]">
                 <div className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(23,33,31,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(23,33,31,0.055)_1px,transparent_1px)] bg-[size:44px_44px]" />
                 <div className="absolute left-0 top-0 -z-10 h-full w-1/3 bg-[#eff5ed]" />
 
                 <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-5 sm:px-8">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <Link className="inline-flex items-center gap-3 text-[#17211f]" href="/">
-                            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#17211f] text-white">
+                            <span className="brand-mark flex h-10 w-10 items-center justify-center rounded-lg bg-[#17211f] text-white">
                                 <Route className="h-5 w-5" />
                             </span>
                             <span className="text-xl font-semibold">Planno</span>
@@ -110,7 +110,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                     </div>
                 </div>
             </header>
-            <main className="mx-auto max-w-7xl px-5 py-8 sm:px-8">{children}</main>
+            <main className="page-content mx-auto max-w-7xl px-5 py-8 sm:px-8">{children}</main>
             <LoginDialog aberto={loginAberto} onClose={() => setLoginAberto(false)} />
         </div>
     );
@@ -119,7 +119,7 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
 function NavLink({ ativo, children, href }: PropsWithChildren<{ ativo: boolean; href: string }>) {
     return (
         <Link
-            className={`inline-flex h-10 items-center gap-2 rounded-md px-3 transition ${
+            className={`nav-link inline-flex h-10 items-center gap-2 rounded-md px-3 ${
                 ativo ? 'bg-[#17211f] text-white shadow-sm' : 'hover:bg-[#edf2e9] hover:text-[#17211f]'
             }`}
             href={href}

@@ -13,6 +13,7 @@ import {
 import { useEffect, useState, type ComponentType } from 'react';
 
 import { LoginDialog } from '../shared/autenticacao/LoginDialog';
+import { Reveal } from '../shared/ui/reveal';
 
 const trilhas = [
     {
@@ -86,7 +87,7 @@ export default function Inicio() {
 
                 <header className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
                     <Link className="inline-flex items-center gap-3 text-[#17211f]" href="/">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#17211f] text-white">
+                        <span className="brand-mark flex h-10 w-10 items-center justify-center rounded-lg bg-[#17211f] text-white">
                             <Route className="h-5 w-5" />
                         </span>
                         <span className="text-xl font-semibold">Planno</span>
@@ -102,7 +103,7 @@ export default function Inicio() {
                             </Link>
                         ) : null}
                         <button
-                            className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md bg-[#17211f] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#273633]"
+                            className="motion-button inline-flex h-10 cursor-pointer items-center gap-2 rounded-md bg-[#17211f] px-4 text-sm font-semibold text-white shadow-sm hover:bg-[#273633]"
                             onClick={entrar}
                             type="button"
                         >
@@ -114,32 +115,32 @@ export default function Inicio() {
 
                 <div className="mx-auto grid min-h-[72svh] max-w-7xl items-center gap-10 px-5 pb-12 pt-6 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:pb-16">
                     <div className="max-w-3xl py-6">
-                        <span className="inline-flex items-center gap-2 rounded-md border border-[#cdd9cf] bg-white px-3 py-2 text-sm font-semibold text-[#0f766e] shadow-sm">
+                        <span className="hero-reveal inline-flex items-center gap-2 rounded-md border border-[#cdd9cf] bg-white px-3 py-2 text-sm font-semibold text-[#0f766e] shadow-sm [--hero-delay:60ms]">
                             <BookOpenCheck className="h-4 w-4" />
                             Gestão de projetos ensinada pela prática
                         </span>
 
-                        <h1 className="mt-5 max-w-4xl text-5xl font-semibold leading-[1.02] text-[#17211f] sm:text-6xl lg:text-7xl">
+                        <h1 className="hero-reveal mt-5 max-w-4xl text-5xl font-semibold leading-[1.02] text-[#17211f] [--hero-delay:140ms] sm:text-6xl lg:text-7xl">
                             O laboratório didático para aprender a planejar, executar e avaliar projetos.
                         </h1>
 
-                        <p className="mt-6 max-w-2xl text-lg leading-8 text-[#53635e]">
+                        <p className="hero-reveal mt-6 max-w-2xl text-lg leading-8 text-[#53635e] [--hero-delay:220ms]">
                             O Planno organiza turmas, grupos e artefatos para que alunos experimentem gestão
                             tradicional e ágil dentro de uma jornada educacional acompanhada por evidências.
                         </p>
 
-                        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                        <div className="hero-reveal mt-8 flex flex-col gap-3 [--hero-delay:300ms] sm:flex-row">
                             {!usuario ? (
                                 <Link
-                                    className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#f06f45] px-5 text-sm font-bold text-white shadow-lg shadow-[#f06f45]/18 hover:bg-[#dc5e38]"
+                                    className="motion-button inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#f06f45] px-5 text-sm font-bold text-white shadow-lg shadow-[#f06f45]/18 hover:bg-[#dc5e38]"
                                     href="/cadastros-alunos/solicitar"
                                 >
                                     Solicitar cadastro
-                                    <ArrowRight className="h-4 w-4" />
+                                    <ArrowRight className="motion-icon h-4 w-4" />
                                 </Link>
                             ) : null}
                             <Link
-                                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-[#b9c4b7] bg-white px-5 text-sm font-bold text-[#17211f] hover:bg-[#f4f7ef]"
+                                className="motion-button inline-flex h-12 items-center justify-center gap-2 rounded-md border border-[#b9c4b7] bg-white px-5 text-sm font-bold text-[#17211f] hover:bg-[#f4f7ef]"
                                 href="/projetos"
                             >
                                 Ver projetos
@@ -154,65 +155,71 @@ export default function Inicio() {
 
             <section className="border-y border-[#dfe5d8] bg-[#f6f7f2]">
                 <div className="mx-auto grid max-w-7xl gap-3 px-5 py-5 sm:grid-cols-3 sm:px-8">
-                    {metricas.map((metrica) => (
-                        <div className="flex items-center gap-4 rounded-lg bg-white px-4 py-4 shadow-sm" key={metrica.rotulo}>
-                            <strong className="text-3xl font-semibold text-[#0f766e]">{metrica.valor}</strong>
-                            <span className="text-sm font-medium leading-5 text-[#4d5d58]">{metrica.rotulo}</span>
-                        </div>
+                    {metricas.map((metrica, index) => (
+                        <Reveal delay={index * 90} key={metrica.rotulo}>
+                            <div className="landing-card flex h-full items-center gap-4 rounded-lg bg-white px-4 py-4 shadow-sm">
+                                <strong className="text-3xl font-semibold text-[#0f766e]">{metrica.valor}</strong>
+                                <span className="text-sm font-medium leading-5 text-[#4d5d58]">{metrica.rotulo}</span>
+                            </div>
+                        </Reveal>
                     ))}
                 </div>
             </section>
 
             <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:py-20">
                 <div className="grid gap-10 lg:grid-cols-[0.76fr_1.24fr] lg:items-end">
-                    <div>
+                    <Reveal>
                         <p className="text-sm font-bold text-[#0f766e]">Da sala de aula ao artefato</p>
                         <h2 className="mt-3 text-4xl font-semibold leading-tight text-[#17211f]">
                             Um produto feito para ensinar decisão, não apenas registrar tarefas.
                         </h2>
-                    </div>
-                    <p className="max-w-3xl text-lg leading-8 text-[#53635e]">
-                        A página inicial agora apresenta o Planno como uma plataforma educacional: cada módulo existe
-                        para transformar conceitos de gestão em produções avaliáveis, comparáveis e acompanhadas.
-                    </p>
+                    </Reveal>
+                    <Reveal delay={100}>
+                        <p className="max-w-3xl text-lg leading-8 text-[#53635e]">
+                            A página inicial agora apresenta o Planno como uma plataforma educacional: cada módulo existe
+                            para transformar conceitos de gestão em produções avaliáveis, comparáveis e acompanhadas.
+                        </p>
+                    </Reveal>
                 </div>
 
                 <div className="mt-10 grid gap-5 md:grid-cols-3">
-                    {trilhas.map((trilha) => (
-                        <TrilhaCard key={trilha.titulo} {...trilha} />
+                    {trilhas.map((trilha, index) => (
+                        <TrilhaCard delay={index * 100} key={trilha.titulo} {...trilha} />
                     ))}
                 </div>
             </section>
 
             <section className="bg-[#17211f] text-white">
                 <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:py-18">
-                    <div>
+                    <Reveal>
                         <p className="text-sm font-bold text-[#6de1d2]">Trilha pedagógica</p>
                         <h2 className="mt-3 text-4xl font-semibold leading-tight">Planejamento com contexto, prática e feedback.</h2>
                         <p className="mt-5 max-w-2xl text-base leading-7 text-white/72">
                             O foco educacional aparece na sequência das atividades: professor estrutura, aluno
                             constrói, grupo decide e a avaliação nasce dos artefatos gerados no caminho.
                         </p>
-                    </div>
+                    </Reveal>
 
-                    <ol className="grid gap-3">
-                        {jornada.map((item, index) => (
-                            <li
-                                className="grid grid-cols-[3rem_1fr] items-center gap-4 rounded-lg border border-white/12 bg-white/7 p-4"
-                                key={item}
-                            >
-                                <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f6f7f2] text-sm font-bold text-[#17211f]">
-                                    {String(index + 1).padStart(2, '0')}
-                                </span>
-                                <span className="text-base font-semibold text-white">{item}</span>
-                            </li>
-                        ))}
-                    </ol>
+                    <Reveal className="journey-list" delay={100}>
+                        <ol className="grid gap-3">
+                            {jornada.map((item, index) => (
+                                <li
+                                    className="journey-item grid grid-cols-[3rem_1fr] items-center gap-4 rounded-lg border border-white/12 bg-white/7 p-4"
+                                    key={item}
+                                >
+                                    <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f6f7f2] text-sm font-bold text-[#17211f]">
+                                        {String(index + 1).padStart(2, '0')}
+                                    </span>
+                                    <span className="text-base font-semibold text-white">{item}</span>
+                                </li>
+                            ))}
+                        </ol>
+                    </Reveal>
                 </div>
             </section>
 
             <section className="bg-[#eef2e8]">
-                <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-10 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
+                <Reveal className="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-10 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <p className="text-sm font-bold text-[#c45132]">Comece pelo fluxo da sua turma</p>
                         <h2 className="mt-2 text-3xl font-semibold text-[#17211f]">
@@ -221,7 +228,7 @@ export default function Inicio() {
                     </div>
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <button
-                            className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-[#17211f] px-5 text-sm font-bold text-white hover:bg-[#273633]"
+                            className="motion-button inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-[#17211f] px-5 text-sm font-bold text-white hover:bg-[#273633]"
                             onClick={entrar}
                             type="button"
                         >
@@ -230,7 +237,7 @@ export default function Inicio() {
                         </button>
                         {!usuario ? (
                             <Link
-                                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#b9c4b7] bg-white px-5 text-sm font-bold text-[#17211f] hover:bg-[#f7f8f4]"
+                                className="motion-button inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#b9c4b7] bg-white px-5 text-sm font-bold text-[#17211f] hover:bg-[#f7f8f4]"
                                 href="/cadastros-alunos/solicitar"
                             >
                                 Solicitar cadastro
@@ -238,7 +245,7 @@ export default function Inicio() {
                             </Link>
                         ) : null}
                     </div>
-                </div>
+                </Reveal>
             </section>
 
             <LoginDialog aberto={loginAberto} onClose={() => setLoginAberto(false)} />
@@ -248,23 +255,27 @@ export default function Inicio() {
 
 function TrilhaCard({
     descricao,
+    delay,
     icon: Icon,
     titulo,
     tom,
 }: {
     descricao: string;
+    delay: number;
     icon: ComponentType<{ className?: string }>;
     titulo: string;
     tom: string;
 }) {
     return (
-        <article className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
-            <div className={`flex h-12 w-12 items-center justify-center rounded-lg ring-1 ${tom}`}>
-                <Icon className="h-6 w-6" />
-            </div>
-            <h3 className="mt-5 text-xl font-semibold text-[#17211f]">{titulo}</h3>
-            <p className="mt-3 text-base leading-7 text-[#586762]">{descricao}</p>
-        </article>
+        <Reveal className="h-full" delay={delay}>
+            <article className="landing-card group h-full rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
+                <div className={`card-icon flex h-12 w-12 items-center justify-center rounded-lg ring-1 ${tom}`}>
+                    <Icon className="h-6 w-6" />
+                </div>
+                <h3 className="mt-5 text-xl font-semibold text-[#17211f]">{titulo}</h3>
+                <p className="mt-3 text-base leading-7 text-[#586762]">{descricao}</p>
+            </article>
+        </Reveal>
     );
 }
 
@@ -276,7 +287,7 @@ function DiagramaPlanno() {
     ];
 
     return (
-        <div className="relative min-h-[420px] overflow-hidden rounded-lg border border-[#d9e2d7] bg-white p-5 shadow-2xl shadow-[#17211f]/8">
+        <div className="diagram-enter relative min-h-[420px] overflow-hidden rounded-lg border border-[#d9e2d7] bg-white p-5 shadow-2xl shadow-[#17211f]/8">
             <div className="absolute inset-0 bg-[linear-gradient(rgba(15,118,110,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(15,118,110,0.08)_1px,transparent_1px)] bg-[size:28px_28px]" />
             <svg
                 aria-hidden="true"
@@ -286,17 +297,18 @@ function DiagramaPlanno() {
                 viewBox="0 0 640 430"
             >
                 <path
+                    className="diagram-dashed-route"
                     d="M72 116 C172 54 251 62 327 124 S462 218 574 136"
                     stroke="#0f766e"
                     strokeDasharray="8 12"
                     strokeLinecap="round"
                     strokeWidth="2"
                 />
-                <path d="M82 314 L224 236 L376 296 L558 210" stroke="#f06f45" strokeLinecap="round" strokeWidth="3" />
-                <circle cx="82" cy="314" fill="#f6f7f2" r="8" stroke="#f06f45" strokeWidth="3" />
-                <circle cx="224" cy="236" fill="#f6f7f2" r="8" stroke="#f06f45" strokeWidth="3" />
-                <circle cx="376" cy="296" fill="#f6f7f2" r="8" stroke="#f06f45" strokeWidth="3" />
-                <circle cx="558" cy="210" fill="#f6f7f2" r="8" stroke="#f06f45" strokeWidth="3" />
+                <path className="diagram-solid-route" d="M82 314 L224 236 L376 296 L558 210" stroke="#f06f45" strokeLinecap="round" strokeWidth="3" />
+                <circle className="diagram-node" cx="82" cy="314" fill="#f6f7f2" r="8" stroke="#f06f45" strokeWidth="3" />
+                <circle className="diagram-node [animation-delay:160ms]" cx="224" cy="236" fill="#f6f7f2" r="8" stroke="#f06f45" strokeWidth="3" />
+                <circle className="diagram-node [animation-delay:320ms]" cx="376" cy="296" fill="#f6f7f2" r="8" stroke="#f06f45" strokeWidth="3" />
+                <circle className="diagram-node [animation-delay:480ms]" cx="558" cy="210" fill="#f6f7f2" r="8" stroke="#f06f45" strokeWidth="3" />
             </svg>
 
             <div className="relative grid h-full gap-5">
@@ -314,7 +326,7 @@ function DiagramaPlanno() {
                     <div className="space-y-3">
                         {['Iniciação', 'Planejamento', 'Execução'].map((etapa, index) => (
                             <div
-                                className="flex items-center gap-3 rounded-lg border border-[#dfe5d8] bg-[#fbfcf7] p-3"
+                                className="diagram-card flex items-center gap-3 rounded-lg border border-[#dfe5d8] bg-[#fbfcf7] p-3"
                                 key={etapa}
                             >
                                 <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[#17211f] text-xs font-bold text-white">
@@ -340,7 +352,7 @@ function DiagramaPlanno() {
                                     <div className="space-y-2">
                                         {coluna.map((item, itemIndex) => (
                                             <div
-                                                className={`rounded-md border bg-white px-2 py-2 text-xs font-bold shadow-sm ${
+                                                className={`diagram-card rounded-md border bg-white px-2 py-2 text-xs font-bold shadow-sm ${
                                                     itemIndex === 0
                                                         ? 'border-[#cdd9cf] text-[#17211f]'
                                                         : 'border-[#ffd7c9] text-[#c45132]'
@@ -363,7 +375,7 @@ function DiagramaPlanno() {
                         ['Ágil', 'backlog + ciclo'],
                         ['Ensino', 'rubrica + feedback'],
                     ].map(([titulo, texto]) => (
-                        <div className="rounded-lg border border-[#dfe5d8] bg-[#fbfcf7] p-3" key={titulo}>
+                        <div className="diagram-card rounded-lg border border-[#dfe5d8] bg-[#fbfcf7] p-3" key={titulo}>
                             <div className="mb-3 flex items-center gap-2">
                                 <CheckCircle2 className="h-4 w-4 text-[#0f766e]" />
                                 <p className="text-sm font-bold text-[#17211f]">{titulo}</p>

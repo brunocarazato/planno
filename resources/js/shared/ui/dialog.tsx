@@ -44,13 +44,13 @@ export function Dialog({ aberto, children, className, descricao, onClose, titulo
     return (
         <div
             aria-modal="true"
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[#17211f]/45 px-4 py-6"
+            className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-[#17211f]/45 px-4 py-6"
             onClick={onClose}
             role="dialog"
         >
             <div
                 className={cn(
-                    'w-full max-w-lg rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-2xl shadow-[#17211f]/12 outline-none',
+                    'dialog-panel w-full max-w-lg rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-2xl shadow-[#17211f]/12 outline-none',
                     className,
                 )}
                 onClick={(event) => event.stopPropagation()}
