@@ -27,6 +27,11 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('professor')
         ->name('dashboard.professor');
 
+    Route::prefix('alunos')->name('alunos.')->middleware('professor')->group(function (): void {
+        Route::get('/', [CadastroAlunoController::class, 'index'])->name('index');
+        Route::post('/', [CadastroAlunoController::class, 'cadastrar'])->name('store');
+    });
+
     Route::prefix('turmas')->name('turmas.')->middleware('professor')->group(function (): void {
         Route::get('/', [TurmaController::class, 'index'])->name('index');
         Route::post('/', [TurmaController::class, 'store'])->name('store');

@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { LayoutDashboard, LogOut, Route } from 'lucide-react';
+import { LayoutDashboard, LogOut, Route, UsersRound } from 'lucide-react';
 import { PropsWithChildren, useState } from 'react';
 
 import { LoginDialog } from '../autenticacao/LoginDialog';
@@ -61,9 +61,15 @@ export function AppLayout({ children, titulo, subtitulo }: AppLayoutProps) {
                                     Turmas
                                 </NavLink>
                             ) : null}
-                            {!ehAluno ? (
+                            {ehProfessor ? (
+                                <NavLink ativo={url.startsWith('/alunos')} href="/alunos">
+                                    <UsersRound className="h-4 w-4" />
+                                    Alunos
+                                </NavLink>
+                            ) : null}
+                            {!usuario ? (
                                 <NavLink ativo={url.startsWith('/cadastros-alunos')} href="/cadastros-alunos/solicitar">
-                                    Cadastrar
+                                    Solicitar cadastro
                                 </NavLink>
                             ) : null}
                             {exibirMenuProjetos ? (

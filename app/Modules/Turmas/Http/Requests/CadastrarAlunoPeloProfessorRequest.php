@@ -8,11 +8,11 @@ use App\Modules\Turmas\Models\Turma;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
-class SolicitarCadastroDeAlunoRequest extends FormRequest
+class CadastrarAlunoPeloProfessorRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() === null;
+        return $this->user()?->professor() === true;
     }
 
     /**
@@ -38,8 +38,8 @@ class SolicitarCadastroDeAlunoRequest extends FormRequest
 
                 $turma = Turma::find($this->integer('turma_id'));
 
-                if (! $turma?->aceitaCadastroDeAluno()) {
-                    $validator->errors()->add('turma_id', 'Esta turma não está recebendo novos cadastros.');
+                if (! $turma || $turma->estaArquivada()) {
+                    $validator->errors()->add('turma_id', 'Selecione uma turma ativa.');
 
                     return;
                 }
@@ -52,15 +52,10 @@ class SolicitarCadastroDeAlunoRequest extends FormRequest
                     return;
                 }
 
-                $cadastroAtivoOuPendente = CadastroAluno::query()
-                    ->where('ra', $ra)
-                    ->whereIn('status', [
-                        CadastroAluno::STATUS_PENDENTE,
-                        CadastroAluno::STATUS_APROVADO,
-                    ])
-                    ->exists();
-
-                if ($cadastroAtivoOuPendente) {
+                if (CadastroAluno::query()->where('ra', $ra)->whereIn('status', [
+                    CadastroAluno::STATUS_PENDENTE,
+                    CadastroAluno::STATUS_APROVADO,
+                ])->exists()) {
                     $validator->errors()->add('ra', 'Já existe um cadastro pendente ou aprovado para este RA.');
                 }
             },

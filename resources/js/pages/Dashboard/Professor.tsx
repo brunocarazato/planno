@@ -99,7 +99,7 @@ export default function ProfessorDashboard({ metricas }: ProfessorDashboardProps
         {
             titulo: 'Alunos',
             descricao: 'Leitura rápida das solicitações e dos vínculos ativos.',
-            href: '/turmas',
+            href: '/alunos',
             acao: 'Revisar cadastros',
             itens: [
                 {

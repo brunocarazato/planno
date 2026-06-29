@@ -1,5 +1,5 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Archive, Ban, Check, CheckCircle2, ClipboardList, Pencil, Plus, RefreshCcw, UserPlus, UsersRound, X } from 'lucide-react';
+import { Head, router, useForm } from '@inertiajs/react';
+import { Archive, Ban, CheckCircle2, Pencil, Plus, RefreshCcw, UsersRound } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 import { AppLayout } from '../../shared/layouts/AppLayout';
@@ -19,18 +19,6 @@ type Turma = {
     status: string;
 };
 
-type CadastroPendente = {
-    id: number;
-    nome: string;
-    ra: string;
-    criadoEm: string | null;
-    turma: {
-        id: number;
-        nome: string;
-        codigo: string;
-    };
-};
-
 type TurmaForm = {
     nome: string;
     periodo: string;
@@ -40,7 +28,6 @@ type TurmaForm = {
 
 type TurmasIndexProps = {
     turmas: Turma[];
-    cadastrosPendentes: CadastroPendente[];
     flash?: {
         success?: string | null;
     };
@@ -55,11 +42,9 @@ const formularioInicial: TurmaForm = {
 
 const TOTAL_DIGITOS_ANO = 4;
 
-export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: TurmasIndexProps) {
+export default function TurmasIndex({ turmas, flash }: TurmasIndexProps) {
     const [turmaEmEdicao, setTurmaEmEdicao] = useState<Turma | null>(null);
     const [turmaParaArquivar, setTurmaParaArquivar] = useState<Turma | null>(null);
-    const [cadastroParaReprovar, setCadastroParaReprovar] = useState<CadastroPendente | null>(null);
-    const [motivoReprovacao, setMotivoReprovacao] = useState('');
     const form = useForm<TurmaForm>(formularioInicial);
 
     function enviarFormulario(event: FormEvent<HTMLFormElement>) {
@@ -133,29 +118,6 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
         setTurmaParaArquivar(null);
     }
 
-    function aprovarCadastro(cadastro: CadastroPendente) {
-        router.patch(`/cadastros-alunos/${cadastro.id}/aprovar`, {}, { preserveScroll: true });
-    }
-
-    function reprovarCadastro(cadastro: CadastroPendente) {
-        setCadastroParaReprovar(cadastro);
-        setMotivoReprovacao('');
-    }
-
-    function confirmarReprovacao() {
-        if (!cadastroParaReprovar) {
-            return;
-        }
-
-        router.patch(
-            `/cadastros-alunos/${cadastroParaReprovar.id}/reprovar`,
-            { motivo_reprovacao: motivoReprovacao },
-            { preserveScroll: true },
-        );
-        setCadastroParaReprovar(null);
-        setMotivoReprovacao('');
-    }
-
     return (
         <AppLayout
             titulo="Turmas"
@@ -169,69 +131,7 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
                 </div>
             ) : null}
 
-            <section className="rounded-lg border border-[#dfe5d8] bg-white shadow-sm">
-                <div className="flex flex-col gap-4 border-b border-[#dfe5d8] p-6 md:flex-row md:items-center md:justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
-                            <ClipboardList className="h-5 w-5" />
-                        </div>
-                        <div>
-                            <h2 className="text-lg font-semibold text-[#17211f]">Cadastros pendentes</h2>
-                            <p className="text-sm text-[#53635e]">
-                                Solicitações aguardando aprovação para receber validade anual.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3">
-                        <span className="rounded-full bg-[#f4f7ef] px-3 py-1 text-sm font-medium text-[#51605c]">
-                            {cadastrosPendentes.length} pendente(s)
-                        </span>
-                        <Link className="inline-flex items-center gap-2 rounded-md border border-[#b9c4b7] px-3 py-2 text-sm font-medium text-[#17211f] hover:bg-[#f6f7f2]" href="/cadastros-alunos/solicitar">
-                            <UserPlus className="h-4 w-4" />
-                            Solicitar cadastro
-                        </Link>
-                    </div>
-                </div>
-
-                {cadastrosPendentes.length === 0 ? (
-                    <div className="p-8 text-center">
-                        <p className="font-medium text-[#17211f]">Nenhum cadastro pendente.</p>
-                        <p className="mt-2 text-sm text-[#53635e]">
-                            Novas solicitações de alunos aparecerão aqui para aprovação.
-                        </p>
-                    </div>
-                ) : (
-                    <div className="divide-y divide-[#dfe5d8]">
-                        {cadastrosPendentes.map((cadastro) => (
-                            <article className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between" key={cadastro.id}>
-                                <div>
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <h3 className="font-semibold text-[#17211f]">{cadastro.nome}</h3>
-                                        <span className="rounded-full bg-[#f4f7ef] px-2.5 py-1 text-xs font-medium text-[#51605c]">
-                                            RA {cadastro.ra}
-                                        </span>
-                                    </div>
-                                    <p className="mt-1 text-sm text-[#53635e]">
-                                        {cadastro.turma.nome} ({cadastro.turma.codigo})
-                                    </p>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                    <Button onClick={() => aprovarCadastro(cadastro)} size="sm" type="button">
-                                        <Check className="h-4 w-4" />
-                                        Aprovar
-                                    </Button>
-                                    <Button onClick={() => reprovarCadastro(cadastro)} size="sm" type="button" variant="secondary">
-                                        <X className="h-4 w-4" />
-                                        Reprovar
-                                    </Button>
-                                </div>
-                            </article>
-                        ))}
-                    </div>
-                )}
-            </section>
-
-            <section className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+            <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
                 <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
                     <div className="flex items-center gap-3">
                         <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
@@ -397,44 +297,6 @@ export default function TurmasIndex({ turmas, cadastrosPendentes, flash }: Turma
                 </div>
             </Dialog>
 
-            <Dialog
-                aberto={Boolean(cadastroParaReprovar)}
-                descricao={
-                    cadastroParaReprovar
-                        ? `Informe o motivo da reprovação de ${cadastroParaReprovar.nome}, se quiser registrar essa justificativa.`
-                        : undefined
-                }
-                onClose={() => setCadastroParaReprovar(null)}
-                titulo="Reprovar cadastro?"
-            >
-                <div>
-                    <label className="text-sm font-medium text-[#51605c]" htmlFor="motivo_reprovacao">
-                        Motivo da reprovação
-                    </label>
-                    <textarea
-                        className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
-                        id="motivo_reprovacao"
-                        onChange={(event) => setMotivoReprovacao(event.target.value)}
-                        placeholder="Opcional"
-                        value={motivoReprovacao}
-                    />
-                </div>
-                <div className="mt-6 flex flex-wrap justify-end gap-3">
-                    <Button
-                        onClick={() => {
-                            setCadastroParaReprovar(null);
-                            setMotivoReprovacao('');
-                        }}
-                        type="button"
-                        variant="secondary"
-                    >
-                        Cancelar
-                    </Button>
-                    <Button onClick={confirmarReprovacao} type="button">
-                        Reprovar cadastro
-                    </Button>
-                </div>
-            </Dialog>
         </AppLayout>
     );
 }

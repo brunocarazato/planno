@@ -83,7 +83,7 @@ export function LoginDialog({ aberto, onClose }: LoginDialogProps) {
                         Entrar
                     </button>
                     <Link className={buttonVariants({ variant: 'secondary' })} href="/cadastros-alunos/solicitar">
-                        Criar cadastro de aluno
+                        Solicitar cadastro
                     </Link>
                 </div>
             </form>

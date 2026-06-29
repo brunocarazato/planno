@@ -57,6 +57,38 @@ class GerenciarCadastrosAlunosTest extends TestCase
             ->assertRedirect('/projetos');
     }
 
+    public function test_professor_logado_e_redirecionado_da_solicitacao_para_gestao_de_alunos(): void
+    {
+        $usuario = User::factory()->create([
+            'tipo' => User::TIPO_PROFESSOR,
+        ]);
+
+        $this->actingAs($usuario)
+            ->get('/cadastros-alunos/solicitar')
+            ->assertRedirect('/alunos');
+    }
+
+    public function test_professor_nao_cria_solicitacao_pendente_pelo_fluxo_publico(): void
+    {
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        $this->actingAs(User::factory()->create([
+            'tipo' => User::TIPO_PROFESSOR,
+        ]))->post('/cadastros-alunos', [
+            'turma_id' => $turma->id,
+            'nome' => 'Ana Souza',
+            'ra' => 'RA123',
+            'password' => 'senha-segura',
+            'password_confirmation' => 'senha-segura',
+        ])->assertForbidden();
+
+        $this->assertDatabaseCount('cadastros_alunos', 0);
+    }
+
     public function test_aluno_solicita_cadastro_para_turma_ativa(): void
     {
         $turma = Turma::create([
@@ -202,7 +234,7 @@ class GerenciarCadastrosAlunosTest extends TestCase
         $this->assertDatabaseCount('cadastros_alunos', 0);
     }
 
-    public function test_lista_cadastros_pendentes_na_tela_de_turmas(): void
+    public function test_professor_lista_cadastros_na_tela_de_alunos(): void
     {
         $this->actingAs(User::factory()->create([
             'tipo' => User::TIPO_PROFESSOR,
@@ -221,13 +253,86 @@ class GerenciarCadastrosAlunosTest extends TestCase
             'status' => CadastroAluno::STATUS_PENDENTE,
         ]);
 
-        $this->get('/turmas')
+        $this->get('/alunos')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->component('Turmas/Index')
-                ->has('cadastrosPendentes', 1)
-                ->where('metricas.cadastrosPendentes', 1)
-                ->where('cadastrosPendentes.0.nome', 'Ana Souza'));
+                ->component('Alunos/Index')
+                ->has('cadastros', 1)
+                ->has('turmas', 1)
+                ->has('turmasAtivas', 1)
+                ->where('metricas.total', 1)
+                ->where('metricas.pendentes', 1)
+                ->where('metricas.aprovadosAtivos', 0)
+                ->where('cadastros.0.nome', 'Ana Souza'));
+    }
+
+    public function test_visitante_e_aluno_nao_acessam_a_gestao_de_alunos(): void
+    {
+        $this->get('/alunos')->assertRedirect('/entrar');
+
+        $this->actingAs(User::factory()->create([
+            'tipo' => User::TIPO_ALUNO,
+        ]))->get('/alunos')->assertForbidden();
+    }
+
+    public function test_professor_cadastra_aluno_automaticamente_aprovado(): void
+    {
+        $this->actingAs(User::factory()->create([
+            'tipo' => User::TIPO_PROFESSOR,
+        ]));
+
+        $this->travelTo(now()->setDate(2026, 6, 29)->startOfDay());
+
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => false,
+        ]);
+
+        $this->post('/alunos', [
+            'turma_id' => $turma->id,
+            'nome' => 'Ana Souza',
+            'ra' => 'ra123',
+            'password' => 'senha-segura',
+            'password_confirmation' => 'senha-segura',
+        ])->assertRedirect('/alunos');
+
+        $usuario = User::query()->where('ra', 'RA123')->firstOrFail();
+
+        $this->assertSame(User::TIPO_ALUNO, $usuario->tipo);
+        $this->assertDatabaseHas('cadastros_alunos', [
+            'user_id' => $usuario->id,
+            'turma_id' => $turma->id,
+            'nome' => 'Ana Souza',
+            'ra' => 'RA123',
+            'status' => CadastroAluno::STATUS_APROVADO,
+            'valido_ate' => '2027-06-29 00:00:00',
+        ]);
+    }
+
+    public function test_professor_nao_cadastra_aluno_em_turma_arquivada(): void
+    {
+        $this->actingAs(User::factory()->create([
+            'tipo' => User::TIPO_PROFESSOR,
+        ]));
+
+        $turma = Turma::create([
+            'nome' => 'Turma arquivada',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => false,
+            'arquivada_em' => now(),
+        ]);
+
+        $this->from('/alunos')->post('/alunos', [
+            'turma_id' => $turma->id,
+            'nome' => 'Ana Souza',
+            'ra' => 'RA123',
+            'password' => 'senha-segura',
+            'password_confirmation' => 'senha-segura',
+        ])->assertRedirect('/alunos')->assertSessionHasErrors('turma_id');
+
+        $this->assertDatabaseCount('users', 1);
+        $this->assertDatabaseCount('cadastros_alunos', 0);
     }
 
     public function test_aprova_cadastro_com_validade_anual(): void
@@ -252,7 +357,7 @@ class GerenciarCadastrosAlunosTest extends TestCase
         ]);
 
         $this->patch("/cadastros-alunos/{$cadastro->id}/aprovar")
-            ->assertRedirect('/turmas');
+            ->assertRedirect('/alunos');
 
         $cadastro->refresh();
 
@@ -282,7 +387,7 @@ class GerenciarCadastrosAlunosTest extends TestCase
 
         $this->patch("/cadastros-alunos/{$cadastro->id}/reprovar", [
             'motivo_reprovacao' => 'RA nao localizado.',
-        ])->assertRedirect('/turmas');
+        ])->assertRedirect('/alunos');
 
         $this->assertDatabaseHas('cadastros_alunos', [
             'id' => $cadastro->id,
