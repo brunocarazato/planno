@@ -21,6 +21,8 @@ use App\Modules\Turmas\Models\Turma;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -117,10 +119,39 @@ class ProjetoController extends Controller
         AtualizarProjetoRequest $request,
         Projeto $projeto,
         AtualizarProjeto $atualizarProjeto,
+        AtualizarTermoDeAberturaDoProjeto $atualizarTermo,
+        AtualizarResponsavelDoProjeto $atualizarResponsavel,
     ): RedirectResponse {
-        $atualizarProjeto->executar($projeto, $request->validated());
+        $dados = $request->validated();
 
-        return to_route('projetos.show', $projeto)->with('success', 'Dados do projeto atualizados.');
+        DB::transaction(function () use (
+            $projeto,
+            $dados,
+            $atualizarProjeto,
+            $atualizarTermo,
+            $atualizarResponsavel,
+        ): void {
+            $atualizarProjeto->executar($projeto, Arr::only($dados, ['nome', 'descricao']));
+
+            $camposDoTermo = Arr::only($dados, [
+                'objetivo',
+                'justificativa',
+                'restricoes',
+                'premissas',
+                'entregas_esperadas',
+            ]);
+
+            if ($camposDoTermo !== []) {
+                $atualizarTermo->executar($projeto, $camposDoTermo);
+            }
+
+            if (array_key_exists('responsavel_id', $dados)) {
+                $responsavel = User::findOrFail($dados['responsavel_id']);
+                $atualizarResponsavel->executar($projeto, $responsavel);
+            }
+        });
+
+        return to_route('projetos.show', $projeto)->with('success', 'Alterações do projeto salvas com sucesso.');
     }
 
     public function atualizarResponsavel(

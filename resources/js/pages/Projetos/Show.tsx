@@ -13,7 +13,8 @@ import {
     Target,
     UserRound,
 } from 'lucide-react';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { AppLayout } from '../../shared/layouts/AppLayout';
 import { Button, buttonVariants } from '../../shared/ui/button';
@@ -59,21 +60,15 @@ type UsuarioOpcao = {
     tipo: string;
 };
 
-type TermoForm = {
+type PreenchimentoForm = {
+    nome: string;
+    descricao: string;
+    responsavel_id?: string;
     objetivo: string;
     justificativa: string;
     restricoes: string;
     premissas: string;
     entregas_esperadas: string;
-};
-
-type ResponsavelForm = {
-    responsavel_id: string;
-};
-
-type ProjetoForm = {
-    nome: string;
-    descricao: string;
 };
 
 type AtividadeDaTrilha = {
@@ -123,44 +118,32 @@ export default function ProjetosShow({
     responsaveisDisponiveis,
     flash,
 }: ProjetosShowProps) {
-    const termoForm = useForm<TermoForm>({
+    const preenchimentoForm = useForm<PreenchimentoForm>({
+        nome: projeto.nome,
+        descricao: projeto.descricao ?? '',
+        ...(podeAlterarResponsavel
+            ? {
+                  responsavel_id: projeto.responsavel.id ? String(projeto.responsavel.id) : '',
+              }
+            : {}),
         objetivo: projeto.termoDeAbertura.objetivo ?? '',
         justificativa: projeto.termoDeAbertura.justificativa ?? '',
         restricoes: projeto.termoDeAbertura.restricoes ?? '',
         premissas: projeto.termoDeAbertura.premissas ?? '',
         entregas_esperadas: projeto.termoDeAbertura.entregasEsperadas ?? '',
     });
-    const responsavelForm = useForm<ResponsavelForm>({
-        responsavel_id: projeto.responsavel.id ? String(projeto.responsavel.id) : '',
-    });
-    const projetoForm = useForm<ProjetoForm>({
-        nome: projeto.nome,
-        descricao: projeto.descricao ?? '',
-    });
     const [trilhaAberta, setTrilhaAberta] = useState(false);
     const [atividadeEmAtualizacao, setAtividadeEmAtualizacao] = useState<string | null>(null);
+    const [paginaMontada, setPaginaMontada] = useState(false);
 
-    function enviarFormulario(event: FormEvent<HTMLFormElement>) {
+    useEffect(() => setPaginaMontada(true), []);
+
+    function salvarAlteracoes(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        termoForm.put(`/projetos/${projeto.id}/termo-de-abertura`, {
+        preenchimentoForm.put(`/projetos/${projeto.id}`, {
             preserveScroll: true,
-        });
-    }
-
-    function enviarDadosDoProjeto(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-
-        projetoForm.put(`/projetos/${projeto.id}`, {
-            preserveScroll: true,
-        });
-    }
-
-    function enviarResponsavel(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-
-        responsavelForm.patch(`/projetos/${projeto.id}/responsavel`, {
-            preserveScroll: true,
+            onSuccess: () => preenchimentoForm.setDefaults(),
         });
     }
 
@@ -222,166 +205,207 @@ export default function ProjetosShow({
                 </button>
             </section>
 
-            <section className="mt-8 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-                <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
-                            <PencilLine className="h-5 w-5" />
+            <form className="mt-8 pb-36 sm:pb-24" id="form-preenchimento-projeto" onSubmit={salvarAlteracoes}>
+                <section className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+                    <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
+                                <PencilLine className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-[#17211f]">Dados do projeto</h2>
+                                <p className="text-sm text-[#53635e]">
+                                    Ajuste a identificação sem alterar seu código ou turma.
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-lg font-semibold text-[#17211f]">Dados do projeto</h2>
-                            <p className="text-sm text-[#53635e]">Ajuste a identificação sem alterar seu código ou turma.</p>
+
+                        <div className="mt-6 space-y-4">
+                            <div>
+                                <label className="text-sm font-medium text-[#51605c]" htmlFor="nome-projeto">
+                                    Nome
+                                </label>
+                                <input
+                                    className="mt-1 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
+                                    id="nome-projeto"
+                                    onChange={(event) => preenchimentoForm.setData('nome', event.target.value)}
+                                    value={preenchimentoForm.data.nome}
+                                />
+                                {preenchimentoForm.errors.nome ? (
+                                    <p className="mt-1 text-sm text-red-600">{preenchimentoForm.errors.nome}</p>
+                                ) : null}
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-[#51605c]" htmlFor="descricao-projeto">
+                                    Descrição
+                                </label>
+                                <textarea
+                                    className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
+                                    id="descricao-projeto"
+                                    onChange={(event) => preenchimentoForm.setData('descricao', event.target.value)}
+                                    placeholder="Contexto, problema ou cliente do projeto didático."
+                                    value={preenchimentoForm.data.descricao}
+                                />
+                                {preenchimentoForm.errors.descricao ? (
+                                    <p className="mt-1 text-sm text-red-600">{preenchimentoForm.errors.descricao}</p>
+                                ) : null}
+                            </div>
                         </div>
+
+                        <dl className="mt-6 space-y-4 text-sm">
+                            <div>
+                                <dt className="font-medium text-[#51605c]">Período da turma</dt>
+                                <dd className="mt-1 text-[#53635e]">
+                                    {projeto.turma.periodoFormatado || 'Não informado'}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt className="font-medium text-[#51605c]">Responsável</dt>
+                                <dd className="mt-1 text-[#53635e]">
+                                    {nomeResponsavel}
+                                    {projeto.responsavel.ra ? ` (${projeto.responsavel.ra})` : null}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt className="font-medium text-[#51605c]">Próxima etapa</dt>
+                                <dd className="mt-1 text-[#53635e]">
+                                    Avançar pelas atividades da trilha e produzir os artefatos esperados.
+                                </dd>
+                            </div>
+                        </dl>
+
+                        {podeAlterarResponsavel ? (
+                            <div className="mt-6 border-t border-[#dfe5d8] pt-5">
+                                <label className="text-sm font-medium text-[#51605c]" htmlFor="responsavel_id">
+                                    Alterar responsável
+                                </label>
+                                <Select
+                                    className="mt-1"
+                                    id="responsavel_id"
+                                    invalid={Boolean(preenchimentoForm.errors.responsavel_id)}
+                                    onValueChange={(value) => preenchimentoForm.setData('responsavel_id', value)}
+                                    options={[
+                                        {
+                                            label: 'Selecione um responsável',
+                                            value: '',
+                                        },
+                                        ...responsaveisDisponiveis.map((responsavel) => ({
+                                            label: `${responsavel.name}${responsavel.ra ? ` (${responsavel.ra})` : ''}`,
+                                            value: String(responsavel.id),
+                                        })),
+                                    ]}
+                                value={preenchimentoForm.data.responsavel_id ?? ''}
+                                />
+                                {preenchimentoForm.errors.responsavel_id ? (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {preenchimentoForm.errors.responsavel_id}
+                                    </p>
+                                ) : null}
+                                <p className="mt-2 text-xs text-[#61716b]">
+                                    A troca será aplicada junto com as demais alterações ao salvar.
+                                </p>
+                            </div>
+                        ) : null}
                     </div>
 
-                    <form className="mt-6 space-y-4" onSubmit={enviarDadosDoProjeto}>
-                        <div>
-                            <label className="text-sm font-medium text-[#51605c]" htmlFor="nome-projeto">
-                                Nome
-                            </label>
-                            <input
-                                className="mt-1 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
-                                id="nome-projeto"
-                                onChange={(event) => projetoForm.setData('nome', event.target.value)}
-                                value={projetoForm.data.nome}
-                            />
-                            {projetoForm.errors.nome ? (
-                                <p className="mt-1 text-sm text-red-600">{projetoForm.errors.nome}</p>
-                            ) : null}
+                    <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
+                                <ClipboardCheck className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-[#17211f]">Termo de abertura</h2>
+                                <p className="text-sm text-[#53635e]">
+                                    Registre os elementos iniciais que autorizam e orientam o projeto.
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <label className="text-sm font-medium text-[#51605c]" htmlFor="descricao-projeto">
-                                Descrição
-                            </label>
-                            <textarea
-                                className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
-                                id="descricao-projeto"
-                                onChange={(event) => projetoForm.setData('descricao', event.target.value)}
-                                placeholder="Contexto, problema ou cliente do projeto didático."
-                                value={projetoForm.data.descricao}
-                            />
-                            {projetoForm.errors.descricao ? (
-                                <p className="mt-1 text-sm text-red-600">{projetoForm.errors.descricao}</p>
-                            ) : null}
-                        </div>
-                        <Button disabled={projetoForm.processing} size="sm" type="submit">
-                            <Save className="h-4 w-4" />
-                            Salvar dados
-                        </Button>
-                    </form>
 
-                    <dl className="mt-6 space-y-4 text-sm">
-                        <div>
-                            <dt className="font-medium text-[#51605c]">Período da turma</dt>
-                            <dd className="mt-1 text-[#53635e]">{projeto.turma.periodoFormatado || 'Não informado'}</dd>
-                        </div>
-                        <div>
-                            <dt className="font-medium text-[#51605c]">Responsável</dt>
-                            <dd className="mt-1 text-[#53635e]">
-                                {nomeResponsavel}
-                                {projeto.responsavel.ra ? ` (${projeto.responsavel.ra})` : null}
-                            </dd>
-                        </div>
-                        <div>
-                            <dt className="font-medium text-[#51605c]">Próxima etapa</dt>
-                            <dd className="mt-1 text-[#53635e]">
-                                Avançar pelas atividades da trilha e produzir os artefatos esperados.
-                            </dd>
-                        </div>
-                    </dl>
-
-                    {podeAlterarResponsavel ? (
-                        <form className="mt-6 border-t border-[#dfe5d8] pt-5" onSubmit={enviarResponsavel}>
-                            <label className="text-sm font-medium text-[#51605c]" htmlFor="responsavel_id">
-                                Alterar responsável
-                            </label>
-                            <Select
-                                className="mt-1"
-                                id="responsavel_id"
-                                invalid={Boolean(responsavelForm.errors.responsavel_id)}
-                                onValueChange={(value) => responsavelForm.setData('responsavel_id', value)}
-                                options={[
-                                    { label: 'Selecione um responsável', value: '' },
-                                    ...responsaveisDisponiveis.map((responsavel) => ({
-                                        label: `${responsavel.name}${responsavel.ra ? ` (${responsavel.ra})` : ''}`,
-                                        value: String(responsavel.id),
-                                    })),
-                                ]}
-                                value={responsavelForm.data.responsavel_id}
+                        <div className="mt-6 space-y-5">
+                            <CampoTextoArea
+                                erro={preenchimentoForm.errors.objetivo}
+                                id="objetivo"
+                                label="Objetivo"
+                                onChange={(valor) => preenchimentoForm.setData('objetivo', valor)}
+                                placeholder="Qual resultado o projeto pretende alcançar?"
+                                value={preenchimentoForm.data.objetivo}
                             />
-                            {responsavelForm.errors.responsavel_id ? (
-                                <p className="mt-1 text-sm text-red-600">{responsavelForm.errors.responsavel_id}</p>
-                            ) : null}
-                            <Button className="mt-3" disabled={responsavelForm.processing} size="sm" type="submit">
-                                <Save className="h-4 w-4" />
-                                Salvar responsável
-                            </Button>
-                        </form>
-                    ) : null}
-                </div>
-
-                <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
-                            <ClipboardCheck className="h-5 w-5" />
-                        </div>
-                        <div>
-                            <h2 className="text-lg font-semibold text-[#17211f]">Termo de abertura</h2>
-                            <p className="text-sm text-[#53635e]">
-                                Registre os elementos iniciais que autorizam e orientam o projeto.
-                            </p>
+                            <CampoTextoArea
+                                erro={preenchimentoForm.errors.justificativa}
+                                id="justificativa"
+                                label="Justificativa"
+                                onChange={(valor) => preenchimentoForm.setData('justificativa', valor)}
+                                placeholder="Por que este projeto deve existir?"
+                                value={preenchimentoForm.data.justificativa}
+                            />
+                            <CampoTextoArea
+                                erro={preenchimentoForm.errors.restricoes}
+                                id="restricoes"
+                                label="Restrições"
+                                onChange={(valor) => preenchimentoForm.setData('restricoes', valor)}
+                                placeholder="Limites de prazo, custo, escopo, tecnologias ou recursos."
+                                value={preenchimentoForm.data.restricoes}
+                            />
+                            <CampoTextoArea
+                                erro={preenchimentoForm.errors.premissas}
+                                id="premissas"
+                                label="Premissas"
+                                onChange={(valor) => preenchimentoForm.setData('premissas', valor)}
+                                placeholder="Condições assumidas como verdadeiras para planejar o projeto."
+                                value={preenchimentoForm.data.premissas}
+                            />
+                            <CampoTextoArea
+                                erro={preenchimentoForm.errors.entregas_esperadas}
+                                id="entregas_esperadas"
+                                label="Entregas esperadas"
+                                onChange={(valor) => preenchimentoForm.setData('entregas_esperadas', valor)}
+                                placeholder="Produtos, serviços ou resultados esperados ao final."
+                                value={preenchimentoForm.data.entregas_esperadas}
+                            />
                         </div>
                     </div>
+                </section>
+            </form>
 
-                    <form className="mt-6 space-y-5" onSubmit={enviarFormulario}>
-                        <CampoTextoArea
-                            erro={termoForm.errors.objetivo}
-                            id="objetivo"
-                            label="Objetivo"
-                            onChange={(valor) => termoForm.setData('objetivo', valor)}
-                            placeholder="Qual resultado o projeto pretende alcançar?"
-                            value={termoForm.data.objetivo}
-                        />
-                        <CampoTextoArea
-                            erro={termoForm.errors.justificativa}
-                            id="justificativa"
-                            label="Justificativa"
-                            onChange={(valor) => termoForm.setData('justificativa', valor)}
-                            placeholder="Por que este projeto deve existir?"
-                            value={termoForm.data.justificativa}
-                        />
-                        <CampoTextoArea
-                            erro={termoForm.errors.restricoes}
-                            id="restricoes"
-                            label="Restrições"
-                            onChange={(valor) => termoForm.setData('restricoes', valor)}
-                            placeholder="Limites de prazo, custo, escopo, tecnologias ou recursos."
-                            value={termoForm.data.restricoes}
-                        />
-                        <CampoTextoArea
-                            erro={termoForm.errors.premissas}
-                            id="premissas"
-                            label="Premissas"
-                            onChange={(valor) => termoForm.setData('premissas', valor)}
-                            placeholder="Condições assumidas como verdadeiras para planejar o projeto."
-                            value={termoForm.data.premissas}
-                        />
-                        <CampoTextoArea
-                            erro={termoForm.errors.entregas_esperadas}
-                            id="entregas_esperadas"
-                            label="Entregas esperadas"
-                            onChange={(valor) => termoForm.setData('entregas_esperadas', valor)}
-                            placeholder="Produtos, serviços ou resultados esperados ao final."
-                            value={termoForm.data.entregas_esperadas}
-                        />
-
-                        <Button disabled={termoForm.processing} type="submit">
-                            <Save className="h-4 w-4" />
-                            Salvar termo
-                        </Button>
-                    </form>
-                </div>
-            </section>
+            {paginaMontada
+                ? createPortal(
+                      <div className="fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-3xl flex-col gap-3 rounded-xl border border-[#c5d3c7] bg-[#eff5ed]/95 px-4 py-3 shadow-[0_18px_48px_-18px_rgba(23,60,56,0.55)] backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
+                          <div aria-live="polite" className="flex items-center gap-3">
+                              <span
+                                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+                                      preenchimentoForm.isDirty
+                                          ? 'bg-[#fff0e9] text-[#c94f2d]'
+                                          : 'bg-white text-[#0f766e]'
+                                  }`}
+                              >
+                                  {preenchimentoForm.isDirty ? (
+                                      <PencilLine className="h-4 w-4" />
+                                  ) : (
+                                      <CheckCircle2 className="h-4 w-4" />
+                                  )}
+                              </span>
+                              <div>
+                                  <p className="text-sm font-semibold text-[#17211f]">Preenchimento do projeto</p>
+                                  <p className="text-xs text-[#53635e]">
+                                      {preenchimentoForm.isDirty
+                                          ? 'Você tem alterações que ainda não foram salvas.'
+                                          : 'Todos os dados abaixo estão salvos.'}
+                                  </p>
+                              </div>
+                          </div>
+                          <Button
+                              className="w-full sm:w-auto"
+                              disabled={preenchimentoForm.processing || !preenchimentoForm.isDirty}
+                              form="form-preenchimento-projeto"
+                              type="submit"
+                          >
+                              <Save className="h-4 w-4" />
+                              {preenchimentoForm.processing ? 'Salvando...' : 'Salvar alterações'}
+                          </Button>
+                      </div>,
+                      document.body,
+                  )
+                : null}
 
             <Dialog
                 aberto={trilhaAberta}
@@ -551,7 +575,7 @@ function CampoTextoArea({
     value,
 }: {
     erro?: string;
-    id: keyof TermoForm;
+    id: keyof PreenchimentoForm;
     label: string;
     onChange: (valor: string) => void;
     placeholder: string;

@@ -570,6 +570,51 @@ class GerenciarProjetosTest extends TestCase
         ]);
     }
 
+    public function test_salva_o_preenchimento_completo_do_projeto_em_uma_unica_acao(): void
+    {
+        $turma = Turma::create([
+            'nome' => 'Gestao de Projetos',
+            'codigo' => 'GP-2026-1A',
+            'aceita_novos_cadastros' => true,
+        ]);
+
+        $novoResponsavel = User::factory()->create([
+            'tipo' => User::TIPO_PROFESSOR,
+        ]);
+
+        $projeto = Projeto::create([
+            'turma_id' => $turma->id,
+            'responsavel_id' => auth()->id(),
+            'nome' => 'Nome inicial',
+            'codigo' => 'PROJ-2026-01',
+            'situacao' => Projeto::SITUACAO_EM_INICIACAO,
+        ]);
+        $projeto->termoDeAbertura()->create();
+
+        $this->put("/projetos/{$projeto->id}", [
+            'nome' => 'Biblioteca comunitária',
+            'descricao' => 'Projeto revisado pela equipe.',
+            'responsavel_id' => $novoResponsavel->id,
+            'objetivo' => '<p><strong>Organizar</strong> o acervo.</p>',
+            'justificativa' => '<p>Reduzir controles manuais.</p>',
+            'restricoes' => '<p>Prazo de oito semanas.</p>',
+            'premissas' => '<p>Acesso ao laboratório.</p>',
+            'entregas_esperadas' => '<p>Protótipo navegável.</p>',
+        ])->assertRedirect("/projetos/{$projeto->id}");
+
+        $this->assertDatabaseHas('projetos', [
+            'id' => $projeto->id,
+            'nome' => 'Biblioteca comunitária',
+            'descricao' => 'Projeto revisado pela equipe.',
+            'responsavel_id' => $novoResponsavel->id,
+        ]);
+        $this->assertDatabaseHas('termos_de_abertura', [
+            'projeto_id' => $projeto->id,
+            'objetivo' => '<p><strong>Organizar</strong> o acervo.</p>',
+            'entregas_esperadas' => '<p>Protótipo navegável.</p>',
+        ]);
+    }
+
     public function test_aluno_nao_atualiza_dados_de_projeto_de_outro_responsavel(): void
     {
         auth()->logout();
