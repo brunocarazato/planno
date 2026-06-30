@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Modules\GruposDeProcessos\Actions\IniciarTrilhaDoProjeto;
 use App\Modules\GruposDeProcessos\Presenters\TrilhaDoProjetoPresenter;
+use App\Modules\GerenciamentoDasPartesInteressadas\Models\ParteInteressada;
+use App\Modules\GerenciamentoDasPartesInteressadas\Presenters\ParteInteressadaPresenter;
 use App\Modules\Projetos\Actions\AtualizarProjeto;
 use App\Modules\Projetos\Actions\AtualizarResponsavelDoProjeto;
 use App\Modules\Projetos\Actions\AtualizarTermoDeAberturaDoProjeto;
@@ -98,16 +100,24 @@ class ProjetoController extends Controller
         ProjetoPresenter $presenter,
         IniciarTrilhaDoProjeto $iniciarTrilha,
         TrilhaDoProjetoPresenter $trilhaPresenter,
+        ParteInteressadaPresenter $parteInteressadaPresenter,
     ): Response {
         $this->garantirAcessoAoProjeto($request, $projeto);
 
-        $projeto->load(['turma', 'responsavel', 'termoDeAbertura']);
+        $projeto->load([
+            'turma',
+            'responsavel',
+            'termoDeAbertura',
+            'partesInteressadas' => fn ($query) => $query->orderBy('nome'),
+        ]);
         $trilha = $iniciarTrilha->executar($projeto);
         $trilha->load('conclusoes.autorDaConclusao');
 
         return Inertia::render('Projetos/Show', [
             'projeto' => $presenter->apresentar($projeto),
             'trilha' => $trilhaPresenter->apresentar($trilha),
+            'partesInteressadas' => $projeto->partesInteressadas
+                ->map(fn (ParteInteressada $parteInteressada) => $parteInteressadaPresenter->apresentar($parteInteressada)),
             'podeAlterarResponsavel' => $request->user()?->professor() === true,
             'responsaveisDisponiveis' => $request->user()?->professor() === true
                 ? $this->responsaveisDisponiveis($projeto)

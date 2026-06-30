@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardProfessorController;
 use App\Modules\Autenticacao\Http\Controllers\SessaoController;
 use App\Modules\GruposDeProcessos\Http\Controllers\TrilhaDoProjetoController;
+use App\Modules\GerenciamentoDasPartesInteressadas\Http\Controllers\ParteInteressadaController;
 use App\Modules\Projetos\Http\Controllers\ProjetoController;
 use App\Modules\Turmas\Http\Controllers\CadastroAlunoController;
 use App\Modules\Turmas\Http\Controllers\TurmaController;
@@ -61,5 +62,11 @@ Route::middleware('auth')->group(function (): void {
             ->name('termo-de-abertura.update');
         Route::patch('/{projeto}/trilha/atividades/{atividade}', [TrilhaDoProjetoController::class, 'atualizarConclusao'])
             ->name('trilha.atividades.update');
+        Route::post('/{projeto}/partes-interessadas', [ParteInteressadaController::class, 'store'])
+            ->name('partes-interessadas.store');
+        Route::put('/{projeto}/partes-interessadas/{parteInteressada}', [ParteInteressadaController::class, 'update'])
+            ->name('partes-interessadas.update');
+        Route::delete('/{projeto}/partes-interessadas/{parteInteressada}', [ParteInteressadaController::class, 'destroy'])
+            ->name('partes-interessadas.destroy');
     });
 });

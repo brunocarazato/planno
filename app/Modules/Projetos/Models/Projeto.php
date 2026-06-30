@@ -3,11 +3,13 @@
 namespace App\Modules\Projetos\Models;
 
 use App\Models\User;
+use App\Modules\GerenciamentoDasPartesInteressadas\Models\ParteInteressada;
 use App\Modules\GruposDeProcessos\Models\TrilhaDoProjeto;
 use App\Modules\Turmas\Models\Turma;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Projeto extends Model
 {
@@ -54,6 +56,14 @@ class Projeto extends Model
     public function trilhaDosGruposDeProcessos(): HasOne
     {
         return $this->hasOne(TrilhaDoProjeto::class);
+    }
+
+    /**
+     * @return HasMany<ParteInteressada>
+     */
+    public function partesInteressadas(): HasMany
+    {
+        return $this->hasMany(ParteInteressada::class);
     }
 
     public function situacaoFormatada(): string
