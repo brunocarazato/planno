@@ -55,6 +55,12 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/', [ProjetoController::class, 'index'])->name('index');
         Route::post('/', [ProjetoController::class, 'store'])->name('store');
         Route::get('/{projeto}', [ProjetoController::class, 'show'])->name('show');
+        Route::get('/{projeto}/termo-de-abertura', [ProjetoController::class, 'show'])
+            ->name('termo-de-abertura.show');
+        Route::get('/{projeto}/partes-interessadas', [ProjetoController::class, 'show'])
+            ->name('partes-interessadas.index');
+        Route::get('/{projeto}/escopo', [ProjetoController::class, 'show'])
+            ->name('escopo.show');
         Route::put('/{projeto}', [ProjetoController::class, 'update'])->name('update');
         Route::patch('/{projeto}/responsavel', [ProjetoController::class, 'atualizarResponsavel'])
             ->middleware('professor')

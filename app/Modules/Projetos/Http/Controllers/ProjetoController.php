@@ -117,6 +117,12 @@ class ProjetoController extends Controller
         $trilha->load('conclusoes.autorDaConclusao');
 
         return Inertia::render('Projetos/Show', [
+            'secao' => match ($request->route()?->getName()) {
+                'projetos.termo-de-abertura.show' => 'termo-de-abertura',
+                'projetos.partes-interessadas.index' => 'partes-interessadas',
+                'projetos.escopo.show' => 'escopo',
+                default => 'visao-geral',
+            },
             'projeto' => $presenter->apresentar($projeto),
             'trilha' => $trilhaPresenter->apresentar($trilha),
             'partesInteressadas' => $projeto->partesInteressadas
@@ -191,7 +197,8 @@ class ProjetoController extends Controller
 
         $atualizarTermo->executar($projeto, $request->validated());
 
-        return to_route('projetos.show', $projeto)->with('success', 'Termo de abertura atualizado.');
+        return to_route('projetos.termo-de-abertura.show', $projeto)
+            ->with('success', 'Termo de abertura atualizado.');
     }
 
     /**

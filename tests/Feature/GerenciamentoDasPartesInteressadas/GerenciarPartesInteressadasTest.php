@@ -38,10 +38,11 @@ class GerenciarPartesInteressadasTest extends TestCase
             'estrategia_engajamento' => 'Realizar uma reunião quinzenal de acompanhamento.',
         ]);
 
-        $this->get("/projetos/{$projeto->id}")
+        $this->get("/projetos/{$projeto->id}/partes-interessadas")
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Projetos/Show')
+                ->where('secao', 'partes-interessadas')
                 ->has('partesInteressadas', 1)
                 ->where('partesInteressadas.0.nome', 'Diretora da escola')
                 ->where('partesInteressadas.0.papel', 'Patrocinadora')
@@ -66,7 +67,7 @@ class GerenciarPartesInteressadasTest extends TestCase
             'poder' => ParteInteressada::NIVEL_MEDIO,
             'interesse' => ParteInteressada::NIVEL_ALTO,
             'estrategia_engajamento' => 'Validar os protótipos ao fim de cada etapa.',
-        ])->assertRedirect("/projetos/{$projeto->id}");
+        ])->assertRedirect("/projetos/{$projeto->id}/partes-interessadas");
 
         $this->assertDatabaseHas('partes_interessadas', [
             'projeto_id' => $projeto->id,
@@ -105,7 +106,7 @@ class GerenciarPartesInteressadasTest extends TestCase
             'poder' => ParteInteressada::NIVEL_ALTO,
             'interesse' => ParteInteressada::NIVEL_ALTO,
             'estrategia_engajamento' => 'Apresentar decisões e impedimentos semanalmente.',
-        ])->assertRedirect("/projetos/{$projeto->id}");
+        ])->assertRedirect("/projetos/{$projeto->id}/partes-interessadas");
 
         $this->assertDatabaseHas('partes_interessadas', [
             'id' => $parteInteressada->id,
@@ -122,7 +123,7 @@ class GerenciarPartesInteressadasTest extends TestCase
         $parteInteressada = $this->criarParteInteressada($projeto);
 
         $this->delete("/projetos/{$projeto->id}/partes-interessadas/{$parteInteressada->id}")
-            ->assertRedirect("/projetos/{$projeto->id}");
+            ->assertRedirect("/projetos/{$projeto->id}/partes-interessadas");
 
         $this->assertDatabaseMissing('partes_interessadas', [
             'id' => $parteInteressada->id,
@@ -159,7 +160,7 @@ class GerenciarPartesInteressadasTest extends TestCase
                 'nome' => 'Cliente do aluno',
                 'poder' => ParteInteressada::NIVEL_MEDIO,
                 'interesse' => ParteInteressada::NIVEL_ALTO,
-            ])->assertRedirect("/projetos/{$projetoDoAluno->id}");
+            ])->assertRedirect("/projetos/{$projetoDoAluno->id}/partes-interessadas");
 
         $this->actingAs($aluno)
             ->post("/projetos/{$projetoDeOutroAluno->id}/partes-interessadas", [

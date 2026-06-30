@@ -20,7 +20,7 @@ class DeclaracaoDeEscopoController extends Controller
     ): RedirectResponse {
         $criarDeclaracao->executar($projeto, $request->validated());
 
-        return to_route('projetos.show', $projeto)->with('success', 'Declaração de escopo criada.');
+        return to_route('projetos.escopo.show', $projeto)->with('success', 'Declaração de escopo criada.');
     }
 
     public function update(
@@ -31,6 +31,6 @@ class DeclaracaoDeEscopoController extends Controller
     ): RedirectResponse {
         $atualizarDeclaracao->executar($declaracaoDeEscopo, $request->validated());
 
-        return to_route('projetos.show', $projeto)->with('success', 'Declaração de escopo atualizada.');
+        return to_route('projetos.escopo.show', $projeto)->with('success', 'Declaração de escopo atualizada.');
     }
 }

@@ -530,6 +530,7 @@ class GerenciarProjetosTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Projetos/Show')
+                ->where('secao', 'visao-geral')
                 ->where('projeto.nome', 'Sistema de biblioteca escolar')
                 ->where('projeto.turma.codigo', 'GP-2026-1A')
                 ->where('projeto.responsavel.id', $professor?->id)
@@ -537,6 +538,12 @@ class GerenciarProjetosTest extends TestCase
                 ->has('trilha.grupos', 5)
                 ->where('trilha.progresso.percentual', 0)
                 ->where('projeto.termoDeAbertura.objetivo', 'Organizar emprestimos de livros.'));
+
+        $this->get("/projetos/{$projeto->id}/termo-de-abertura")
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Projetos/Show')
+                ->where('secao', 'termo-de-abertura'));
     }
 
     public function test_atualiza_os_dados_basicos_do_projeto(): void
@@ -671,7 +678,7 @@ class GerenciarProjetosTest extends TestCase
             'restricoes' => 'Prazo de oito semanas.',
             'premissas' => 'A turma tera acesso ao laboratorio.',
             'entregas_esperadas' => 'Prototipo navegavel e relatorio final.',
-        ])->assertRedirect("/projetos/{$projeto->id}");
+        ])->assertRedirect("/projetos/{$projeto->id}/termo-de-abertura");
 
         $this->assertDatabaseHas('termos_de_abertura', [
             'projeto_id' => $projeto->id,
@@ -703,7 +710,7 @@ class GerenciarProjetosTest extends TestCase
             'justificativa' => '<p><em>Reduzir</em> controles manuais.</p>',
             'restricoes' => '<ul><li>Prazo</li><li>Custo</li></ul>',
             'premissas' => '<ol><li>Acesso ao laboratório</li></ol>',
-        ])->assertRedirect("/projetos/{$projeto->id}");
+        ])->assertRedirect("/projetos/{$projeto->id}/termo-de-abertura");
 
         $this->assertDatabaseHas('termos_de_abertura', [
             'projeto_id' => $projeto->id,

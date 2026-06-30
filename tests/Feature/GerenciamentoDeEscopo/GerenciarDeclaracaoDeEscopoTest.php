@@ -34,10 +34,11 @@ class GerenciarDeclaracaoDeEscopoTest extends TestCase
             'exclusoes' => '<p>Compra de novos exemplares.</p>',
         ]);
 
-        $this->get("/projetos/{$projeto->id}")
+        $this->get("/projetos/{$projeto->id}/escopo")
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Projetos/Show')
+                ->where('secao', 'escopo')
                 ->where('declaracaoDeEscopo.descricao', '<p>Plataforma para organizar o acervo escolar.</p>')
                 ->where('declaracaoDeEscopo.inclui', '<ul><li>Consulta de livros</li></ul>')
                 ->where('declaracaoDeEscopo.exclusoes', '<p>Compra de novos exemplares.</p>'));
@@ -47,7 +48,7 @@ class GerenciarDeclaracaoDeEscopoTest extends TestCase
     {
         $projeto = $this->criarProjeto();
 
-        $this->get("/projetos/{$projeto->id}")
+        $this->get("/projetos/{$projeto->id}/escopo")
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Projetos/Show')
@@ -62,7 +63,7 @@ class GerenciarDeclaracaoDeEscopoTest extends TestCase
             'descricao' => '<p>Aplicação web <script>alert(1)</script> para a biblioteca.</p>',
             'inclui' => '<ul><li>Empréstimos</li><li>Devoluções</li></ul>',
             'exclusoes' => '<p>Integrações externas.</p>',
-        ])->assertRedirect("/projetos/{$projeto->id}");
+        ])->assertRedirect("/projetos/{$projeto->id}/escopo");
 
         $this->assertDatabaseHas('declaracoes_de_escopo', [
             'projeto_id' => $projeto->id,
@@ -93,7 +94,7 @@ class GerenciarDeclaracaoDeEscopoTest extends TestCase
             'descricao' => '<p>Nova fronteira do produto.</p>',
             'inclui' => '<p>Catálogo e empréstimos.</p>',
             'exclusoes' => '<p>Aplicativo móvel.</p>',
-        ])->assertRedirect("/projetos/{$projeto->id}");
+        ])->assertRedirect("/projetos/{$projeto->id}/escopo");
 
         $this->assertDatabaseHas('declaracoes_de_escopo', [
             'id' => $declaracao->id,
@@ -134,7 +135,7 @@ class GerenciarDeclaracaoDeEscopoTest extends TestCase
 
         $this->actingAs($aluno)
             ->post("/projetos/{$projetoDoAluno->id}/declaracao-de-escopo", $dados)
-            ->assertRedirect("/projetos/{$projetoDoAluno->id}");
+            ->assertRedirect("/projetos/{$projetoDoAluno->id}/escopo");
 
         $this->actingAs($aluno)
             ->post("/projetos/{$projetoDeOutroAluno->id}/declaracao-de-escopo", $dados)

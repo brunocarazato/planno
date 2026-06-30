@@ -1,17 +1,23 @@
 import { Head, Link, router, useForm, type InertiaFormProps } from '@inertiajs/react';
 import {
     ArrowLeft,
+    BookOpenCheck,
+    CalendarDays,
     Check,
     CheckCircle2,
+    ChevronDown,
     Circle,
     ClipboardCheck,
     Compass,
     FileText,
+    Landmark,
     LayoutGrid,
+    ListTree,
     PencilLine,
     Plus,
     Save,
     School,
+    ShieldAlert,
     Target,
     Trash2,
     UserRound,
@@ -64,10 +70,13 @@ type UsuarioOpcao = {
     tipo: string;
 };
 
-type PreenchimentoForm = {
+type ProjetoForm = {
     nome: string;
     descricao: string;
     responsavel_id?: string;
+};
+
+type TermoDeAberturaForm = {
     objetivo: string;
     justificativa: string;
     restricoes: string;
@@ -142,6 +151,7 @@ type DeclaracaoDeEscopoForm = {
 };
 
 type ProjetosShowProps = {
+    secao: SecaoProjeto;
     projeto: Projeto;
     trilha: Trilha;
     partesInteressadas: ParteInteressada[];
@@ -153,7 +163,10 @@ type ProjetosShowProps = {
     };
 };
 
+type SecaoProjeto = 'visao-geral' | 'termo-de-abertura' | 'partes-interessadas' | 'escopo';
+
 export default function ProjetosShow({
+    secao,
     projeto,
     trilha,
     partesInteressadas,
@@ -162,7 +175,7 @@ export default function ProjetosShow({
     responsaveisDisponiveis,
     flash,
 }: ProjetosShowProps) {
-    const preenchimentoForm = useForm<PreenchimentoForm>({
+    const projetoForm = useForm<ProjetoForm>({
         nome: projeto.nome,
         descricao: projeto.descricao ?? '',
         ...(podeAlterarResponsavel
@@ -170,6 +183,8 @@ export default function ProjetosShow({
                   responsavel_id: projeto.responsavel.id ? String(projeto.responsavel.id) : '',
               }
             : {}),
+    });
+    const termoForm = useForm<TermoDeAberturaForm>({
         objetivo: projeto.termoDeAbertura.objetivo ?? '',
         justificativa: projeto.termoDeAbertura.justificativa ?? '',
         restricoes: projeto.termoDeAbertura.restricoes ?? '',
@@ -198,12 +213,21 @@ export default function ProjetosShow({
 
     useEffect(() => setPaginaMontada(true), []);
 
-    function salvarAlteracoes(event: FormEvent<HTMLFormElement>) {
+    function salvarProjeto(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        preenchimentoForm.put(`/projetos/${projeto.id}`, {
+        projetoForm.put(`/projetos/${projeto.id}`, {
             preserveScroll: true,
-            onSuccess: () => preenchimentoForm.setDefaults(),
+            onSuccess: () => projetoForm.setDefaults(),
+        });
+    }
+
+    function salvarTermoDeAbertura(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        termoForm.put(`/projetos/${projeto.id}/termo-de-abertura`, {
+            preserveScroll: true,
+            onSuccess: () => termoForm.setDefaults(),
         });
     }
 
@@ -299,12 +323,13 @@ export default function ProjetosShow({
     }
 
     const nomeResponsavel = projeto.responsavel.name ?? 'Não definido';
+    const camposTermoPreenchidos = Object.values(termoForm.data).filter((valor) => valor.trim()).length;
 
     return (
-        <AppLayout titulo={projeto.nome} subtitulo="Detalhe do projeto didático e termo de abertura inicial.">
+        <AppLayout titulo={projeto.nome} subtitulo="Espaço de trabalho do projeto didático.">
             <Head title={projeto.nome} />
 
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                 <Link className={buttonVariants({ variant: 'secondary' })} href="/projetos">
                     <ArrowLeft className="h-4 w-4" />
                     Voltar para projetos
@@ -320,32 +345,42 @@ export default function ProjetosShow({
                 </div>
             ) : null}
 
-            <section className="grid grid-cols-2 gap-4 md:grid-cols-[repeat(4,minmax(0,1fr))_5.5rem]">
+            <div className="grid items-start gap-6 lg:grid-cols-[17rem_minmax(0,1fr)]">
+                <ProjetoIndice
+                    camposTermoPreenchidos={camposTermoPreenchidos}
+                    declaracaoRegistrada={Boolean(declaracaoDeEscopo)}
+                    onAbrirTrilha={() => setTrilhaAberta(true)}
+                    partesInteressadas={partesInteressadas.length}
+                    projeto={projeto}
+                    secao={secao}
+                    trilha={trilha}
+                />
+
+                <main
+                    className={`min-w-0 ${
+                        secao === 'visao-geral' || secao === 'termo-de-abertura' ? 'lg:pb-28' : ''
+                    }`}
+                >
+            {secao === 'visao-geral' ? (
+                <>
+            <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 <Resumo icon={ClipboardCheck} rotulo="Código" valor={projeto.codigo} />
                 <Resumo icon={School} rotulo="Turma" valor={`${projeto.turma.nome} (${projeto.turma.codigo})`} />
                 <Resumo icon={UserRound} rotulo="Responsável" valor={nomeResponsavel} />
                 <Resumo icon={Target} rotulo="Situação" valor={projeto.situacaoFormatada} />
-                <button
-                    aria-label={`Abrir trilha dos grupos de processos. Progresso atual: ${trilha.progresso.percentual}%`}
-                    className="journey-hint group relative flex min-h-28 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border border-[#bfd1c4] bg-[#173c38] px-3 py-4 text-center text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f766e]"
-                    onClick={() => setTrilhaAberta(true)}
-                    title="Abrir trilha dos grupos de processos"
-                    type="button"
-                >
-                    <span className="journey-hint__halo absolute h-16 w-16 rounded-full border border-[#78c9b9]/20" />
-                    <Compass className="relative h-6 w-6 text-[#9ed9cd] transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
-                    <span className="relative mt-2 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[#c8ddd8]">
-                        Trilha
-                    </span>
-                    <span className="relative mt-0.5 text-xs font-semibold tabular-nums text-white">
-                        {trilha.progresso.percentual}%
-                    </span>
-                </button>
             </section>
+                </>
+            ) : null}
 
-            <form className="mt-8" id="form-preenchimento-projeto" onSubmit={salvarAlteracoes}>
-                <section className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-                    <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
+            {secao === 'visao-geral' || secao === 'termo-de-abertura' ? (
+            <form
+                className={secao === 'visao-geral' ? 'mt-6' : ''}
+                id={secao === 'visao-geral' ? 'form-projeto' : 'form-termo-de-abertura'}
+                onSubmit={secao === 'visao-geral' ? salvarProjeto : salvarTermoDeAbertura}
+            >
+                <section>
+                    {secao === 'visao-geral' ? (
+                    <div className="rounded-xl border border-[#dfe5d8] bg-white p-6 shadow-sm">
                         <div className="flex items-center gap-3">
                             <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
                                 <PencilLine className="h-5 w-5" />
@@ -366,11 +401,11 @@ export default function ProjetosShow({
                                 <input
                                     className="mt-1 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                                     id="nome-projeto"
-                                    onChange={(event) => preenchimentoForm.setData('nome', event.target.value)}
-                                    value={preenchimentoForm.data.nome}
+                                    onChange={(event) => projetoForm.setData('nome', event.target.value)}
+                                    value={projetoForm.data.nome}
                                 />
-                                {preenchimentoForm.errors.nome ? (
-                                    <p className="mt-1 text-sm text-red-600">{preenchimentoForm.errors.nome}</p>
+                                {projetoForm.errors.nome ? (
+                                    <p className="mt-1 text-sm text-red-600">{projetoForm.errors.nome}</p>
                                 ) : null}
                             </div>
                             <div>
@@ -380,30 +415,17 @@ export default function ProjetosShow({
                                 <textarea
                                     className="mt-1 min-h-28 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
                                     id="descricao-projeto"
-                                    onChange={(event) => preenchimentoForm.setData('descricao', event.target.value)}
+                                    onChange={(event) => projetoForm.setData('descricao', event.target.value)}
                                     placeholder="Contexto, problema ou cliente do projeto didático."
-                                    value={preenchimentoForm.data.descricao}
+                                    value={projetoForm.data.descricao}
                                 />
-                                {preenchimentoForm.errors.descricao ? (
-                                    <p className="mt-1 text-sm text-red-600">{preenchimentoForm.errors.descricao}</p>
+                                {projetoForm.errors.descricao ? (
+                                    <p className="mt-1 text-sm text-red-600">{projetoForm.errors.descricao}</p>
                                 ) : null}
                             </div>
                         </div>
 
                         <dl className="mt-6 space-y-4 text-sm">
-                            <div>
-                                <dt className="font-medium text-[#51605c]">Período da turma</dt>
-                                <dd className="mt-1 text-[#53635e]">
-                                    {projeto.turma.periodoFormatado || 'Não informado'}
-                                </dd>
-                            </div>
-                            <div>
-                                <dt className="font-medium text-[#51605c]">Responsável</dt>
-                                <dd className="mt-1 text-[#53635e]">
-                                    {nomeResponsavel}
-                                    {projeto.responsavel.ra ? ` (${projeto.responsavel.ra})` : null}
-                                </dd>
-                            </div>
                             <div>
                                 <dt className="font-medium text-[#51605c]">Próxima etapa</dt>
                                 <dd className="mt-1 text-[#53635e]">
@@ -420,8 +442,8 @@ export default function ProjetosShow({
                                 <Select
                                     className="mt-1"
                                     id="responsavel_id"
-                                    invalid={Boolean(preenchimentoForm.errors.responsavel_id)}
-                                    onValueChange={(value) => preenchimentoForm.setData('responsavel_id', value)}
+                                    invalid={Boolean(projetoForm.errors.responsavel_id)}
+                                    onValueChange={(value) => projetoForm.setData('responsavel_id', value)}
                                     options={[
                                         {
                                             label: 'Selecione um responsável',
@@ -432,11 +454,11 @@ export default function ProjetosShow({
                                             value: String(responsavel.id),
                                         })),
                                     ]}
-                                value={preenchimentoForm.data.responsavel_id ?? ''}
+                                value={projetoForm.data.responsavel_id ?? ''}
                                 />
-                                {preenchimentoForm.errors.responsavel_id ? (
+                                {projetoForm.errors.responsavel_id ? (
                                     <p className="mt-1 text-sm text-red-600">
-                                        {preenchimentoForm.errors.responsavel_id}
+                                        {projetoForm.errors.responsavel_id}
                                     </p>
                                 ) : null}
                                 <p className="mt-2 text-xs text-[#61716b]">
@@ -445,8 +467,11 @@ export default function ProjetosShow({
                             </div>
                         ) : null}
                     </div>
+                    ) : null}
 
-                    <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
+                    {secao === 'termo-de-abertura' ? (
+                    <div className="overflow-hidden rounded-xl border border-[#dfe5d8] bg-white shadow-sm">
+                        <div className="border-b border-[#dfe5d8] bg-[#f8faf6] p-6 md:p-8">
                         <div className="flex items-center gap-3">
                             <div className="rounded-md bg-[#eff5ed] p-2 text-[#0f766e]">
                                 <ClipboardCheck className="h-5 w-5" />
@@ -459,58 +484,64 @@ export default function ProjetosShow({
                             </div>
                         </div>
 
-                        <div className="mt-6 space-y-5">
+                        </div>
+                        <div className="divide-y divide-[#e2e8df]">
                             <CampoTextoArea
-                                erro={preenchimentoForm.errors.objetivo}
+                                erro={termoForm.errors.objetivo}
                                 id="objetivo"
                                 label="Objetivo"
-                                onChange={(valor) => preenchimentoForm.setData('objetivo', valor)}
+                                onChange={(valor) => termoForm.setData('objetivo', valor)}
                                 placeholder="Qual resultado o projeto pretende alcançar?"
-                                value={preenchimentoForm.data.objetivo}
+                                value={termoForm.data.objetivo}
                             />
                             <CampoTextoArea
-                                erro={preenchimentoForm.errors.justificativa}
+                                erro={termoForm.errors.justificativa}
                                 id="justificativa"
                                 label="Justificativa"
-                                onChange={(valor) => preenchimentoForm.setData('justificativa', valor)}
+                                onChange={(valor) => termoForm.setData('justificativa', valor)}
                                 placeholder="Por que este projeto deve existir?"
-                                value={preenchimentoForm.data.justificativa}
+                                value={termoForm.data.justificativa}
                             />
                             <CampoTextoArea
-                                erro={preenchimentoForm.errors.restricoes}
+                                erro={termoForm.errors.restricoes}
                                 id="restricoes"
                                 label="Restrições"
-                                onChange={(valor) => preenchimentoForm.setData('restricoes', valor)}
+                                onChange={(valor) => termoForm.setData('restricoes', valor)}
                                 placeholder="Limites de prazo, custo, escopo, tecnologias ou recursos."
-                                value={preenchimentoForm.data.restricoes}
+                                value={termoForm.data.restricoes}
                             />
                             <CampoTextoArea
-                                erro={preenchimentoForm.errors.premissas}
+                                erro={termoForm.errors.premissas}
                                 id="premissas"
                                 label="Premissas"
-                                onChange={(valor) => preenchimentoForm.setData('premissas', valor)}
+                                onChange={(valor) => termoForm.setData('premissas', valor)}
                                 placeholder="Condições assumidas como verdadeiras para planejar o projeto."
-                                value={preenchimentoForm.data.premissas}
+                                value={termoForm.data.premissas}
                             />
                             <CampoTextoArea
-                                erro={preenchimentoForm.errors.entregas_esperadas}
+                                erro={termoForm.errors.entregas_esperadas}
                                 id="entregas_esperadas"
                                 label="Entregas esperadas"
-                                onChange={(valor) => preenchimentoForm.setData('entregas_esperadas', valor)}
+                                onChange={(valor) => termoForm.setData('entregas_esperadas', valor)}
                                 placeholder="Produtos, serviços ou resultados esperados ao final."
-                                value={preenchimentoForm.data.entregas_esperadas}
+                                value={termoForm.data.entregas_esperadas}
                             />
                         </div>
                     </div>
+                    ) : null}
                 </section>
             </form>
+            ) : null}
 
+            {secao === 'escopo' ? (
             <DeclaracaoDeEscopoSection
                 declaracao={declaracaoDeEscopo}
                 form={declaracaoDeEscopoForm}
                 onSubmit={salvarDeclaracaoDeEscopo}
             />
+            ) : null}
 
+            {secao === 'partes-interessadas' ? (
             <PartesInteressadasSection
                 emExclusao={parteInteressadaEmExclusao}
                 onCadastrar={abrirCadastroDeParteInteressada}
@@ -518,28 +549,34 @@ export default function ProjetosShow({
                 onExcluir={excluirParteInteressada}
                 partesInteressadas={partesInteressadas}
             />
+            ) : null}
+                </main>
+            </div>
 
             {paginaMontada
                 ? createPortal(
-                      <div className="fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-3xl flex-col gap-3 rounded-xl border border-[#c5d3c7] bg-[#eff5ed]/95 px-4 py-3 shadow-[0_18px_48px_-18px_rgba(23,60,56,0.55)] backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
+                      secao === 'visao-geral' || secao === 'termo-de-abertura' ? (
+                      <div className="relative z-0 mx-5 mb-4 mt-6 flex max-w-3xl flex-col gap-3 rounded-xl border border-[#c5d3c7] bg-[#eff5ed]/95 px-4 py-3 shadow-[0_18px_48px_-18px_rgba(23,60,56,0.55)] backdrop-blur-md sm:mx-auto sm:flex-row sm:items-center sm:justify-between lg:fixed lg:inset-x-4 lg:bottom-2 lg:z-40 lg:my-0">
                           <div aria-live="polite" className="flex items-center gap-3">
                               <span
                                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
-                                      preenchimentoForm.isDirty
+                                      (secao === 'visao-geral' ? projetoForm.isDirty : termoForm.isDirty)
                                           ? 'bg-[#fff0e9] text-[#c94f2d]'
                                           : 'bg-white text-[#0f766e]'
                                   }`}
                               >
-                                  {preenchimentoForm.isDirty ? (
+                                  {(secao === 'visao-geral' ? projetoForm.isDirty : termoForm.isDirty) ? (
                                       <PencilLine className="h-4 w-4" />
                                   ) : (
                                       <CheckCircle2 className="h-4 w-4" />
                                   )}
                               </span>
                               <div>
-                                  <p className="text-sm font-semibold text-[#17211f]">Preenchimento do projeto</p>
+                                  <p className="text-sm font-semibold text-[#17211f]">
+                                      {secao === 'visao-geral' ? 'Dados do projeto' : 'Termo de abertura'}
+                                  </p>
                                   <p className="text-xs text-[#53635e]">
-                                      {preenchimentoForm.isDirty
+                                      {(secao === 'visao-geral' ? projetoForm.isDirty : termoForm.isDirty)
                                           ? 'Você tem alterações que ainda não foram salvas.'
                                           : 'Todos os dados acima estão salvos.'}
                                   </p>
@@ -547,14 +584,21 @@ export default function ProjetosShow({
                           </div>
                           <Button
                               className="w-full sm:w-auto"
-                              disabled={preenchimentoForm.processing || !preenchimentoForm.isDirty}
-                              form="form-preenchimento-projeto"
+                              disabled={
+                                  secao === 'visao-geral'
+                                      ? projetoForm.processing || !projetoForm.isDirty
+                                      : termoForm.processing || !termoForm.isDirty
+                              }
+                              form={secao === 'visao-geral' ? 'form-projeto' : 'form-termo-de-abertura'}
                               type="submit"
                           >
                               <Save className="h-4 w-4" />
-                              {preenchimentoForm.processing ? 'Salvando...' : 'Salvar alterações'}
+                              {(secao === 'visao-geral' ? projetoForm.processing : termoForm.processing)
+                                  ? 'Salvando...'
+                                  : 'Salvar alterações'}
                           </Button>
-                      </div>,
+                      </div>
+                      ) : null,
                       document.body,
                   )
                 : null}
@@ -787,6 +831,162 @@ function BarraDeProgresso({ clara = false, percentual }: { clara?: boolean; perc
     );
 }
 
+function ProjetoIndice({
+    camposTermoPreenchidos,
+    declaracaoRegistrada,
+    onAbrirTrilha,
+    partesInteressadas,
+    projeto,
+    secao,
+    trilha,
+}: {
+    camposTermoPreenchidos: number;
+    declaracaoRegistrada: boolean;
+    onAbrirTrilha: () => void;
+    partesInteressadas: number;
+    projeto: Projeto;
+    secao: SecaoProjeto;
+    trilha: Trilha;
+}) {
+    const conteudo = (
+        <>
+            <div className="border-b border-white/10 px-5 py-5">
+                <div className="flex items-center justify-between gap-3">
+                    <span className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-[#9ed9cd]">
+                        Projeto {projeto.codigo}
+                    </span>
+                    <span className="text-xs font-semibold tabular-nums text-white">
+                        {trilha.progresso.percentual}%
+                    </span>
+                </div>
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/20">
+                    <div
+                        className="h-full rounded-full bg-[#78c9b9] transition-[width] duration-500"
+                        style={{ width: `${trilha.progresso.percentual}%` }}
+                    />
+                </div>
+                <button
+                    className="mt-4 inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-[#c8ddd8] transition hover:text-white"
+                    onClick={onAbrirTrilha}
+                    type="button"
+                >
+                    <Compass className="h-4 w-4 text-[#9ed9cd]" />
+                    Abrir percurso pedagógico
+                </button>
+            </div>
+
+            <nav aria-label="Seções do projeto" className="px-3 py-4">
+                <p className="px-2 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[#8fb1aa]">Visão do projeto</p>
+                <IndiceLink
+                    ativo={secao === 'visao-geral'}
+                    href={`/projetos/${projeto.id}`}
+                    icon={BookOpenCheck}
+                    rotulo="Visão geral"
+                />
+
+                <p className="mt-5 px-2 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[#8fb1aa]">Iniciação</p>
+                <IndiceLink
+                    ativo={secao === 'termo-de-abertura'}
+                    detalhe={`${camposTermoPreenchidos}/5`}
+                    href={`/projetos/${projeto.id}/termo-de-abertura`}
+                    icon={ClipboardCheck}
+                    rotulo="Termo de abertura"
+                />
+                <IndiceLink
+                    ativo={secao === 'partes-interessadas'}
+                    detalhe={String(partesInteressadas)}
+                    href={`/projetos/${projeto.id}/partes-interessadas`}
+                    icon={UsersRound}
+                    rotulo="Partes interessadas"
+                />
+
+                <p className="mt-5 px-2 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-[#8fb1aa]">Planejamento</p>
+                <IndiceLink
+                    ativo={secao === 'escopo'}
+                    concluido={declaracaoRegistrada}
+                    href={`/projetos/${projeto.id}/escopo`}
+                    icon={FileText}
+                    rotulo="Escopo"
+                />
+                <IndiceLink desabilitado icon={ListTree} rotulo="EAP" />
+                <IndiceLink desabilitado icon={CalendarDays} rotulo="Cronograma" />
+                <IndiceLink desabilitado icon={Landmark} rotulo="Custos" />
+                <IndiceLink desabilitado icon={ShieldAlert} rotulo="Riscos" />
+            </nav>
+        </>
+    );
+
+    return (
+        <aside>
+            <details className="group overflow-hidden rounded-xl bg-[#173c38] text-white shadow-sm lg:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
+                    <span className="flex items-center gap-3 text-sm font-semibold">
+                        <LayoutGrid className="h-4 w-4 text-[#9ed9cd]" />
+                        Seções do projeto
+                    </span>
+                    <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="border-t border-white/10">{conteudo}</div>
+            </details>
+            <div className="sticky top-5 hidden overflow-hidden rounded-xl bg-[#173c38] text-white shadow-sm lg:block">
+                {conteudo}
+            </div>
+        </aside>
+    );
+}
+
+function IndiceLink({
+    ativo = false,
+    concluido = false,
+    desabilitado = false,
+    detalhe,
+    href = '#',
+    icon: Icon,
+    rotulo,
+}: {
+    ativo?: boolean;
+    concluido?: boolean;
+    desabilitado?: boolean;
+    detalhe?: string;
+    href?: string;
+    icon: typeof ClipboardCheck;
+    rotulo: string;
+}) {
+    const conteudo = (
+        <>
+            <Icon className={`h-4 w-4 shrink-0 ${ativo ? 'text-[#173c38]' : 'text-[#9ed9cd]'}`} />
+            <span className="min-w-0 flex-1 truncate">{rotulo}</span>
+            {desabilitado ? (
+                <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] text-[#8fb1aa]">Em breve</span>
+            ) : concluido ? (
+                <CheckCircle2 className={`h-4 w-4 ${ativo ? 'text-[#0f766e]' : 'text-[#78c9b9]'}`} />
+            ) : detalhe ? (
+                <span className={`rounded-full px-2 py-0.5 text-[0.65rem] font-bold ${ativo ? 'bg-white/70 text-[#0d625c]' : 'bg-white/10 text-[#c8ddd8]'}`}>
+                    {detalhe}
+                </span>
+            ) : null}
+        </>
+    );
+
+    const classes = `mt-1 flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition ${
+        ativo
+            ? 'bg-[#e8f1e8] text-[#173c38] shadow-sm'
+            : desabilitado
+              ? 'cursor-not-allowed text-[#76918b]'
+              : 'text-[#d4e4df] hover:bg-white/10 hover:text-white'
+    }`;
+
+    return desabilitado ? (
+        <span aria-disabled="true" className={classes}>
+            {conteudo}
+        </span>
+    ) : (
+        <Link className={classes} href={href}>
+            {conteudo}
+        </Link>
+    );
+}
+
 function Resumo({
     icon: Icon,
     rotulo,
@@ -819,7 +1019,7 @@ function DeclaracaoDeEscopoSection({
     ).length;
 
     return (
-        <section className="mt-8">
+        <section>
             <form className="overflow-hidden rounded-xl border border-[#cfdccf] bg-white shadow-sm" onSubmit={onSubmit}>
                 <header className="relative overflow-hidden border-b border-[#cbd9cb] bg-[#e9f0e5] px-6 py-7 md:px-8">
                     <div className="stakeholder-empty-grid pointer-events-none absolute inset-0 opacity-45" />
@@ -985,7 +1185,7 @@ function PartesInteressadasSection({
     ];
 
     return (
-        <section className="mt-8 pb-36 sm:pb-24">
+        <section className="pb-8">
             <div className="overflow-hidden rounded-xl border border-[#d4dfd5] bg-white shadow-sm">
                 <header className="relative overflow-hidden border-b border-[#dce5db] bg-[#173c38] px-6 py-7 text-white md:px-8">
                     <div className="journey-grid pointer-events-none absolute inset-0 opacity-25" />
@@ -1264,25 +1464,46 @@ function CampoTextoArea({
     value,
 }: {
     erro?: string;
-    id: keyof PreenchimentoForm;
+    id: keyof TermoDeAberturaForm;
     label: string;
     onChange: (valor: string) => void;
     placeholder: string;
     value: string;
 }) {
+    const [aberto, setAberto] = useState(id === 'objetivo' || Boolean(erro));
+
+    useEffect(() => {
+        if (erro) {
+            setAberto(true);
+        }
+    }, [erro]);
+
     return (
-        <div>
-            <label className="text-sm font-medium text-[#51605c]" htmlFor={id}>
-                {label}
-            </label>
-            <RichTextEditor
-                id={id}
-                invalid={Boolean(erro)}
-                onChange={onChange}
-                placeholder={placeholder}
-                value={value}
-            />
-            {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
-        </div>
+        <details
+            className="group bg-white px-5 py-1 md:px-7"
+            onToggle={(event) => setAberto(event.currentTarget.open)}
+            open={aberto}
+        >
+            <summary className="flex cursor-pointer list-none items-center gap-3 py-5 [&::-webkit-details-marker]:hidden">
+                <span className={`flex h-7 w-7 items-center justify-center rounded-full ${value.trim() ? 'bg-[#dceadf] text-[#0d625c]' : 'bg-[#f0f2ed] text-[#71817b]'}`}>
+                    {value.trim() ? <Check className="h-3.5 w-3.5" /> : <Circle className="h-3.5 w-3.5" />}
+                </span>
+                <label className="pointer-events-none flex-1 font-semibold text-[#17211f]" htmlFor={id}>
+                    {label}
+                </label>
+                <span className="text-xs font-medium text-[#71817b]">{value.trim() ? 'Preenchido' : 'A preencher'}</span>
+                <ChevronDown className="h-4 w-4 text-[#71817b] transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="pb-6 pl-10">
+                <RichTextEditor
+                    id={id}
+                    invalid={Boolean(erro)}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    value={value}
+                />
+                {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
+            </div>
+        </details>
     );
 }

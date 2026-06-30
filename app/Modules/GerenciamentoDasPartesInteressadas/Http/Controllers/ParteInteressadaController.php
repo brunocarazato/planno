@@ -22,7 +22,8 @@ class ParteInteressadaController extends Controller
     ): RedirectResponse {
         $cadastrarParteInteressada->executar($projeto, $request->validated());
 
-        return to_route('projetos.show', $projeto)->with('success', 'Parte interessada cadastrada.');
+        return to_route('projetos.partes-interessadas.index', $projeto)
+            ->with('success', 'Parte interessada cadastrada.');
     }
 
     public function update(
@@ -33,7 +34,8 @@ class ParteInteressadaController extends Controller
     ): RedirectResponse {
         $atualizarParteInteressada->executar($parteInteressada, $request->validated());
 
-        return to_route('projetos.show', $projeto)->with('success', 'Parte interessada atualizada.');
+        return to_route('projetos.partes-interessadas.index', $projeto)
+            ->with('success', 'Parte interessada atualizada.');
     }
 
     public function destroy(
@@ -44,6 +46,7 @@ class ParteInteressadaController extends Controller
     ): RedirectResponse {
         $excluirParteInteressada->executar($parteInteressada);
 
-        return to_route('projetos.show', $projeto)->with('success', 'Parte interessada removida.');
+        return to_route('projetos.partes-interessadas.index', $projeto)
+            ->with('success', 'Parte interessada removida.');
     }
 }
