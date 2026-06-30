@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm, type InertiaFormProps } from '@inertiajs/react';
 import {
     ArrowLeft,
     Check,
@@ -128,10 +128,24 @@ type ParteInteressadaForm = {
     estrategia_engajamento: string;
 };
 
+type DeclaracaoDeEscopo = {
+    id: number;
+    descricao: string | null;
+    inclui: string | null;
+    exclusoes: string | null;
+};
+
+type DeclaracaoDeEscopoForm = {
+    descricao: string;
+    inclui: string;
+    exclusoes: string;
+};
+
 type ProjetosShowProps = {
     projeto: Projeto;
     trilha: Trilha;
     partesInteressadas: ParteInteressada[];
+    declaracaoDeEscopo: DeclaracaoDeEscopo | null;
     podeAlterarResponsavel: boolean;
     responsaveisDisponiveis: UsuarioOpcao[];
     flash?: {
@@ -143,6 +157,7 @@ export default function ProjetosShow({
     projeto,
     trilha,
     partesInteressadas,
+    declaracaoDeEscopo,
     podeAlterarResponsavel,
     responsaveisDisponiveis,
     flash,
@@ -174,6 +189,11 @@ export default function ProjetosShow({
         poder: 'medio',
         interesse: 'medio',
         estrategia_engajamento: '',
+    });
+    const declaracaoDeEscopoForm = useForm<DeclaracaoDeEscopoForm>({
+        descricao: declaracaoDeEscopo?.descricao ?? '',
+        inclui: declaracaoDeEscopo?.inclui ?? '',
+        exclusoes: declaracaoDeEscopo?.exclusoes ?? '',
     });
 
     useEffect(() => setPaginaMontada(true), []);
@@ -257,6 +277,25 @@ export default function ProjetosShow({
             preserveScroll: true,
             onFinish: () => setParteInteressadaEmExclusao(null),
         });
+    }
+
+    function salvarDeclaracaoDeEscopo(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        const opcoes = {
+            preserveScroll: true,
+            onSuccess: () => declaracaoDeEscopoForm.setDefaults(),
+        };
+
+        if (declaracaoDeEscopo) {
+            declaracaoDeEscopoForm.put(
+                `/projetos/${projeto.id}/declaracao-de-escopo/${declaracaoDeEscopo.id}`,
+                opcoes,
+            );
+            return;
+        }
+
+        declaracaoDeEscopoForm.post(`/projetos/${projeto.id}/declaracao-de-escopo`, opcoes);
     }
 
     const nomeResponsavel = projeto.responsavel.name ?? 'Não definido';
@@ -465,6 +504,12 @@ export default function ProjetosShow({
                     </div>
                 </section>
             </form>
+
+            <DeclaracaoDeEscopoSection
+                declaracao={declaracaoDeEscopo}
+                form={declaracaoDeEscopoForm}
+                onSubmit={salvarDeclaracaoDeEscopo}
+            />
 
             <PartesInteressadasSection
                 emExclusao={parteInteressadaEmExclusao}
@@ -756,6 +801,161 @@ function Resumo({
             <Icon className="h-5 w-5 text-[#0f766e]" />
             <p className="mt-4 text-sm text-[#66756f]">{rotulo}</p>
             <p className="mt-1 font-semibold text-[#17211f]">{valor}</p>
+        </div>
+    );
+}
+
+function DeclaracaoDeEscopoSection({
+    declaracao,
+    form,
+    onSubmit,
+}: {
+    declaracao: DeclaracaoDeEscopo | null;
+    form: InertiaFormProps<DeclaracaoDeEscopoForm>;
+    onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+    const camposPreenchidos = Object.values(form.data).filter((conteudo) =>
+        conteudo.replace(/<[^>]*>/g, '').trim(),
+    ).length;
+
+    return (
+        <section className="mt-8">
+            <form className="overflow-hidden rounded-xl border border-[#cfdccf] bg-white shadow-sm" onSubmit={onSubmit}>
+                <header className="relative overflow-hidden border-b border-[#cbd9cb] bg-[#e9f0e5] px-6 py-7 md:px-8">
+                    <div className="stakeholder-empty-grid pointer-events-none absolute inset-0 opacity-45" />
+                    <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                        <div className="max-w-2xl">
+                            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#0d625c]">
+                                <FileText className="h-4 w-4" />
+                                Fronteira do projeto
+                            </div>
+                            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#17211f]">
+                                Declaração de escopo
+                            </h2>
+                            <p className="mt-2 text-sm leading-6 text-[#53635e]">
+                                Delimite o trabalho antes de decompor as entregas na EAP. Uma boa declaração torna
+                                visível tanto o compromisso quanto aquilo que o projeto decidiu não assumir.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3">
+                            <span className="rounded-full border border-[#bdcdbd] bg-white/80 px-3 py-1.5 text-xs font-semibold text-[#51605c]">
+                                {camposPreenchidos}/3 campos preenchidos
+                            </span>
+                            <span
+                                className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                                    declaracao
+                                        ? 'bg-[#d4e7d9] text-[#0d625c]'
+                                        : 'bg-[#fff1da] text-[#8a5a16]'
+                                }`}
+                            >
+                                {declaracao ? 'Registrada' : 'Em construção'}
+                            </span>
+                        </div>
+                    </div>
+                </header>
+
+                <div className="divide-y divide-[#dfe6dc] bg-white">
+                    <CampoDaDeclaracao
+                        descricao="Sintetize o produto, serviço ou resultado e a fronteira do trabalho necessário para alcançá-lo."
+                        erro={form.errors.descricao}
+                        id="declaracao-escopo-descricao"
+                        indice="01"
+                        label="Descrição do escopo"
+                        onChange={(valor) => form.setData('descricao', valor)}
+                        placeholder="Que resultado será produzido e até onde vai o trabalho do projeto?"
+                        value={form.data.descricao}
+                    />
+                    <CampoDaDeclaracao
+                        descricao="Liste capacidades, processos, públicos ou atividades que fazem parte do compromisso assumido."
+                        erro={form.errors.inclui}
+                        id="declaracao-escopo-inclui"
+                        indice="02"
+                        label="O escopo inclui"
+                        onChange={(valor) => form.setData('inclui', valor)}
+                        placeholder="Quais elementos precisam estar contemplados na solução?"
+                        value={form.data.inclui}
+                    />
+                    <CampoDaDeclaracao
+                        descricao="Registre exclusões deliberadas para reduzir ambiguidades e proteger o foco do projeto."
+                        erro={form.errors.exclusoes}
+                        id="declaracao-escopo-exclusoes"
+                        indice="03"
+                        label="Fora do escopo"
+                        onChange={(valor) => form.setData('exclusoes', valor)}
+                        placeholder="O que pode ser esperado, mas não será realizado neste projeto?"
+                        value={form.data.exclusoes}
+                    />
+                </div>
+
+                <footer className="flex flex-col gap-3 border-t border-[#dfe6dc] bg-[#f8faf6] px-6 py-4 sm:flex-row sm:items-center sm:justify-between md:px-8">
+                    <p aria-live="polite" className="text-xs text-[#61716b]">
+                        {form.isDirty
+                            ? 'Há decisões de escopo ainda não salvas.'
+                            : declaracao
+                              ? 'A declaração está salva e pode ser revisada a qualquer momento.'
+                              : 'Preencha os três campos para registrar a primeira versão.'}
+                    </p>
+                    <Button
+                        className="w-full sm:w-auto"
+                        disabled={form.processing || (Boolean(declaracao) && !form.isDirty)}
+                        type="submit"
+                    >
+                        <Save className="h-4 w-4" />
+                        {form.processing
+                            ? 'Salvando...'
+                            : declaracao
+                              ? 'Salvar declaração'
+                              : 'Criar declaração'}
+                    </Button>
+                </footer>
+            </form>
+        </section>
+    );
+}
+
+function CampoDaDeclaracao({
+    descricao,
+    erro,
+    id,
+    indice,
+    label,
+    onChange,
+    placeholder,
+    value,
+}: {
+    descricao: string;
+    erro?: string;
+    id: string;
+    indice: string;
+    label: string;
+    onChange: (valor: string) => void;
+    placeholder: string;
+    value: string;
+}) {
+    return (
+        <div className="grid gap-5 bg-white p-5 md:p-6 lg:grid-cols-[minmax(14rem,0.42fr)_minmax(0,1fr)] lg:gap-8 lg:px-8 lg:py-7">
+            <div className="flex items-start gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#bfd0c1] bg-[#eff5ed] text-xs font-bold text-[#0d625c]">
+                    {indice}
+                </span>
+                <div>
+                    <label className="font-semibold text-[#17211f]" htmlFor={id}>
+                        {label}
+                    </label>
+                    <p className="mt-1 max-w-sm text-xs leading-5 text-[#66756f]">{descricao}</p>
+                </div>
+            </div>
+            <div>
+                <RichTextEditor
+                    id={id}
+                    invalid={Boolean(erro)}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    value={value}
+                />
+                {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
+            </div>
         </div>
     );
 }

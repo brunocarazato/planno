@@ -4,6 +4,7 @@ namespace App\Modules\Projetos\Models;
 
 use App\Models\User;
 use App\Modules\GerenciamentoDasPartesInteressadas\Models\ParteInteressada;
+use App\Modules\GerenciamentoDeEscopo\Models\DeclaracaoDeEscopo;
 use App\Modules\GruposDeProcessos\Models\TrilhaDoProjeto;
 use App\Modules\Turmas\Models\Turma;
 use Illuminate\Database\Eloquent\Model;
@@ -64,6 +65,14 @@ class Projeto extends Model
     public function partesInteressadas(): HasMany
     {
         return $this->hasMany(ParteInteressada::class);
+    }
+
+    /**
+     * @return HasOne<DeclaracaoDeEscopo>
+     */
+    public function declaracaoDeEscopo(): HasOne
+    {
+        return $this->hasOne(DeclaracaoDeEscopo::class);
     }
 
     public function situacaoFormatada(): string

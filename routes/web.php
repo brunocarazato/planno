@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardProfessorController;
 use App\Modules\Autenticacao\Http\Controllers\SessaoController;
 use App\Modules\GerenciamentoDasPartesInteressadas\Http\Controllers\ParteInteressadaController;
+use App\Modules\GerenciamentoDeEscopo\Http\Controllers\DeclaracaoDeEscopoController;
 use App\Modules\GruposDeProcessos\Http\Controllers\TrilhaDoProjetoController;
 use App\Modules\Projetos\Http\Controllers\ProjetoController;
 use App\Modules\Turmas\Http\Controllers\CadastroAlunoController;
@@ -68,5 +69,9 @@ Route::middleware('auth')->group(function (): void {
             ->name('partes-interessadas.update');
         Route::delete('/{projeto}/partes-interessadas/{parteInteressada}', [ParteInteressadaController::class, 'destroy'])
             ->name('partes-interessadas.destroy');
+        Route::post('/{projeto}/declaracao-de-escopo', [DeclaracaoDeEscopoController::class, 'store'])
+            ->name('declaracao-de-escopo.store');
+        Route::put('/{projeto}/declaracao-de-escopo/{declaracaoDeEscopo}', [DeclaracaoDeEscopoController::class, 'update'])
+            ->name('declaracao-de-escopo.update');
     });
 });

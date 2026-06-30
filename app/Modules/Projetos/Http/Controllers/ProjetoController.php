@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Modules\GerenciamentoDasPartesInteressadas\Models\ParteInteressada;
 use App\Modules\GerenciamentoDasPartesInteressadas\Presenters\ParteInteressadaPresenter;
+use App\Modules\GerenciamentoDeEscopo\Presenters\DeclaracaoDeEscopoPresenter;
 use App\Modules\GruposDeProcessos\Actions\IniciarTrilhaDoProjeto;
 use App\Modules\GruposDeProcessos\Presenters\TrilhaDoProjetoPresenter;
 use App\Modules\Projetos\Actions\AtualizarProjeto;
@@ -101,6 +102,7 @@ class ProjetoController extends Controller
         IniciarTrilhaDoProjeto $iniciarTrilha,
         TrilhaDoProjetoPresenter $trilhaPresenter,
         ParteInteressadaPresenter $parteInteressadaPresenter,
+        DeclaracaoDeEscopoPresenter $declaracaoDeEscopoPresenter,
     ): Response {
         $this->garantirAcessoAoProjeto($request, $projeto);
 
@@ -108,6 +110,7 @@ class ProjetoController extends Controller
             'turma',
             'responsavel',
             'termoDeAbertura',
+            'declaracaoDeEscopo',
             'partesInteressadas' => fn ($query) => $query->orderBy('nome'),
         ]);
         $trilha = $iniciarTrilha->executar($projeto);
@@ -118,6 +121,9 @@ class ProjetoController extends Controller
             'trilha' => $trilhaPresenter->apresentar($trilha),
             'partesInteressadas' => $projeto->partesInteressadas
                 ->map(fn (ParteInteressada $parteInteressada) => $parteInteressadaPresenter->apresentar($parteInteressada)),
+            'declaracaoDeEscopo' => $projeto->declaracaoDeEscopo
+                ? $declaracaoDeEscopoPresenter->apresentar($projeto->declaracaoDeEscopo)
+                : null,
             'podeAlterarResponsavel' => $request->user()?->professor() === true,
             'responsaveisDisponiveis' => $request->user()?->professor() === true
                 ? $this->responsaveisDisponiveis($projeto)
