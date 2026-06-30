@@ -297,32 +297,48 @@ GerenciamentoDasPartesInteressadas
 
 Entregáveis:
 
-- Cadastro de partes interessadas.
-- Registro de poder, interesse e estratégia de engajamento.
-- Declaração de escopo.
-- Cadastro de entregáveis.
-- EAP/WBS simplificada em formato hierárquico.
-- Critérios de aceitação por entregável.
+- [x] Cadastro de partes interessadas.
+- [x] Registro de poder, interesse e estratégia de engajamento.
+- [x] Matriz simples de poder e interesse.
+- [ ] Declaração de escopo.
+- [ ] Cadastro de entregáveis.
+- [ ] EAP/WBS simplificada em formato hierárquico.
+- [ ] Critérios de aceitação por entregável.
 
 Casos de uso:
 
 ```text
-CadastrarParteInteressada
-AtualizarParteInteressada
-CriarDeclaracaoDeEscopo
-AtualizarDeclaracaoDeEscopo
-CriarItemDaEap
-AtualizarItemDaEap
-CadastrarEntregavel
-DefinirCriteriosDeAceitacao
+[x] CadastrarParteInteressada
+[x] AtualizarParteInteressada
+[x] ExcluirParteInteressada
+[ ] CriarDeclaracaoDeEscopo
+[ ] AtualizarDeclaracaoDeEscopo
+[ ] CriarItemDaEap
+[ ] AtualizarItemDaEap
+[ ] CadastrarEntregavel
+[ ] DefinirCriteriosDeAceitacao
 ```
 
 Critérios de aceite:
 
-- O usuário consegue registrar partes interessadas do projeto.
-- O usuário consegue criar uma declaração de escopo.
-- A EAP/WBS permite pelo menos dois níveis.
-- Um entregável pode estar associado a um item da EAP/WBS.
+- [x] O usuário consegue registrar partes interessadas do projeto.
+- [x] O usuário consegue editar e remover partes interessadas do projeto.
+- [x] O usuário consegue visualizar as partes interessadas em uma matriz de poder e interesse.
+- [ ] O usuário consegue criar uma declaração de escopo.
+- [ ] A EAP/WBS permite pelo menos dois níveis.
+- [ ] Um entregável pode estar associado a um item da EAP/WBS.
+
+Status em 30/06/2026: vertical de partes interessadas concluída. O detalhe do projeto agora permite cadastrar, editar e remover pessoas ou organizações, registrar papel, poder, interesse e estratégia de engajamento, além de posicioná-las automaticamente em uma matriz 3×3. As operações respeitam o acesso do professor e do aluno responsável pelo projeto, impedindo alterações cruzadas entre projetos.
+
+Validações executadas:
+
+```text
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan test
+docker compose exec app ./vendor/bin/pint --test
+docker compose exec app php artisan route:list --path=partes-interessadas
+docker compose run --rm node npm run build
+```
 
 ### Fase 5 — Cronograma, calendário e Gantt simplificado
 
@@ -567,10 +583,10 @@ Critérios de aceite:
 
 ### Épico 6 — Partes interessadas
 
-- [ ] Cadastrar parte interessada.
-- [ ] Registrar poder e interesse.
-- [ ] Registrar estratégia de engajamento.
-- [ ] Exibir matriz simples de poder/interesse.
+- [x] Cadastrar parte interessada.
+- [x] Registrar poder e interesse.
+- [x] Registrar estratégia de engajamento.
+- [x] Exibir matriz simples de poder/interesse.
 
 ### Épico 7 — Cronograma
 

@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\DashboardProfessorController;
 use App\Modules\Autenticacao\Http\Controllers\SessaoController;
-use App\Modules\GruposDeProcessos\Http\Controllers\TrilhaDoProjetoController;
 use App\Modules\GerenciamentoDasPartesInteressadas\Http\Controllers\ParteInteressadaController;
+use App\Modules\GruposDeProcessos\Http\Controllers\TrilhaDoProjetoController;
 use App\Modules\Projetos\Http\Controllers\ProjetoController;
 use App\Modules\Turmas\Http\Controllers\CadastroAlunoController;
 use App\Modules\Turmas\Http\Controllers\TurmaController;

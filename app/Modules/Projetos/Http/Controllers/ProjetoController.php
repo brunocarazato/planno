@@ -4,10 +4,10 @@ namespace App\Modules\Projetos\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Modules\GruposDeProcessos\Actions\IniciarTrilhaDoProjeto;
-use App\Modules\GruposDeProcessos\Presenters\TrilhaDoProjetoPresenter;
 use App\Modules\GerenciamentoDasPartesInteressadas\Models\ParteInteressada;
 use App\Modules\GerenciamentoDasPartesInteressadas\Presenters\ParteInteressadaPresenter;
+use App\Modules\GruposDeProcessos\Actions\IniciarTrilhaDoProjeto;
+use App\Modules\GruposDeProcessos\Presenters\TrilhaDoProjetoPresenter;
 use App\Modules\Projetos\Actions\AtualizarProjeto;
 use App\Modules\Projetos\Actions\AtualizarResponsavelDoProjeto;
 use App\Modules\Projetos\Actions\AtualizarTermoDeAberturaDoProjeto;

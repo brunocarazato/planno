@@ -48,6 +48,14 @@
         mask-image: linear-gradient(100deg, black, transparent 78%);
     }
 
+    .stakeholder-empty-grid {
+        background-image:
+            linear-gradient(rgb(15 118 110 / 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(15 118 110 / 0.08) 1px, transparent 1px);
+        background-size: 54px 54px;
+        mask-image: radial-gradient(circle at center, black, transparent 72%);
+    }
+
     .journey-hint {
         isolation: isolate;
         transition:

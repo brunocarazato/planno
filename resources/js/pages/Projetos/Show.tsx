@@ -7,11 +7,15 @@ import {
     ClipboardCheck,
     Compass,
     FileText,
+    LayoutGrid,
     PencilLine,
+    Plus,
     Save,
     School,
     Target,
+    Trash2,
     UserRound,
+    UsersRound,
 } from 'lucide-react';
 import { FormEvent, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -101,9 +105,33 @@ type Trilha = {
     progresso: Progresso;
 };
 
+type NivelDeInfluencia = 'baixo' | 'medio' | 'alto';
+
+type ParteInteressada = {
+    id: number;
+    nome: string;
+    papel: string | null;
+    organizacao: string | null;
+    poder: NivelDeInfluencia;
+    poderFormatado: string;
+    interesse: NivelDeInfluencia;
+    interesseFormatado: string;
+    estrategiaEngajamento: string | null;
+};
+
+type ParteInteressadaForm = {
+    nome: string;
+    papel: string;
+    organizacao: string;
+    poder: NivelDeInfluencia;
+    interesse: NivelDeInfluencia;
+    estrategia_engajamento: string;
+};
+
 type ProjetosShowProps = {
     projeto: Projeto;
     trilha: Trilha;
+    partesInteressadas: ParteInteressada[];
     podeAlterarResponsavel: boolean;
     responsaveisDisponiveis: UsuarioOpcao[];
     flash?: {
@@ -114,6 +142,7 @@ type ProjetosShowProps = {
 export default function ProjetosShow({
     projeto,
     trilha,
+    partesInteressadas,
     podeAlterarResponsavel,
     responsaveisDisponiveis,
     flash,
@@ -133,8 +162,19 @@ export default function ProjetosShow({
         entregas_esperadas: projeto.termoDeAbertura.entregasEsperadas ?? '',
     });
     const [trilhaAberta, setTrilhaAberta] = useState(false);
+    const [parteInteressadaAberta, setParteInteressadaAberta] = useState(false);
+    const [parteInteressadaEmEdicao, setParteInteressadaEmEdicao] = useState<number | null>(null);
+    const [parteInteressadaEmExclusao, setParteInteressadaEmExclusao] = useState<number | null>(null);
     const [atividadeEmAtualizacao, setAtividadeEmAtualizacao] = useState<string | null>(null);
     const [paginaMontada, setPaginaMontada] = useState(false);
+    const parteInteressadaForm = useForm<ParteInteressadaForm>({
+        nome: '',
+        papel: '',
+        organizacao: '',
+        poder: 'medio',
+        interesse: 'medio',
+        estrategia_engajamento: '',
+    });
 
     useEffect(() => setPaginaMontada(true), []);
 
@@ -158,6 +198,65 @@ export default function ProjetosShow({
                 onFinish: () => setAtividadeEmAtualizacao(null),
             },
         );
+    }
+
+    function abrirCadastroDeParteInteressada() {
+        setParteInteressadaEmEdicao(null);
+        parteInteressadaForm.clearErrors();
+        parteInteressadaForm.setData({
+            nome: '',
+            papel: '',
+            organizacao: '',
+            poder: 'medio',
+            interesse: 'medio',
+            estrategia_engajamento: '',
+        });
+        setParteInteressadaAberta(true);
+    }
+
+    function abrirEdicaoDeParteInteressada(parteInteressada: ParteInteressada) {
+        setParteInteressadaEmEdicao(parteInteressada.id);
+        parteInteressadaForm.clearErrors();
+        parteInteressadaForm.setData({
+            nome: parteInteressada.nome,
+            papel: parteInteressada.papel ?? '',
+            organizacao: parteInteressada.organizacao ?? '',
+            poder: parteInteressada.poder,
+            interesse: parteInteressada.interesse,
+            estrategia_engajamento: parteInteressada.estrategiaEngajamento ?? '',
+        });
+        setParteInteressadaAberta(true);
+    }
+
+    function salvarParteInteressada(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        const opcoes = {
+            preserveScroll: true,
+            onSuccess: () => setParteInteressadaAberta(false),
+        };
+
+        if (parteInteressadaEmEdicao) {
+            parteInteressadaForm.put(
+                `/projetos/${projeto.id}/partes-interessadas/${parteInteressadaEmEdicao}`,
+                opcoes,
+            );
+            return;
+        }
+
+        parteInteressadaForm.post(`/projetos/${projeto.id}/partes-interessadas`, opcoes);
+    }
+
+    function excluirParteInteressada(parteInteressada: ParteInteressada) {
+        if (!window.confirm(`Remover ${parteInteressada.nome} do mapa de partes interessadas?`)) {
+            return;
+        }
+
+        setParteInteressadaEmExclusao(parteInteressada.id);
+        router.delete(`/projetos/${projeto.id}/partes-interessadas/${parteInteressada.id}`, {
+            preserveScroll: true,
+            onFinish: () => setParteInteressadaEmExclusao(null),
+        });
     }
 
     const nomeResponsavel = projeto.responsavel.name ?? 'Não definido';
@@ -205,7 +304,7 @@ export default function ProjetosShow({
                 </button>
             </section>
 
-            <form className="mt-8 pb-36 sm:pb-24" id="form-preenchimento-projeto" onSubmit={salvarAlteracoes}>
+            <form className="mt-8" id="form-preenchimento-projeto" onSubmit={salvarAlteracoes}>
                 <section className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
                     <div className="rounded-lg border border-[#dfe5d8] bg-white p-6 shadow-sm">
                         <div className="flex items-center gap-3">
@@ -366,6 +465,14 @@ export default function ProjetosShow({
                     </div>
                 </section>
             </form>
+
+            <PartesInteressadasSection
+                emExclusao={parteInteressadaEmExclusao}
+                onCadastrar={abrirCadastroDeParteInteressada}
+                onEditar={abrirEdicaoDeParteInteressada}
+                onExcluir={excluirParteInteressada}
+                partesInteressadas={partesInteressadas}
+            />
 
             {paginaMontada
                 ? createPortal(
@@ -533,6 +640,93 @@ export default function ProjetosShow({
                 </div>
             </section>
             </Dialog>
+
+            <Dialog
+                aberto={parteInteressadaAberta}
+                descricao="Posicione a pessoa ou organização no mapa e registre como a equipe pretende envolvê-la."
+                onClose={() => setParteInteressadaAberta(false)}
+                titulo={parteInteressadaEmEdicao ? 'Editar parte interessada' : 'Cadastrar parte interessada'}
+            >
+                <form className="space-y-4" onSubmit={salvarParteInteressada}>
+                    <CampoSimples
+                        erro={parteInteressadaForm.errors.nome}
+                        id="parte-interessada-nome"
+                        label="Nome"
+                        onChange={(valor) => parteInteressadaForm.setData('nome', valor)}
+                        placeholder="Ex.: Direção da escola"
+                        value={parteInteressadaForm.data.nome}
+                    />
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <CampoSimples
+                            erro={parteInteressadaForm.errors.papel}
+                            id="parte-interessada-papel"
+                            label="Papel no projeto"
+                            onChange={(valor) => parteInteressadaForm.setData('papel', valor)}
+                            placeholder="Ex.: Patrocinadora"
+                            value={parteInteressadaForm.data.papel}
+                        />
+                        <CampoSimples
+                            erro={parteInteressadaForm.errors.organizacao}
+                            id="parte-interessada-organizacao"
+                            label="Organização"
+                            onChange={(valor) => parteInteressadaForm.setData('organizacao', valor)}
+                            placeholder="Ex.: Escola Horizonte"
+                            value={parteInteressadaForm.data.organizacao}
+                        />
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <CampoNivel
+                            erro={parteInteressadaForm.errors.poder}
+                            id="parte-interessada-poder"
+                            label="Poder"
+                            onChange={(valor) => parteInteressadaForm.setData('poder', valor)}
+                            value={parteInteressadaForm.data.poder}
+                        />
+                        <CampoNivel
+                            erro={parteInteressadaForm.errors.interesse}
+                            id="parte-interessada-interesse"
+                            label="Interesse"
+                            onChange={(valor) => parteInteressadaForm.setData('interesse', valor)}
+                            value={parteInteressadaForm.data.interesse}
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            className="text-sm font-medium text-[#51605c]"
+                            htmlFor="parte-interessada-estrategia"
+                        >
+                            Estratégia de engajamento
+                        </label>
+                        <textarea
+                            className="mt-1 min-h-24 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
+                            id="parte-interessada-estrategia"
+                            onChange={(event) =>
+                                parteInteressadaForm.setData('estrategia_engajamento', event.target.value)
+                            }
+                            placeholder="Como informar, consultar ou envolver esta parte nas decisões?"
+                            value={parteInteressadaForm.data.estrategia_engajamento}
+                        />
+                        {parteInteressadaForm.errors.estrategia_engajamento ? (
+                            <p className="mt-1 text-sm text-red-600">
+                                {parteInteressadaForm.errors.estrategia_engajamento}
+                            </p>
+                        ) : null}
+                    </div>
+
+                    <div className="flex justify-end gap-3 border-t border-[#e4e9df] pt-4">
+                        <Button onClick={() => setParteInteressadaAberta(false)} type="button" variant="secondary">
+                            Cancelar
+                        </Button>
+                        <Button disabled={parteInteressadaForm.processing} type="submit">
+                            <Save className="h-4 w-4" />
+                            {parteInteressadaForm.processing ? 'Salvando...' : 'Salvar parte interessada'}
+                        </Button>
+                    </div>
+                </form>
+            </Dialog>
         </AppLayout>
     );
 }
@@ -562,6 +756,301 @@ function Resumo({
             <Icon className="h-5 w-5 text-[#0f766e]" />
             <p className="mt-4 text-sm text-[#66756f]">{rotulo}</p>
             <p className="mt-1 font-semibold text-[#17211f]">{valor}</p>
+        </div>
+    );
+}
+
+function PartesInteressadasSection({
+    emExclusao,
+    onCadastrar,
+    onEditar,
+    onExcluir,
+    partesInteressadas,
+}: {
+    emExclusao: number | null;
+    onCadastrar: () => void;
+    onEditar: (parteInteressada: ParteInteressada) => void;
+    onExcluir: (parteInteressada: ParteInteressada) => void;
+    partesInteressadas: ParteInteressada[];
+}) {
+    const poderes: Array<{ rotulo: string; valor: NivelDeInfluencia }> = [
+        { rotulo: 'Alto', valor: 'alto' },
+        { rotulo: 'Médio', valor: 'medio' },
+        { rotulo: 'Baixo', valor: 'baixo' },
+    ];
+    const interesses: Array<{ rotulo: string; valor: NivelDeInfluencia }> = [
+        { rotulo: 'Baixo', valor: 'baixo' },
+        { rotulo: 'Médio', valor: 'medio' },
+        { rotulo: 'Alto', valor: 'alto' },
+    ];
+
+    return (
+        <section className="mt-8 pb-36 sm:pb-24">
+            <div className="overflow-hidden rounded-xl border border-[#d4dfd5] bg-white shadow-sm">
+                <header className="relative overflow-hidden border-b border-[#dce5db] bg-[#173c38] px-6 py-7 text-white md:px-8">
+                    <div className="journey-grid pointer-events-none absolute inset-0 opacity-25" />
+                    <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                        <div className="max-w-2xl">
+                            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#9ed9cd]">
+                                <UsersRound className="h-4 w-4" />
+                                Mapa de influência
+                            </div>
+                            <h2 className="mt-3 text-2xl font-semibold tracking-tight">Partes interessadas</h2>
+                            <p className="mt-2 text-sm leading-6 text-[#c8ddd8]">
+                                Identifique quem afeta o projeto, compare poder e interesse e defina uma abordagem de
+                                engajamento consciente.
+                            </p>
+                        </div>
+                        <Button className="shrink-0 bg-[#f5c96a] text-[#173c38] hover:bg-[#ffda82]" onClick={onCadastrar}>
+                            <Plus className="h-4 w-4" />
+                            Cadastrar parte
+                        </Button>
+                    </div>
+                </header>
+
+                {partesInteressadas.length === 0 ? (
+                    <div className="relative overflow-hidden px-6 py-12 text-center md:py-16">
+                        <div className="stakeholder-empty-grid pointer-events-none absolute inset-0 opacity-55" />
+                        <div className="relative mx-auto max-w-md">
+                            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-[#cad8cd] bg-[#eff5ed] text-[#0f766e]">
+                                <LayoutGrid className="h-6 w-6" />
+                            </span>
+                            <h3 className="mt-5 text-lg font-semibold text-[#17211f]">O mapa ainda está em branco</h3>
+                            <p className="mt-2 text-sm leading-6 text-[#61716b]">
+                                Comece por quem aprova, usa, financia ou pode bloquear uma decisão importante do projeto.
+                            </p>
+                            <Button className="mt-5" onClick={onCadastrar} variant="secondary">
+                                <Plus className="h-4 w-4" />
+                                Adicionar primeira parte
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="grid gap-0 xl:grid-cols-[1.35fr_0.65fr]">
+                        <div className="overflow-x-auto border-b border-[#e1e7df] p-5 md:p-7 xl:border-r xl:border-b-0">
+                            <div className="min-w-[660px]">
+                                <div className="grid grid-cols-[5.5rem_repeat(3,minmax(0,1fr))] gap-2">
+                                    <div />
+                                    {interesses.map((interesse) => (
+                                        <div className="pb-1 text-center" key={interesse.valor}>
+                                            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-[#71817b]">
+                                                Interesse {interesse.rotulo}
+                                            </span>
+                                        </div>
+                                    ))}
+
+                                    {poderes.map((poder) => (
+                                        <MatrizRow
+                                            interesses={interesses}
+                                            key={poder.valor}
+                                            onEditar={onEditar}
+                                            partesInteressadas={partesInteressadas}
+                                            poder={poder}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-[#f8f9f5] p-5 md:p-7">
+                            <div className="flex items-center justify-between gap-3">
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#71817b]">
+                                        Registro
+                                    </p>
+                                    <p className="mt-1 text-sm text-[#53635e]">
+                                        {partesInteressadas.length}{' '}
+                                        {partesInteressadas.length === 1 ? 'parte mapeada' : 'partes mapeadas'}
+                                    </p>
+                                </div>
+                                <span className="rounded-full bg-[#e3eee5] px-3 py-1 text-xs font-semibold text-[#0d625c]">
+                                    {partesInteressadas.filter((parte) => parte.poder === 'alto').length} alto poder
+                                </span>
+                            </div>
+
+                            <div className="mt-5 space-y-3">
+                                {partesInteressadas.map((parteInteressada) => (
+                                    <article
+                                        className="group rounded-lg border border-[#d8e1d7] bg-white p-4 transition hover:-translate-y-0.5 hover:border-[#b9cdbd] hover:shadow-sm"
+                                        key={parteInteressada.id}
+                                    >
+                                        <div className="flex items-start justify-between gap-3">
+                                            <button
+                                                className="min-w-0 flex-1 cursor-pointer text-left"
+                                                onClick={() => onEditar(parteInteressada)}
+                                                type="button"
+                                            >
+                                                <span className="block truncate font-semibold text-[#17211f]">
+                                                    {parteInteressada.nome}
+                                                </span>
+                                                <span className="mt-1 block truncate text-xs text-[#66756f]">
+                                                    {[parteInteressada.papel, parteInteressada.organizacao]
+                                                        .filter(Boolean)
+                                                        .join(' · ') || 'Papel ainda não informado'}
+                                                </span>
+                                            </button>
+                                            <div className="flex items-center gap-1">
+                                                <button
+                                                    aria-label={`Editar ${parteInteressada.nome}`}
+                                                    className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-[#60716b] hover:bg-[#eff5ed] hover:text-[#0f766e]"
+                                                    onClick={() => onEditar(parteInteressada)}
+                                                    type="button"
+                                                >
+                                                    <PencilLine className="h-3.5 w-3.5" />
+                                                </button>
+                                                <button
+                                                    aria-label={`Remover ${parteInteressada.nome}`}
+                                                    className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-[#8b6860] hover:bg-[#fff0e9] hover:text-[#b53f24] disabled:cursor-wait disabled:opacity-50"
+                                                    disabled={emExclusao === parteInteressada.id}
+                                                    onClick={() => onExcluir(parteInteressada)}
+                                                    type="button"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {parteInteressada.estrategiaEngajamento ? (
+                                            <p className="mt-3 border-t border-[#edf0e9] pt-3 text-xs leading-5 text-[#61716b]">
+                                                {parteInteressada.estrategiaEngajamento}
+                                            </p>
+                                        ) : null}
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+}
+
+function MatrizRow({
+    interesses,
+    onEditar,
+    partesInteressadas,
+    poder,
+}: {
+    interesses: Array<{ rotulo: string; valor: NivelDeInfluencia }>;
+    onEditar: (parteInteressada: ParteInteressada) => void;
+    partesInteressadas: ParteInteressada[];
+    poder: { rotulo: string; valor: NivelDeInfluencia };
+}) {
+    return (
+        <>
+            <div className="flex items-center justify-end pr-3 text-right">
+                <span className="text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-[#71817b]">
+                    Poder {poder.rotulo}
+                </span>
+            </div>
+            {interesses.map((interesse) => {
+                const partesDaCelula = partesInteressadas.filter(
+                    (parte) => parte.poder === poder.valor && parte.interesse === interesse.valor,
+                );
+                const destaque = poder.valor === 'alto' && interesse.valor === 'alto';
+
+                return (
+                    <div
+                        className={`min-h-28 rounded-lg border p-3 ${
+                            destaque
+                                ? 'border-[#e8b794] bg-[#fff4ea]'
+                                : partesDaCelula.length > 0
+                                  ? 'border-[#bdd2c1] bg-[#eff5ed]'
+                                  : 'border-[#e3e8df] bg-[#fafbf8]'
+                        }`}
+                        key={`${poder.valor}-${interesse.valor}`}
+                    >
+                        <div className="flex flex-wrap gap-2">
+                            {partesDaCelula.map((parteInteressada) => (
+                                <button
+                                    className={`inline-flex max-w-full cursor-pointer items-center gap-2 rounded-full border px-2.5 py-1.5 text-left text-xs font-medium transition hover:-translate-y-0.5 hover:shadow-sm ${
+                                        destaque
+                                            ? 'border-[#e4a77c] bg-white text-[#8d3f26]'
+                                            : 'border-[#b9cdbd] bg-white text-[#24574f]'
+                                    }`}
+                                    key={parteInteressada.id}
+                                    onClick={() => onEditar(parteInteressada)}
+                                    title={`Editar ${parteInteressada.nome}`}
+                                    type="button"
+                                >
+                                    <span
+                                        className={`h-1.5 w-1.5 shrink-0 rounded-full ${destaque ? 'bg-[#c94f2d]' : 'bg-[#0f766e]'}`}
+                                    />
+                                    <span className="truncate">{parteInteressada.nome}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                );
+            })}
+        </>
+    );
+}
+
+function CampoSimples({
+    erro,
+    id,
+    label,
+    onChange,
+    placeholder,
+    value,
+}: {
+    erro?: string;
+    id: string;
+    label: string;
+    onChange: (valor: string) => void;
+    placeholder: string;
+    value: string;
+}) {
+    return (
+        <div>
+            <label className="text-sm font-medium text-[#51605c]" htmlFor={id}>
+                {label}
+            </label>
+            <input
+                className="mt-1 w-full rounded-md border border-[#b9c4b7] px-3 py-2 text-sm text-[#17211f] outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#d9e2d7]"
+                id={id}
+                onChange={(event) => onChange(event.target.value)}
+                placeholder={placeholder}
+                value={value}
+            />
+            {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
+        </div>
+    );
+}
+
+function CampoNivel({
+    erro,
+    id,
+    label,
+    onChange,
+    value,
+}: {
+    erro?: string;
+    id: string;
+    label: string;
+    onChange: (valor: NivelDeInfluencia) => void;
+    value: NivelDeInfluencia;
+}) {
+    return (
+        <div>
+            <label className="text-sm font-medium text-[#51605c]" htmlFor={id}>
+                {label}
+            </label>
+            <Select
+                className="mt-1"
+                id={id}
+                invalid={Boolean(erro)}
+                onValueChange={(valor) => onChange(valor as NivelDeInfluencia)}
+                options={[
+                    { label: 'Baixo', value: 'baixo' },
+                    { label: 'Médio', value: 'medio' },
+                    { label: 'Alto', value: 'alto' },
+                ]}
+                value={value}
+            />
+            {erro ? <p className="mt-1 text-sm text-red-600">{erro}</p> : null}
         </div>
     );
 }
